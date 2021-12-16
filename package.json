@@ -1,6 +1,6 @@
 {
   "name": "async-server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A lightweight framework",
   "main": "main.mjs",
   "directories": {

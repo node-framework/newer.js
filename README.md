@@ -61,3 +61,42 @@ await new NodeServer()
     // Start the server
     .start();
 ```
+
+To use req.query and req.body use:
+```javascript
+import NodeServer from "async-server";
+// Import middlewares
+import { queryParser, bodyParser } from "async-server/middleware";
+
+// Create the server
+const app = new NodeServer();
+
+// Use middlewares
+app.use(queryParser, bodyParser);
+
+// Register /index route
+app.register("/index", (req, res) => {
+    res.write("Hello " + req.query.name);
+});
+
+// Start the server
+await app.start();
+```
+
+- Or even shorter
+```javascript
+import NodeServer from "async-server";
+
+// Create the server
+await new NodeServer()
+    // Register middlewares
+    .use(queryParser, bodyParser)
+    // Register the route
+    .register("/index", (req, res) => {
+        res.write("Hello " + req.query.name);
+    })
+    // Start the server
+    .start();
+```
+
+- Go to http://localhost:8080/index?name=Reve and you will see the text "Hello Reve"
