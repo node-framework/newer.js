@@ -20,5 +20,8 @@
   "license": "MIT",
   "dependencies": {
     "query-string": "^7.0.1"
+  },
+  "repository": {
+    "url": "https://github.com/aquapi/async-server"
   }
 }
