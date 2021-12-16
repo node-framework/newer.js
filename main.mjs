@@ -1,8 +1,5 @@
-import Middlewares from "./src/middlewares.mjs";
-import NodeServer from "./src/nodeserver.mjs";
+import Server from "./src/nodeserver.js";
+import mdw from "./src/middlewares.js";
 
-export default {
-    NodeServer,
-    Middlewares
-}
-
+export const NodeServer = Server,
+    Middlewares = mdw

@@ -1,6 +1,6 @@
 // @ts-check
 // @ts-ignore
-import http from "http";
+const http = require("http");
 
 /**
  * @param {string} url 
@@ -22,7 +22,7 @@ const getParams = (url, paramsUrl) => {
     return reqParams;
 }
 
-export default class NodeServer {
+module.exports = class NodeServer {
     /**
      * @type {{ [route: string]: (req: import("http").IncomingMessage, res: import("http").ServerResponse) => Promise<void> | void}}
      */
@@ -133,4 +133,3 @@ export default class NodeServer {
         }
     );
 };
-

@@ -1,4 +1,4 @@
-import { NodeServer, Middlewares } from "../main.js";
+import { NodeServer, Middlewares } from "../main.mjs";
 import calc from "./execTime.mjs";
 
 calc(

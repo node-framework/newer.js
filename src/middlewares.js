@@ -1,11 +1,12 @@
 // @ts-check
 const { existsSync, readFile, readFileSync } = require("fs");
 const path = require("path");
+// @ts-ignore
 const qs = require("query-string");
 
 /**
 * @param {import("http").ServerResponse} res
-* @param {import("./nodeserver.mjs").default} server
+* @param {import("./nodeserver.js")} server
 * @returns {(pathname: string, callback?: () => void) => Promise<string | boolean>}
 */
 const getAsyncRenderer = (res, server) => (
@@ -26,7 +27,7 @@ const getAsyncRenderer = (res, server) => (
 
 /**
 * @param {import("http").ServerResponse} res 
-* @param {import("./nodeserver.mjs").default} server
+* @param {import("./nodeserver.js")} server
 * @returns {(pathname: string, callback?: () => void) => string | boolean}
 */
 const getSyncRenderer = (res, server) => (
@@ -46,7 +47,7 @@ const getSyncRenderer = (res, server) => (
 /**
 * @param {any} _ 
 * @param {import("http").ServerResponse} res 
-* @param {import("./nodeserver.mjs").default} server 
+* @param {import("./nodeserver.js")} server 
 */
 const renderHTML = (_, res, server) => {
     // Normal render
@@ -85,7 +86,7 @@ const queryParser = req =>
         new URLSearchParams(req.url.split("?")[1]).entries()
     );
 
-export default {
+module.exports = {
     queryParser,
     bodyParser,
     renderHTML
