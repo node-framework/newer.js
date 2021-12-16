@@ -1,5 +1,5 @@
 import { bodyParser, queryParser, renderHTML } from "./src/middlewares.mjs";
-import NodeServer from "./dist/nodeserver.mjs";
+import NodeServer from "./src/nodeserver.mjs";
 
 const mod = {
     NodeServer,
