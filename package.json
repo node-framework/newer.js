@@ -1,0 +1,24 @@
+{
+  "name": "async-server",
+  "version": "0.0.1",
+  "description": "A lightweight framework",
+  "main": "src/main.mjs",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/test.mjs"
+  },
+  "keywords": [
+    "async",
+    "server",
+    "framework",
+    "lightweight",
+    "express-like"
+  ],
+  "author": "revenity",
+  "license": "MIT",
+  "dependencies": {
+    "query-string": "^7.0.1"
+  }
+}

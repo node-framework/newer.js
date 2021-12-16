@@ -1,0 +1,88 @@
+// @ts-check
+import { existsSync, readFile, readFileSync } from "fs";
+import path from "path";
+import qs from "query-string";
+
+/**
+* @param {import("http").ServerResponse} res
+* @param {import("./main.mjs").default} server
+* @returns {(pathname: string, callback?: () => void) => Promise<string | boolean>}
+*/
+const getAsyncRenderer = (res, server) => (
+    async (pathname, callback = () => { }) =>
+        new Promise((rs, rj) =>
+            existsSync(path.join(server.staticPath, pathname + ".html"))
+                ? readFile(path.join(server.staticPath, pathname + ".html"),
+                    (err, data) => {
+                        if (err) rj(err);
+                        let dt = data?.toString() ?? "";
+                        res.write(dt, callback);
+                        rs(dt);
+                    })
+                // @ts-ignore
+                : rs(false)
+        )
+);
+
+/**
+* @param {import("http").ServerResponse} res 
+* @param {import("./main.mjs").default} server
+* @returns {(pathname: string, callback?: () => void) => string | boolean}
+*/
+const getSyncRenderer = (res, server) => (
+    (pathname, callback = () => { }) => {
+        let data = existsSync(
+            path.join(server.staticPath, pathname + (!path.extname(pathname) ? ".html" : ""))
+        ) ? readFileSync(
+            path.join(server.staticPath, pathname + (!path.extname(pathname) ? ".html" : ""))
+            // @ts-ignore
+        ).toString() : false;
+        res.write(data ?? "", callback);
+        return data;
+    }
+)
+
+
+/**
+* @param {any} _ 
+* @param {import("http").ServerResponse} res 
+* @param {import("./main.mjs").default} server 
+*/
+export const renderHTML = (_, res, server) => {
+    // Normal render
+    // @ts-ignore
+    res.render = getAsyncRenderer(res, server);
+    // Sync render
+    // @ts-ignore
+    res.renderSync = getSyncRenderer(res, server);
+}
+
+/**
+* @param {import("http").IncomingMessage} req 
+*/
+export const bodyParser = async req =>
+    // Body
+    // @ts-ignore
+    req.body = await new Promise((res, rej) => {
+        let body = '';
+        req.on('data', data => {
+            body += data;
+            if (body.length > 1e6) {
+                req.socket.destroy();
+                rej();
+            }
+        });
+        req.on('end', () => res(qs.parse(body)));
+    });
+
+/**
+* @param {import("http").IncomingMessage} req 
+*/
+export const queryParser = req =>
+    // Query
+    // @ts-ignore
+    req.query = Object.fromEntries(
+        new URLSearchParams(req.url.split("?")[1]).entries()
+    );
+
+
