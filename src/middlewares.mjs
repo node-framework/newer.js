@@ -5,7 +5,7 @@ const qs = require("query-string");
 
 /**
 * @param {import("http").ServerResponse} res
-* @param {import("./main.mjs").default} server
+* @param {import("./nodeserver.mjs").default} server
 * @returns {(pathname: string, callback?: () => void) => Promise<string | boolean>}
 */
 const getAsyncRenderer = (res, server) => (
@@ -26,7 +26,7 @@ const getAsyncRenderer = (res, server) => (
 
 /**
 * @param {import("http").ServerResponse} res 
-* @param {import("./main.mjs").default} server
+* @param {import("./nodeserver.mjs").default} server
 * @returns {(pathname: string, callback?: () => void) => string | boolean}
 */
 const getSyncRenderer = (res, server) => (
@@ -46,7 +46,7 @@ const getSyncRenderer = (res, server) => (
 /**
 * @param {any} _ 
 * @param {import("http").ServerResponse} res 
-* @param {import("./main.mjs").default} server 
+* @param {import("./nodeserver.mjs").default} server 
 */
 module.exports.renderHTML = (_, res, server) => {
     // Normal render
@@ -82,6 +82,7 @@ module.exports.queryParser = req =>
     // Query
     // @ts-ignore
     req.query = Object.fromEntries(
+        // @ts-ignore
         new URLSearchParams(req.url.split("?")[1]).entries()
     );
 

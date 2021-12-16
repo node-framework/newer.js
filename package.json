@@ -1,6 +1,6 @@
 {
   "name": "async-server",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A lightweight framework",
   "main": "main.mjs",
   "directories": {
@@ -19,9 +19,11 @@
   "author": "revenity",
   "license": "MIT",
   "dependencies": {
-    "query-string": "^7.0.1"
+    "query-string": "^7.0.1",
+    "typescript": "^4.5.4"
   },
   "repository": {
     "url": "https://github.com/aquapi/async-server"
-  }
+  },
+  "types": "main.d.ts"
 }

@@ -1,6 +1,6 @@
 import NodeServer from "../main.mjs";
 import calc from "./execTime.mjs";
-import { renderHTML } from "../middlewares.js";
+import { renderHTML } from "../src/middlewares.mjs";
 
 calc(
     async () => {
