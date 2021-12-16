@@ -1,6 +1,5 @@
-import NodeServer from "../main.mjs";
+import { NodeServer, Middlewares } from "../main.js";
 import calc from "./execTime.mjs";
-import { renderHTML } from "../src/middlewares.mjs";
 
 calc(
     async () => {
@@ -18,7 +17,7 @@ calc(
             // the same as express().use(express.static("test"))
             .useStaticPath("test")
             // Render HTML
-            .use(renderHTML)
+            .use(Middlewares.renderHTML)
             // go to /index will render index.html
             .register("/index", async (req, res) =>
                 await res.render(req.url)
