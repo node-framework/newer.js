@@ -48,7 +48,7 @@ const getSyncRenderer = (res, server) => (
 * @param {import("http").ServerResponse} res 
 * @param {import("./nodeserver.mjs").default} server 
 */
-const renderHTML = (_, res, server) => {
+export const renderHTML = (_, res, server) => {
     // Normal render
     // @ts-ignore
     res.render = getAsyncRenderer(res, server);
@@ -60,7 +60,7 @@ const renderHTML = (_, res, server) => {
 /**
 * @param {import("http").IncomingMessage} req 
 */
-const bodyParser = async req =>
+export const bodyParser = async req =>
     // Body
     // @ts-ignore
     req.body = await new Promise((res, rej) => {
@@ -78,16 +78,10 @@ const bodyParser = async req =>
 /**
 * @param {import("http").IncomingMessage} req 
 */
-const queryParser = req =>
+export const queryParser = req =>
     // Query
     // @ts-ignore
     req.query = Object.fromEntries(
         // @ts-ignore
         new URLSearchParams(req.url.split("?")[1]).entries()
     );
-
-export default {
-    queryParser,
-    bodyParser,
-    renderHTML
-}
