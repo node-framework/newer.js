@@ -1,7 +1,7 @@
 // @ts-check
-import { existsSync, readFile, readFileSync } from "fs";
-import path from "path";
-import qs from "query-string";
+const { existsSync, readFile, readFileSync } = require("fs");
+const path = require("path");
+const qs = require("query-string");
 
 /**
 * @param {import("http").ServerResponse} res
@@ -37,7 +37,7 @@ const getSyncRenderer = (res, server) => (
             path.join(server.staticPath, pathname + (!path.extname(pathname) ? ".html" : ""))
             // @ts-ignore
         ).toString() : false;
-        res.write(data ?? "", callback);
+        res.write(typeof data === "string" ? data : "", callback);
         return data;
     }
 )
@@ -48,7 +48,7 @@ const getSyncRenderer = (res, server) => (
 * @param {import("http").ServerResponse} res 
 * @param {import("./main.mjs").default} server 
 */
-export const renderHTML = (_, res, server) => {
+module.exports.renderHTML = (_, res, server) => {
     // Normal render
     // @ts-ignore
     res.render = getAsyncRenderer(res, server);
@@ -60,7 +60,7 @@ export const renderHTML = (_, res, server) => {
 /**
 * @param {import("http").IncomingMessage} req 
 */
-export const bodyParser = async req =>
+module.exports.bodyParser = async req =>
     // Body
     // @ts-ignore
     req.body = await new Promise((res, rej) => {
@@ -78,7 +78,7 @@ export const bodyParser = async req =>
 /**
 * @param {import("http").IncomingMessage} req 
 */
-export const queryParser = req =>
+module.exports.queryParser = req =>
     // Query
     // @ts-ignore
     req.query = Object.fromEntries(
