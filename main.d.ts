@@ -8,4 +8,4 @@ export = {
 };
 import NodeServer from "./dist/nodeserver.js";
 import { bodyParser, queryParser, renderHTML } from "./dist/middlewares.js";
-//# sourceMappingURL=main.d.mts.map
+//# sourceMappingURL=main.d.ts.map
