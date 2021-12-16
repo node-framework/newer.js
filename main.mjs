@@ -126,7 +126,7 @@ export default class NodeServer {
                         this.routes[route](req, res);
                     }
             // End
-            if (!res.writableEnded)
+            if (!res.writableEnded || !res.writableFinished)
                 res.end();
         }
     );
