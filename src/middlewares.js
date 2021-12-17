@@ -1,19 +1,19 @@
 // @ts-check
-const { existsSync, readFile, readFileSync } = require("fs");
-const path = require("path");
+import { existsSync, readFile, readFileSync } from "fs";
+import { join, extname } from "path";
 // @ts-ignore
-const qs = require("query-string");
+import { parse } from "query-string";
 
 /**
 * @param {import("http").ServerResponse} res
-* @param {import("./nodeserver.js")} server
+* @param {import("./nodeserver.js").default} server
 * @returns {(pathname: string, callback?: () => void) => Promise<string | boolean>}
 */
 const getAsyncRenderer = (res, server) => (
     async (pathname, callback = () => { }) =>
         new Promise((rs, rj) =>
-            existsSync(path.join(server.staticPath, pathname + ".html"))
-                ? readFile(path.join(server.staticPath, pathname + ".html"),
+            existsSync(join(server.staticPath, pathname + ".html"))
+                ? readFile(join(server.staticPath, pathname + ".html"),
                     (err, data) => {
                         if (err) rj(err);
                         let dt = data?.toString() ?? "";
@@ -27,15 +27,15 @@ const getAsyncRenderer = (res, server) => (
 
 /**
 * @param {import("http").ServerResponse} res 
-* @param {import("./nodeserver.js")} server
+* @param {import("./nodeserver.js").default} server
 * @returns {(pathname: string, callback?: () => void) => string | boolean}
 */
 const getSyncRenderer = (res, server) => (
     (pathname, callback = () => { }) => {
         let data = existsSync(
-            path.join(server.staticPath, pathname + (!path.extname(pathname) ? ".html" : ""))
+            join(server.staticPath, pathname + (!extname(pathname) ? ".html" : ""))
         ) ? readFileSync(
-            path.join(server.staticPath, pathname + (!path.extname(pathname) ? ".html" : ""))
+            join(server.staticPath, pathname + (!extname(pathname) ? ".html" : ""))
             // @ts-ignore
         ).toString() : false;
         res.write(typeof data === "string" ? data : "", callback);
@@ -73,7 +73,7 @@ const bodyParser = async req =>
                 rej();
             }
         });
-        req.on('end', () => res(qs.parse(body)));
+        req.on('end', () => res(parse(body)));
     });
 
 /**
@@ -86,7 +86,7 @@ const queryParser = req =>
         new URLSearchParams(req.url.split("?")[1]).entries()
     );
 
-module.exports = {
+export default {
     queryParser,
     bodyParser,
     renderHTML

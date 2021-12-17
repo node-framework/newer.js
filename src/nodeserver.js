@@ -1,6 +1,6 @@
 // @ts-check
 // @ts-ignore
-const http = require("http");
+import { createServer } from "http";
 
 /**
  * @param {string} url 
@@ -22,7 +22,7 @@ const getParams = (url, paramsUrl) => {
     return reqParams;
 }
 
-module.exports = class NodeServer {
+export default class NodeServer {
     /**
      * @type {{ [route: string]: (req: import("http").IncomingMessage, res: import("http").ServerResponse) => Promise<void> | void}}
      */
@@ -64,7 +64,7 @@ module.exports = class NodeServer {
     start = async () =>
         new Promise((res, rej) => {
             try {
-                this.#server = http.createServer(this.callback()).listen(this.port, this.hostname, () => res(this));
+                this.#server = createServer(this.callback()).listen(this.port, this.hostname, () => res(this));
             } catch (e) {
                 rej(e);
             }

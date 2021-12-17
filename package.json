@@ -2,7 +2,7 @@
   "name": "async-server",
   "version": "0.2.6",
   "description": "A lightweight framework",
-  "main": "main.mjs",
+  "main": "main.js",
   "directories": {
     "lib": "src",
     "example": "test"
@@ -25,5 +25,6 @@
   },
   "repository": {
     "url": "https://github.com/aquapi/async-server"
-  }
+  },
+  "type": "module"
 }
