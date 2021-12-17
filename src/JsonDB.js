@@ -55,7 +55,7 @@ export default class JsonDB {
     schema = schem => {
         const pth = path.join(this.parentPath, this.fileName);
         const pointer = this;
-        return class Schema {
+        return class {
             /**
              * @type {JsonDB}
              */
@@ -104,7 +104,7 @@ export default class JsonDB {
              * @param {number} count 
              */
             static find = async (obj, count = undefined) => 
-                await pointer.find(obj, count, Schema);
+                await pointer.find(obj, count, this);
         }
     }
     /**
