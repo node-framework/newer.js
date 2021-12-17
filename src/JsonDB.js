@@ -32,6 +32,11 @@ const checkType = (type, obj) => {
 
 export default class JsonDB {
     /**
+     * @type {number[]}
+     * @private
+     */
+    ids;
+    /**
      * @type {string}
      */
     parentPath;
@@ -48,6 +53,7 @@ export default class JsonDB {
             fs.appendFileSync(path.join(parentPath, fileName), "[]");
         this.fileName = fileName;
         this.parentPath = parentPath;
+        this.ids = [];
     }
     /**
      * @param {object} schem 
@@ -57,22 +63,26 @@ export default class JsonDB {
         const pointer = this;
         return class {
             /**
-             * @type {JsonDB}
+             * @type {number}
              */
-            parent = pointer;
+            #id;
             /**
              * @type {object}
+             * @private
              */
-            obj
+            obj;
             /**
              * @param {object} obj 
              */
             constructor(obj) {
+                const id = Date.now();
+                pointer.ids.push(id);
                 for (const e in schem) {
                     if (!checkType(schem[e], obj[e]))
                         throw new Error("Invalid object");
                 }
                 this.obj = obj;
+                this.#id = id;
             }
 
             save = async () => {
@@ -91,13 +101,21 @@ export default class JsonDB {
                     )
                 )
             }
-
+            /**
+             * @param {object} obj 
+             */
             static match = obj => {
                 for (const e in schem) {
                     if (!checkType(schem[e], obj[e]))
                         return false;
                 }
                 return true;
+            }
+            /**
+             * @returns this schema id
+             */
+            get id() {
+                return this.#id;
             }
             /**
              * @param {object} obj 
@@ -114,7 +132,7 @@ export default class JsonDB {
      */
     find = async (obj, count = undefined, schem = undefined) => {
         // @ts-ignore
-        if (schem.parent !== this)
+        if (schem && this.ids.includes(schem.id))
             throw new Error("Invalid schema");
         const current = JSON.parse(
             await new Promise(
