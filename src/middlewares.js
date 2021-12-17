@@ -9,6 +9,7 @@ import { parse } from "query-string";
 * @param {import("./nodeserver.js").default} server
 * @returns {(pathname: string, callback?: () => void) => Promise<string | boolean>}
 */
+// FIXME: The code is not rendering
 const getAsyncRenderer = (res, server) => (
     async (pathname, callback = () => { }) =>
         new Promise((rs, rj) =>
@@ -16,11 +17,9 @@ const getAsyncRenderer = (res, server) => (
                 ? readFile(join(server.staticPath, pathname + ".html"),
                     (err, data) => {
                         if (err) rj(err);
-                        let dt = data?.toString() ?? "";
-                        res.write(dt, callback);
-                        rs(dt);
+                        res.write(data, callback);
+                        rs(data.toString());
                     })
-                // @ts-ignore
                 : rs(false)
         )
 );

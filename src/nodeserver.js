@@ -9,6 +9,8 @@ import { createServer } from "http";
 const getParams = (url, paramsUrl) => {
     let parts = url.split("/");
     let params = paramsUrl.split("/");
+    if (params.length !== parts.length)
+        return {};
     let extractedParams = [];
     for (let i in params)
         if (params[i].indexOf(":") === 0)
@@ -120,13 +122,18 @@ export default class NodeServer {
                     await plugin(req, res, this);
             // Init routes
             if (Object.keys(this.routes).length !== 0)
-                for (const route in this.routes)
-                    if (req.url === route || route.includes(":")) {
-                        if (route.includes(":"))
-                            // @ts-ignore
-                            req.params = getParams(req.url, route);
+                for (const route in this.routes) {
+                    const reqParams = getParams(req.url, route);
+                    if (
+                        (req.url === route)
+                        !==
+                        (Object.keys(reqParams).length !== 0)
+                    ) {
+                        // @ts-ignore
+                        req.params = reqParams ?? null;
                         this.routes[route](req, res);
                     }
+                }
             // End
             if (!res.writableEnded || !res.writableFinished)
                 res.end();
