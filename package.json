@@ -1,14 +1,11 @@
 {
   "name": "async-server",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A lightweight framework",
   "main": "main.js",
   "directories": {
     "lib": "src",
-    "example": "test"
-  },
-  "scripts": {
-    "test": "node test/test.js"
+    "example": "example"
   },
   "keywords": [
     "async",
@@ -17,7 +14,7 @@
     "lightweight",
     "express-like"
   ],
-  "author": "revenity",
+  "author": "reve-node",
   "license": "MIT",
   "dependencies": {
     "query-string": "^7.0.1",
