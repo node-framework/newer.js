@@ -98,3 +98,5 @@ await new NodeServer()
 ```
 
 - Go to http://localhost:8080/index?name=Reve and you will see the text "Hello Reve"
+
+- Example code: https://github.com/aquapi/async-server/tree/main/example

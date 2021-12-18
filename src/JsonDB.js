@@ -48,7 +48,7 @@ export default class JsonDB {
      * @param {string} fileName 
      * @param {string} parentPath 
      */
-    constructor(fileName, parentPath) {
+    constructor(fileName, parentPath = ".") {
         if (!existsSync(path.join(parentPath, fileName)))
             fs.appendFileSync(path.join(parentPath, fileName), "[]");
         this.fileName = fileName;
@@ -120,17 +120,25 @@ export default class JsonDB {
             /**
              * @param {object} obj 
              * @param {number} count 
+             * @param {boolean} except
              */
-            static find = async (obj, count = undefined) => 
-                await pointer.find(obj, count, this);
+            static find = async (obj, count = undefined, except = false) =>
+                await pointer.find(obj, count, this, except);
+            /**
+             * @param {object} obj 
+             * @param {boolean} except
+             */
+            static findOne = async (obj, except = false) =>
+                await pointer.findOne(obj, this, except);
         }
     }
     /**
      * @param {object} obj 
      * @param {Function} schem
      * @param {number} count
+     * @param {boolean} except
      */
-    find = async (obj, count = undefined, schem = undefined) => {
+    find = async (obj, count = undefined, schem = undefined, except = false) => {
         // @ts-ignore
         if (schem && this.ids.includes(schem.id))
             throw new Error("Invalid schema");
@@ -149,11 +157,43 @@ export default class JsonDB {
                     return result;
                 // @ts-ignore
                 if (
-                    (e[i] === obj[i] &&
+                    (
+                        (e[i] === obj[i]) !== except &&
                         // @ts-ignore
-                        !schem || schem?.match(e))
+                        !schem || schem?.match(e)
+                    )
                 ) result.push(e);
             }
         return result;
+    }
+    /**
+     * @param {object} obj 
+     * @param {Function} schem
+     * @param {boolean} except
+     */
+    findOne = async (obj, schem = undefined, except = false) => {
+        // @ts-ignore
+        if (schem && this.ids.includes(schem.id))
+            throw new Error("Invalid schema");
+        const current = JSON.parse(
+            await new Promise(
+                (res, rej) =>
+                    fs.readFile(path.join(this.parentPath, this.fileName), (err, data) =>
+                        err ? rej(err) : res(data.toString())
+                    )
+            )
+        );
+        for (let e of current)
+            for (let i in obj) {
+                // @ts-ignore
+                if (
+                    (
+                        (e[i] === obj[i]) !== except &&
+                        // @ts-ignore
+                        !schem || schem?.match(e)
+                    )
+                ) return e;
+            }
+        return {};
     }
 }
