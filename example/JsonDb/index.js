@@ -19,5 +19,8 @@ await User.findOne({
     name: "Reve" 
 }).then(console.log); // Then console.log
 
-// Drop user schema
-await User.clear(); 
+await User.deleteMatch({
+    name: "Reve"
+}).then(e => 
+    console.log("[" + e.map(i => i.id).join(", ") + "]")
+);

@@ -159,6 +159,9 @@ export default class JsonDB {
              */
             static findOne = async (obj, except = false) =>
                 await pointer.#findOne(obj, this, except);
+            /**
+             * @returns {Promise<void>}
+             */
             static clear = async () => {
                 const current = JSON.parse(
                     (await fs.promises.readFile(pth)).toString()
@@ -169,7 +172,38 @@ export default class JsonDB {
                 await fs.promises.writeFile(pth, JSON.stringify(current));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
-                return current;
+            }
+            /**
+             * @param {object} obj 
+             * @param {number | undefined} count 
+             * @param {boolean} except
+             */
+            static deleteMatch = async (obj, count = undefined, except = false) => {
+                const current = JSON.parse(
+                    (await fs.promises.readFile(pth)).toString()
+                );
+                const result = [];
+                let schem = current[Schema.schem];
+                // @ts-ignore
+                for (let e in schem)
+                    for (let i in obj) {
+                        if (count && result.length === count)
+                            break;
+                        // @ts-ignore
+                        if (
+                            (schem[e][i] === obj[i]) !== except
+                        ) {
+                            let { [e]: _, ...rest } = schem;
+                            schem = rest;
+                        }
+                    }
+                current[Schema.schem] = schem;
+                // Open the file for writing
+                fs.chmodSync(pth, 0o600);
+                await fs.promises.writeFile(pth, JSON.stringify(current));
+                // Prevent user from editing
+                fs.chmodSync(pth, 0o400);
+                return result;
             }
         }
     }
@@ -194,9 +228,7 @@ export default class JsonDB {
                     return result;
                 // @ts-ignore
                 if (
-                    (
-                        (e[i] === obj[i]) !== except
-                    )
+                    (e[i] === obj[i]) !== except
                 ) result.push(e);
             }
         return result;
@@ -218,9 +250,7 @@ export default class JsonDB {
             for (let i in obj) {
                 // @ts-ignore
                 if (
-                    (
-                        (e[i] === obj[i]) !== except
-                    )
+                    (e[i] === obj[i]) !== except
                 ) return e;
             }
         return {};
