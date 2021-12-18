@@ -61,16 +61,15 @@ export default class JsonDB {
     schema = schem => {
         const pth = path.join(this.parentPath, this.fileName);
         const pointer = this;
-        return class {
+        let Schema = class Schema {
             /**
              * @type {number}
              */
             #id;
             /**
              * @type {object}
-             * @private
              */
-            obj;
+            #obj;
             /**
              * @param {object} obj 
              */
@@ -81,7 +80,7 @@ export default class JsonDB {
                     if (!checkType(schem[e], obj[e]))
                         throw new Error("Invalid object");
                 }
-                this.obj = obj;
+                this.#obj = obj;
                 this.#id = id;
             }
 
@@ -94,7 +93,24 @@ export default class JsonDB {
                             )
                     )
                 );
-                current.push(this.obj);
+                current.push(this.#obj);
+                return new Promise((res, rej) =>
+                    fs.writeFile(pth, JSON.stringify(current), err =>
+                        err ? rej(err) : res(current)
+                    )
+                )
+            }
+
+            del = async () => {
+                const current = JSON.parse(
+                    await new Promise(
+                        (res, rej) =>
+                            fs.readFile(pth, (err, data) =>
+                                err ? rej(err) : res(data.toString())
+                            )
+                    )
+                );
+                current.splice(current.indexOf(this.#obj), 1);
                 return new Promise((res, rej) =>
                     fs.writeFile(pth, JSON.stringify(current), err =>
                         err ? rej(err) : res(current)
@@ -123,14 +139,19 @@ export default class JsonDB {
              * @param {boolean} except
              */
             static find = async (obj, count = undefined, except = false) =>
-                await pointer.find(obj, count, this, except);
+                await pointer.#find(obj, Schema, count, except);
             /**
              * @param {object} obj 
              * @param {boolean} except
              */
             static findOne = async (obj, except = false) =>
-                await pointer.findOne(obj, this, except);
+                await pointer.#findOne(obj, Schema, except);
         }
+        /**
+         * @type {object[]}
+         */
+        Schema.registeredObjects = [];
+        return Schema;
     }
     /**
      * @param {object} obj 
@@ -138,9 +159,9 @@ export default class JsonDB {
      * @param {number} count
      * @param {boolean} except
      */
-    find = async (obj, count = undefined, schem = undefined, except = false) => {
+    #find = async (obj, schem, count = undefined, except = false) => {
         // @ts-ignore
-        if (schem && this.ids.includes(schem.id))
+        if (this.ids.includes(schem.id))
             throw new Error("Invalid schema");
         const current = JSON.parse(
             await new Promise(
@@ -160,7 +181,7 @@ export default class JsonDB {
                     (
                         (e[i] === obj[i]) !== except &&
                         // @ts-ignore
-                        !schem || schem?.match(e)
+                        schem.match(e)
                     )
                 ) result.push(e);
             }
@@ -171,9 +192,9 @@ export default class JsonDB {
      * @param {Function} schem
      * @param {boolean} except
      */
-    findOne = async (obj, schem = undefined, except = false) => {
+    #findOne = async (obj, schem, except = false) => {
         // @ts-ignore
-        if (schem && this.ids.includes(schem.id))
+        if (this.ids.includes(schem.id))
             throw new Error("Invalid schema");
         const current = JSON.parse(
             await new Promise(
@@ -190,7 +211,7 @@ export default class JsonDB {
                     (
                         (e[i] === obj[i]) !== except &&
                         // @ts-ignore
-                        !schem || schem?.match(e)
+                        schem.match(e)
                     )
                 ) return e;
             }
