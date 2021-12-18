@@ -61,6 +61,8 @@ export default class JsonDB {
      * @param {string} name
      */
     schema = (schem, name) => {
+        if (this.schemas.includes(name))
+            throw new Error("Invalid schema name");
         const pth = path.join(this.parentPath, this.fileName);
         const pointer = this;
         // Read and append this schema
@@ -124,6 +126,8 @@ export default class JsonDB {
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
                 await fs.promises.writeFile(pth, JSON.stringify(current));
+                // Prevent user from editing
+                fs.chmodSync(pth, 0o400);
                 return current;
             }
             /**
@@ -155,6 +159,18 @@ export default class JsonDB {
              */
             static findOne = async (obj, except = false) =>
                 await pointer.#findOne(obj, this, except);
+            static clear = async () => {
+                const current = JSON.parse(
+                    (await fs.promises.readFile(pth)).toString()
+                );
+                current[Schema.schem] = {};
+                // Open the file for writing
+                fs.chmodSync(pth, 0o600);
+                await fs.promises.writeFile(pth, JSON.stringify(current));
+                // Prevent user from editing
+                fs.chmodSync(pth, 0o400);
+                return current;
+            }
         }
     }
     /**
@@ -217,5 +233,26 @@ export default class JsonDB {
         // Open this file for writing
         fs.chmodSync(pth, 0o600);
         await fs.promises.writeFile(pth, "{}");
+        // Prevent user from editing
+        fs.chmodSync(pth, 0o400);
+    }
+    /**
+     * @param {Function} schema
+     */
+    drop = async schema => {
+        const pth = path.join(this.parentPath, this.fileName);
+        let current = JSON.parse(
+            (await fs.promises.readFile(pth)).toString()
+        );
+        // Open this file for writing
+        fs.chmodSync(pth, 0o600);
+        // @ts-ignore
+        const { [schema.schem]: _, ...rest } = current;
+        current = rest;
+        // @ts-ignore
+        this.schemas.splice(this.schemas.indexOf(schema.schem), 1);
+        await fs.promises.writeFile(pth, JSON.stringify(current));
+        // Prevent user from editing
+        fs.chmodSync(pth, 0o400);
     }
 }

@@ -14,8 +14,10 @@ let i = new User({
 
 await i.save(); // Save to database
 
+// Find one user with name = Reve
 await User.findOne({
-    name: "Reve" // Find one with name = Reve
+    name: "Reve" 
 }).then(console.log); // Then console.log
 
-await db.clear(); 
+// Drop user schema
+await User.clear(); 
