@@ -149,7 +149,4 @@ await new NodeServer()
  // 6
  await db.clear();
  ```
-
-2. Find an user in a database and log in to the console
-
 - Example code: https://github.com/aquapi/async-server/tree/main/example
