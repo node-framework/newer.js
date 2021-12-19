@@ -183,7 +183,6 @@ export default class JsonDB {
                 );
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                const result = [];
                 let schem = current[Schema.schem];
                 // @ts-ignore
                 for (let i in obj)
@@ -195,7 +194,6 @@ export default class JsonDB {
                 await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
-                return result;
             }
         }
     }

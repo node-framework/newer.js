@@ -22,6 +22,4 @@ await User.find({
 // Delete match result
 await User.deleteMatch({
     name: "Reve"
-}).then(e => 
-    console.log("[" + e.map(i => i.id).join(", ") + "]")
-);
+});
