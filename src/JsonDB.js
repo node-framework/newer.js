@@ -194,6 +194,7 @@ export default class JsonDB {
                             (schem[e][i] === obj[i]) !== except
                         ) {
                             let { [e]: _, ...rest } = schem;
+                            result.push(schem[e]);
                             schem = rest;
                         }
                     }

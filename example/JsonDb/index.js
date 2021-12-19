@@ -19,6 +19,7 @@ await User.findOne({
     name: "Reve" 
 }).then(console.log); // Then console.log
 
+// Delete match result
 await User.deleteMatch({
     name: "Reve"
 }).then(e => 
