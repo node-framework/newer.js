@@ -72,7 +72,7 @@ export default class JsonDB {
         current[name] = [];
         // Open the file for writing
         fs.chmodSync(pth, 0o600);
-        fs.writeFileSync(pth, JSON.stringify(current));
+        fs.writeFileSync(pth, JSON.stringify(current, null, 4));
         // Prevent user from editing
         fs.chmodSync(pth, 0o400);
         pointer.schemas.push(name);
@@ -110,7 +110,7 @@ export default class JsonDB {
                 current[Schema.schem].push(this.#obj);
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current));
+                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
                 return current;
@@ -125,7 +125,7 @@ export default class JsonDB {
                 current.splice(current.indexOf(this.#obj), 1);
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current));
+                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
                 return current;
@@ -169,7 +169,7 @@ export default class JsonDB {
                 current[Schema.schem] = {};
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current));
+                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
             }
@@ -201,7 +201,7 @@ export default class JsonDB {
                 current[Schema.schem] = schem;
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current));
+                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
                 return result;
@@ -282,7 +282,7 @@ export default class JsonDB {
         current = rest;
         // @ts-ignore
         this.schemas.splice(this.schemas.indexOf(schema.schem), 1);
-        await fs.promises.writeFile(pth, JSON.stringify(current));
+        await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
         // Prevent user from editing
         fs.chmodSync(pth, 0o400);
     }
