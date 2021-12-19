@@ -14,10 +14,8 @@ let i = new User({
 
 await i.save(); // Save to database
 
-// Find one user with name = Reve
-await User.find({
-    name: "Reve" 
-}).then(console.log); // Then console.log
+// Find all user
+await User.find().then(console.log); // Then console.log
 
 // Delete match result
 await User.deleteMatch({
