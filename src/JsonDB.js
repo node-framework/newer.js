@@ -36,7 +36,7 @@ export default class JsonDB {
     /**
      * @type {object}
      */
-    #data
+    #data;
     /**
      * @type {string[]}
      */
