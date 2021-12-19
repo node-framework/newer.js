@@ -1,4 +1,4 @@
-import { NodeServer, Middlewares } from "../../main.js";
+import { NodeServer, Middlewares } from "../../src/main.js";
 
 await new NodeServer()
     .use(Middlewares.renderHTML)

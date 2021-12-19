@@ -1,4 +1,4 @@
-import { JsonDB } from "../../main.js";
+import { JsonDB } from "../../src/main.js";
 
 const db = new JsonDB("./example/JsonDB/db/db.json");
 

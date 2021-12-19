@@ -1,5 +1,5 @@
 // @ts-check
-import fs from "fs";
+import * as fs from "fs";
 import path from "path";
 
 const getWrapper = (/** @type {any} */ obj) => {
