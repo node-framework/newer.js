@@ -75,7 +75,9 @@ export default class NodeServer {
      * @returns {Promise<NodeServer>}
      */
     stop = async () =>
-        new Promise((res, rej) => this.#server.close(err => err ? rej(err) : res(this)));
+        new Promise(
+            (res, rej) => this.#server.close(err => err ? rej(err) : res(this))
+        );
     /**
      * @param {string} route 
      * @param {(req: import("http").IncomingMessage, res: import("http").ServerResponse) => Promise<void> | void} listener 

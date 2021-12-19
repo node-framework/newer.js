@@ -98,4 +98,58 @@ await new NodeServer()
 ```
 
 - Go to http://localhost:8080/index?name=Reve and you will see the text "Hello Reve"
+
+## JsonDB
+
+- JsonDB is a type of local database which data is stored in a local `.json` file.
+- JsonDB is lightweight (Only 275 lines of codes).
+- Database is independent to the server.
+
+### Examples
+
+1. Creating a database, 
+2. create a schema called user with `name` property typed `string` and `id` property typed `number`
+3. create objects that matched the schema and save it to the database
+4. Search for the objects that was created before
+5. Clear all the objects belong to the schema that was created before
+6. Clear the database
+ ```javascript
+ import { JsonDB } from "async-server";
+
+ // 1
+ const db = new JsonDB("Your json file path"); 
+
+ // 2
+ const User = db.schema({
+     name: String,
+     id: Number
+ }, "User");
+
+ // 3
+ let user = new User({
+     name: "Reve", // Matches type "String"
+     id: 863068 // Matches type "Number"
+ });
+
+ await user.save(); // Save to database
+
+ let user1 = new User({
+     name: "Alex", // Matches type "String"
+     id: 509390 // Matches type "Number"
+ });
+
+ await user1.save(); // Save to database
+
+ // 4
+ await User.find().then(console.log);
+
+ // 5
+ await User.clear();
+
+ // 6
+ await db.clear();
+ ```
+
+2. Find an user in a database and log in to the console
+
 - Example code: https://github.com/aquapi/async-server/tree/main/example

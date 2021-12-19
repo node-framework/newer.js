@@ -150,14 +150,14 @@ export default class JsonDB {
              * @param {object} obj 
              * @param {boolean} except
              */
-            static find = async (obj, except = false) =>
-                await pointer.#find(obj, this, except);
+            static find = async (obj = undefined, except = false) =>
+                await pointer.#find(this, obj, except);
             /**
              * @param {object} obj 
              * @param {boolean} except
              */
-            static findOne = async (obj, except = false) =>
-                await pointer.#findOne(obj, this, except);
+            static findOne = async (obj = undefined, except = false) =>
+                await pointer.#findOne(this, obj, except);
             /**
              * @returns {Promise<void>}
              */
@@ -204,7 +204,7 @@ export default class JsonDB {
      * @param {Function} schem
      * @param {boolean} except
      */
-    #find = async (obj, schem, except = false) => {
+    #find = async (schem, obj = undefined, except = false) => {
         // @ts-ignore
         if (!this.schemas.includes(schem.schem))
             throw new Error("Invalid schema");
@@ -212,12 +212,16 @@ export default class JsonDB {
             (await fs.promises.readFile(path.join(this.parentPath, this.fileName))).toString()
         );
         const result = [];
-        for (let i in obj)
+        if (obj)
+            for (let i in obj)
+                // @ts-ignore
+                result.push(...current[schem.schem].filter(
+                    (/** @type {{ [x: string]: any; }} */ val) =>
+                        (val[i] === obj[i]) !== except)
+                );
+        else
             // @ts-ignore
-            result.push(...current[schem.schem].filter(
-                (/** @type {{ [x: string]: any; }} */ val) =>
-                    (val[i] === obj[i]) !== except)
-            );
+            result.push(...current[schem.schem]);
         return result;
     }
     /**
@@ -225,7 +229,7 @@ export default class JsonDB {
      * @param {Function} schem
      * @param {boolean} except
      */
-    #findOne = async (obj, schem, except = false) => {
+    #findOne = async (schem, obj = undefined, except = false) => {
         // @ts-ignore
         if (!this.schemas.includes(schem.schem))
             throw new Error("Invalid schema");
@@ -233,13 +237,16 @@ export default class JsonDB {
             (await fs.promises.readFile(path.join(this.parentPath, this.fileName))).toString()
         );
         // @ts-ignore
-        for (let e of current[schem.schem])
-            for (let i in obj) {
-                // @ts-ignore
-                if (
-                    (e[i] === obj[i]) !== except
-                ) return e;
-            }
+        for (let e of current[schem.schem]) {
+            if (obj)
+                for (let i in obj)
+                    // @ts-ignore
+                    if (
+                        (e[i] === obj[i]) !== except
+                    ) return e;
+            else if (e)
+                return e;
+        }
         return {};
     }
     /**

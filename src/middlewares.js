@@ -5,12 +5,12 @@ import { join, extname } from "path";
 import { parse } from "query-string";
 
 /**
+* @param {any} _
 * @param {import("http").ServerResponse} res
 * @param {import("./nodeserver.js").default} server
 * @returns {(pathname: string, callback?: () => void) => Promise<string | boolean>}
 */
-// FIXME: The code is not rendering
-const getAsyncRenderer = (res, server) => (
+const getAsyncRenderer = (_, res, server) => (
     async (pathname, callback = () => { }) =>
         new Promise((rs, rj) =>
             existsSync(join(server.staticPath, pathname + ".html"))
@@ -25,11 +25,12 @@ const getAsyncRenderer = (res, server) => (
 );
 
 /**
+* @param {any} _
 * @param {import("http").ServerResponse} res 
 * @param {import("./nodeserver.js").default} server
 * @returns {(pathname: string, callback?: () => void) => string | boolean}
 */
-const getSyncRenderer = (res, server) => (
+const getSyncRenderer = (_, res, server) => (
     (pathname, callback = () => { }) => {
         let data = existsSync(
             join(server.staticPath, pathname + (!extname(pathname) ? ".html" : ""))
@@ -51,10 +52,10 @@ const getSyncRenderer = (res, server) => (
 const renderHTML = (_, res, server) => {
     // Normal render
     // @ts-ignore
-    res.render = getAsyncRenderer(res, server);
+    res.render = getAsyncRenderer(_, res, server);
     // Sync render
     // @ts-ignore
-    res.renderSync = getSyncRenderer(res, server);
+    res.renderSync = getSyncRenderer(_, res, server);
 }
 
 /**
