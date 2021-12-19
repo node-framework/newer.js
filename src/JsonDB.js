@@ -148,11 +148,10 @@ export default class JsonDB {
             }
             /**
              * @param {object} obj 
-             * @param {number} count 
              * @param {boolean} except
              */
-            static find = async (obj, count = undefined, except = false) =>
-                await pointer.#find(obj, this, count, except);
+            static find = async (obj, except = false) =>
+                await pointer.#find(obj, this, except);
             /**
              * @param {object} obj 
              * @param {boolean} except
@@ -182,25 +181,17 @@ export default class JsonDB {
                 const current = JSON.parse(
                     (await fs.promises.readFile(pth)).toString()
                 );
+                // Open the file for writing
+                fs.chmodSync(pth, 0o600);
                 const result = [];
                 let schem = current[Schema.schem];
                 // @ts-ignore
-                for (let e in schem)
-                    for (let i in obj) {
-                        if (count && result.length === count)
-                            break;
-                        // @ts-ignore
-                        if (
-                            (schem[e][i] === obj[i]) !== except
-                        ) {
-                            let { [e]: _, ...rest } = schem;
-                            result.push(schem[e]);
-                            schem = rest;
-                        }
-                    }
+                for (let i in obj)
+                    schem = schem.filter(
+                        (/** @type {{ [x: string]: any; }} */ val) =>
+                            (val[i] !== obj[i]) !== except
+                    );
                 current[Schema.schem] = schem;
-                // Open the file for writing
-                fs.chmodSync(pth, 0o600);
                 await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
@@ -211,10 +202,9 @@ export default class JsonDB {
     /**
      * @param {object} obj 
      * @param {Function} schem
-     * @param {number} count
      * @param {boolean} except
      */
-    #find = async (obj, schem, count = undefined, except = false) => {
+    #find = async (obj, schem, except = false) => {
         // @ts-ignore
         if (!this.schemas.includes(schem.schem))
             throw new Error("Invalid schema");
@@ -222,16 +212,12 @@ export default class JsonDB {
             (await fs.promises.readFile(path.join(this.parentPath, this.fileName))).toString()
         );
         const result = [];
-        // @ts-ignore
-        for (let e of current[schem.schem])
-            for (let i in obj) {
-                if (count && result.length === count)
-                    return result;
-                // @ts-ignore
-                if (
-                    (e[i] === obj[i]) !== except
-                ) result.push(e);
-            }
+        for (let i in obj)
+            // @ts-ignore
+            result.push(...current[schem.schem].filter(
+                (/** @type {{ [x: string]: any; }} */ val) =>
+                    (val[i] === obj[i]) !== except)
+            );
         return result;
     }
     /**

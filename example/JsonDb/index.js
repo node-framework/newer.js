@@ -15,7 +15,7 @@ let i = new User({
 await i.save(); // Save to database
 
 // Find one user with name = Reve
-await User.findOne({
+await User.find({
     name: "Reve" 
 }).then(console.log); // Then console.log
 
