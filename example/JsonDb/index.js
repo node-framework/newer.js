@@ -15,7 +15,7 @@ let i = new User({
 await i.save(); // Save to database
 
 // Find all user
-await User.find().then(console.log); // Then console.log
+await User.read().then(console.log); // Then console.log
 
 // Delete match result
 await User.deleteMatch({

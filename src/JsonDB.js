@@ -126,6 +126,11 @@ export default class JsonDB {
                 return pointer.#data;
             }
             /**
+             * @returns {Promise<any[]>}
+             */
+            static read = async () => 
+                pointer.#data[Schema.schem]
+            /**
              * @param {object} obj 
              */
             static match = obj => {
