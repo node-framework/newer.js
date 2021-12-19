@@ -1,7 +1,6 @@
 // @ts-check
 import { existsSync, readFile, readFileSync } from "fs";
 import { join, extname } from "path";
-// @ts-ignore
 import { parse } from "query-string";
 
 /**
@@ -23,7 +22,6 @@ const getAsyncRenderer = (_, res, server) => (
                 : rs(false)
         )
 );
-
 /**
 * @param {any} _
 * @param {import("http").ServerResponse} res 
@@ -42,8 +40,6 @@ const getSyncRenderer = (_, res, server) => (
         return data;
     }
 )
-
-
 /**
 * @param {any} _ 
 * @param {import("http").ServerResponse} res 
@@ -57,7 +53,6 @@ const renderHTML = (_, res, server) => {
     // @ts-ignore
     res.renderSync = getSyncRenderer(_, res, server);
 }
-
 /**
 * @param {import("http").IncomingMessage} req 
 */
@@ -75,7 +70,6 @@ const bodyParser = async req =>
         });
         req.on('end', () => res(parse(body)));
     });
-
 /**
 * @param {import("http").IncomingMessage} req 
 */
@@ -85,7 +79,6 @@ const queryParser = req =>
     req.query = Object.fromEntries(
         new URLSearchParams(req.url.split("?")[1]).entries()
     );
-
 export default {
     queryParser,
     bodyParser,

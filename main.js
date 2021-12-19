@@ -1,7 +1,3 @@
-import Server from "./src/nodeserver.js";
-import mdw from "./src/middlewares.js";
-import db from "./src/JsonDB.js";
-
-export const NodeServer = Server,
-    Middlewares = mdw,
-    JsonDB = db
+export { default as NodeServer } from "./src/nodeserver.js";
+export { default as Middlewares } from "./src/middlewares.js";
+export { default as JsonDB } from "./src/JsonDB.js";

@@ -1,5 +1,5 @@
 // @ts-check
-import fs, { existsSync } from "fs";
+import fs from "fs";
 import path from "path";
 
 const getWrapper = (/** @type {any} */ obj) => {
@@ -20,6 +20,11 @@ const getWrapper = (/** @type {any} */ obj) => {
     return typeof obj;
 }
 
+/**
+ * @param {any | object} type 
+ * @param {any | object} obj 
+ * @returns 
+ */
 const checkType = (type, obj) => {
     if (typeof type === 'function')
         return getWrapper(obj) === type;
@@ -50,7 +55,7 @@ export default class JsonDB {
      */
     constructor(...filePaths) {
         const filePath = path.join(...filePaths);
-        if (!existsSync(filePath))
+        if (!fs.existsSync(filePath))
             fs.appendFileSync(filePath, "{}");
         fs.chmodSync(filePath, 0o400);
         this.#filePath = filePath;
