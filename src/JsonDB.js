@@ -15,7 +15,9 @@ const getWrapper = (/** @type {any} */ obj) => {
         return Symbol;
     if (typeof obj === 'object')
         return Object;
-    return null;
+    if (typeof obj === 'function')
+        return Function;
+    return typeof obj;
 }
 
 const checkType = (type, obj) => {
@@ -32,56 +34,55 @@ const checkType = (type, obj) => {
 
 export default class JsonDB {
     /**
+     * @type {object}
+     */
+    #data
+    /**
      * @type {string[]}
-     * @private
      */
-    schemas;
+    #schemas;
     /**
      * @type {string}
      */
-    parentPath;
+    #filePath;
+    /**
+     * @param {string[]} filePaths
+     */
+    constructor(...filePaths) {
+        const filePath = path.join(...filePaths);
+        if (!existsSync(filePath))
+            fs.appendFileSync(filePath, "{}");
+        fs.chmodSync(filePath, 0o400);
+        this.#filePath = filePath;
+        this.#schemas = [];
+        this.#data = JSON.parse(
+            fs.readFileSync(filePath).toString()
+        );
+    }
     /**
      * @type {string}
      */
-    fileName;
-    /**
-     * @param {string} fileName 
-     * @param {string} parentPath 
-     */
-    constructor(fileName, parentPath = ".") {
-        if (!existsSync(path.join(parentPath, fileName)))
-            fs.appendFileSync(path.join(parentPath, fileName), "{}");
-        fs.chmodSync(path.join(parentPath, fileName), 0o400);
-        this.fileName = fileName;
-        this.parentPath = parentPath;
-        this.schemas = [];
+    get filePath() {
+        return this.#filePath;
     }
     /**
      * @param {object} schem 
      * @param {string} name
      */
     schema = (schem, name) => {
-        if (this.schemas.includes(name))
-            throw new Error("Invalid schema name");
-        const pth = path.join(this.parentPath, this.fileName);
-        const pointer = this;
-        // Read and append this schema
-        const current = JSON.parse(
-            fs.readFileSync(pth).toString()
-        );
-        current[name] = [];
+        const pth = this.filePath;
         // Open the file for writing
         fs.chmodSync(pth, 0o600);
-        fs.writeFileSync(pth, JSON.stringify(current, null, 4));
+        if (this.#schemas.includes(name))
+            throw new Error("Invalid schema name");
+        const pointer = this;
+        this.#data[name] = [];
+        fs.writeFileSync(pth, JSON.stringify(this.#data, null, 4));
         // Prevent user from editing
         fs.chmodSync(pth, 0o400);
-        pointer.schemas.push(name);
+        pointer.#schemas.push(name);
         // End read and write file
         return class Schema {
-            /**
-             * @type {string}
-             */
-            #name;
             /**
              * @type {object}
              */
@@ -104,31 +105,25 @@ export default class JsonDB {
              * @returns {Promise<object>} the object after saving
              */
             save = async () => {
-                const current = JSON.parse(
-                    (await fs.promises.readFile(pth)).toString()
-                );
-                current[Schema.schem].push(this.#obj);
+                pointer.#data[Schema.schem].push(this.#obj);
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
+                await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
-                return current;
+                return pointer.#data;
             }
             /**
              * @returns {Promise<object>} data before deleting
              */
             del = async () => {
-                const current = JSON.parse(
-                    (await fs.promises.readFile(pth)).toString()
-                );
-                current.splice(current.indexOf(this.#obj), 1);
+                pointer.#data.splice(pointer.#data.indexOf(this.#obj), 1);
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
+                await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
-                return current;
+                return pointer.#data;
             }
             /**
              * @param {object} obj 
@@ -151,47 +146,42 @@ export default class JsonDB {
              * @param {boolean} except
              */
             static find = async (obj = undefined, except = false) =>
-                await pointer.#find(this, obj, except);
+                await pointer.#find(Schema.schem, obj, except);
             /**
              * @param {object} obj 
              * @param {boolean} except
              */
             static findOne = async (obj = undefined, except = false) =>
-                await pointer.#findOne(this, obj, except);
+                await pointer.#findOne(Schema.schem, obj, except);
             /**
              * @returns {Promise<void>}
              */
             static clear = async () => {
-                const current = JSON.parse(
-                    (await fs.promises.readFile(pth)).toString()
-                );
-                current[Schema.schem] = {};
+                pointer.#data[Schema.schem] = {};
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
+                await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
             }
             /**
              * @param {object} obj 
-             * @param {number | undefined} count 
              * @param {boolean} except
              */
-            static deleteMatch = async (obj, count = undefined, except = false) => {
-                const current = JSON.parse(
-                    (await fs.promises.readFile(pth)).toString()
-                );
+            static deleteMatch = async (obj = undefined, except = false) => {
                 // Open the file for writing
                 fs.chmodSync(pth, 0o600);
-                let schem = current[Schema.schem];
-                // @ts-ignore
-                for (let i in obj)
-                    schem = schem.filter(
-                        (/** @type {{ [x: string]: any; }} */ val) =>
-                            (val[i] !== obj[i]) !== except
-                    );
-                current[Schema.schem] = schem;
-                await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
+                let schem = pointer.#data[Schema.schem];
+                if (obj)
+                    for (let i in obj)
+                        schem = schem.filter(
+                            (/** @type {{ [x: string]: any; }} */ val) =>
+                                (val[i] !== obj[i]) !== except
+                        );
+                else
+                    schem = [];
+                pointer.#data[Schema.schem] = schem;
+                await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
                 // Prevent user from editing
                 fs.chmodSync(pth, 0o400);
             }
@@ -199,51 +189,39 @@ export default class JsonDB {
     }
     /**
      * @param {object} obj 
-     * @param {Function} schem
+     * @param {string} schem
      * @param {boolean} except
      */
     #find = async (schem, obj = undefined, except = false) => {
-        // @ts-ignore
-        if (!this.schemas.includes(schem.schem))
+        if (!this.#schemas.includes(schem))
             throw new Error("Invalid schema");
-        const current = JSON.parse(
-            (await fs.promises.readFile(path.join(this.parentPath, this.fileName))).toString()
-        );
         const result = [];
         if (obj)
             for (let i in obj)
-                // @ts-ignore
-                result.push(...current[schem.schem].filter(
+                result.push(...this.#data[schem].filter(
                     (/** @type {{ [x: string]: any; }} */ val) =>
                         (val[i] === obj[i]) !== except)
                 );
         else
-            // @ts-ignore
-            result.push(...current[schem.schem]);
+            result.push(...this.#data[schem]);
         return result;
     }
     /**
      * @param {object} obj 
-     * @param {Function} schem
+     * @param {string} schem
      * @param {boolean} except
      */
     #findOne = async (schem, obj = undefined, except = false) => {
-        // @ts-ignore
-        if (!this.schemas.includes(schem.schem))
+        if (!this.#schemas.includes(schem))
             throw new Error("Invalid schema");
-        const current = JSON.parse(
-            (await fs.promises.readFile(path.join(this.parentPath, this.fileName))).toString()
-        );
-        // @ts-ignore
-        for (let e of current[schem.schem]) {
+        for (let e of this.#data[schem]) {
             if (obj)
                 for (let i in obj)
-                    // @ts-ignore
                     if (
                         (e[i] === obj[i]) !== except
                     ) return e;
-            else if (e)
-                return e;
+                    else if (e)
+                        return e;
         }
         return {};
     }
@@ -251,30 +229,25 @@ export default class JsonDB {
      * @returns {Promise<void>} 
      */
     clear = async () => {
-        const pth = path.join(this.parentPath, this.fileName);
         // Open this file for writing
-        fs.chmodSync(pth, 0o600);
-        await fs.promises.writeFile(pth, "{}");
+        fs.chmodSync(this.filePath, 0o600);
+        await fs.promises.writeFile(this.filePath, "{}");
         // Prevent user from editing
-        fs.chmodSync(pth, 0o400);
+        fs.chmodSync(this.filePath, 0o400);
     }
     /**
      * @param {Function} schema
      */
     drop = async schema => {
-        const pth = path.join(this.parentPath, this.fileName);
-        let current = JSON.parse(
-            (await fs.promises.readFile(pth)).toString()
-        );
         // Open this file for writing
-        fs.chmodSync(pth, 0o600);
+        fs.chmodSync(this.filePath, 0o600);
         // @ts-ignore
-        const { [schema.schem]: _, ...rest } = current;
-        current = rest;
+        const { [schema.schem]: _, ...rest } = this.#data;
+        this.#data = rest;
         // @ts-ignore
         this.schemas.splice(this.schemas.indexOf(schema.schem), 1);
-        await fs.promises.writeFile(pth, JSON.stringify(current, null, 4));
+        await fs.promises.writeFile(this.filePath, JSON.stringify(this.#data, null, 4));
         // Prevent user from editing
-        fs.chmodSync(pth, 0o400);
+        fs.chmodSync(this.filePath, 0o400);
     }
 }

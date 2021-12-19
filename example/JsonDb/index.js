@@ -1,6 +1,6 @@
 import { JsonDB } from "../../main.js";
 
-const db = new JsonDB("db.json", "./example/JsonDB/db");
+const db = new JsonDB("./example/JsonDB/db/db.json");
 
 const User = db.schema({
     name: String,
