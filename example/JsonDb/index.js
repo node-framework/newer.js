@@ -1,23 +1,22 @@
 import { JsonDB } from "../../src/main.js";
 
+/**
+ * Given
+ * {
+ *     "name": "Reve",
+ *     "id": 503806
+ * } as the first document of schema "User"
+ */
 const db = new JsonDB("./example/JsonDB/db/db.json");
 
-const User = db.schema({
-    name: String,
-    id: Number
-}, "User"); // Schema
+const User = db.get("User"); // Schema
 
-let i = new User({
-    name: "Reve",
-    id: 898905
-}); // Create new object
+const test = new User({
+    name: "Alex",
+    id: 358300
+});
 
-await i.save(); // Save to database
+await test.save();
 
 // Find all user
 await User.read().then(console.log); // Then console.log
-
-// Delete match result
-await User.deleteMatch({
-    name: "Reve"
-});

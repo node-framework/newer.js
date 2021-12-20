@@ -104,6 +104,7 @@ await new NodeServer()
 - JsonDB is a type of local database which data is stored in a local `.json` file.
 - JsonDB is lightweight (Only 275 lines of codes).
 - Database is independent to the server.
+- (Changes) JsonDB files is editable since 0.3.3
 
 ### Examples
 
@@ -120,10 +121,10 @@ await new NodeServer()
  const db = new JsonDB("Your json file path"); 
 
  // 2
- const User = db.schema({
+ const User = db.schema("User", {
      name: String,
      id: Number
- }, "User");
+ });
 
  // 3
  let user = new User({

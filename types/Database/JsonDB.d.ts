@@ -8,10 +8,14 @@ export default class JsonDB {
      */
     get filePath(): string;
     /**
+     * @param {string} name
+     */
+    get: (name: string) => Function;
+    /**
      * @param {object} schem
      * @param {string} name
      */
-    schema: (schem: object, name: string) => {
+    schema: (name: string, schem: object) => {
         new (obj: object): {
             /**
              * @type {object}

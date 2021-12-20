@@ -23,18 +23,29 @@ const getWrapper = (/** @type {any} */ obj) => {
 /**
  * @param {any | object} type 
  * @param {any | object} obj 
- * @returns 
  */
 const checkType = (type, obj) => {
     if (typeof type === 'function')
         return getWrapper(obj) === type;
-
     let current = true;
     for (let e in type) {
         current = checkType(type[e], obj[e]);
         if (!current) return false;
     }
     return true;
+}
+/**
+ * @param {object} obj 
+ */
+const getSchemFrom = obj => {
+    let schem = {};
+    for (let i in obj)
+        schem[i] = (
+            getWrapper(obj[i]) !== Object
+                ? getWrapper
+                : getSchemFrom
+        )(obj[i]);
+    return schem;
 }
 
 export default class JsonDB {
@@ -43,7 +54,7 @@ export default class JsonDB {
      */
     #data;
     /**
-     * @type {string[]}
+     * @type {{ name: string, schem: Function }[]}
      */
     #schemas;
     /**
@@ -57,12 +68,28 @@ export default class JsonDB {
         const filePath = path.join(...filePaths);
         if (!fs.existsSync(filePath))
             fs.appendFileSync(filePath, "{}");
-        fs.chmodSync(filePath, 0o400);
         this.#filePath = filePath;
         this.#schemas = [];
         this.#data = JSON.parse(
             fs.readFileSync(filePath).toString()
         );
+        this.#data = this.#loadSchemas(JSON.parse(
+            fs.readFileSync(filePath).toString()
+        )); // Weird thing happens here so I need to fix by using the next line
+        fs.writeFileSync(filePath, JSON.stringify(this.#data, null, 4));
+    }
+    /**
+     * @param {{ [name: string]: object[] }} data
+     */
+    #loadSchemas = data => {
+        const dt = data;
+        for (let schemName in data)
+            if (data[schemName][0])
+                this.schema(
+                    schemName,
+                    getSchemFrom(data[schemName][0])
+                );
+        return dt;
     }
     /**
      * @type {string}
@@ -71,23 +98,23 @@ export default class JsonDB {
         return this.#filePath;
     }
     /**
+     * @param {string} name 
+     */
+    get = name =>
+        this.#schemas.filter(val => val.name === name)[0].schem;
+    /**
      * @param {object} schem 
      * @param {string} name
      */
-    schema = (schem, name) => {
+    schema = (name, schem) => {
         const pth = this.filePath;
-        // Open the file for writing
-        fs.chmodSync(pth, 0o600);
-        if (this.#schemas.includes(name))
+        if (this.#schemas.map((/** @type {{ name: any; }} */ val) => val.name).includes(name))
             throw new Error("Invalid schema name");
         const pointer = this;
         this.#data[name] = [];
         fs.writeFileSync(pth, JSON.stringify(this.#data, null, 4));
-        // Prevent user from editing
-        fs.chmodSync(pth, 0o400);
-        pointer.#schemas.push(name);
         // End read and write file
-        return class Schema {
+        let sch = class Schema {
             /**
              * @type {object}
              */
@@ -111,11 +138,7 @@ export default class JsonDB {
              */
             save = async () => {
                 pointer.#data[Schema.schem].push(this.#obj);
-                // Open the file for writing
-                fs.chmodSync(pth, 0o600);
                 await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
-                // Prevent user from editing
-                fs.chmodSync(pth, 0o400);
                 return pointer.#data;
             }
             /**
@@ -123,17 +146,13 @@ export default class JsonDB {
              */
             del = async () => {
                 pointer.#data.splice(pointer.#data.indexOf(this.#obj), 1);
-                // Open the file for writing
-                fs.chmodSync(pth, 0o600);
                 await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
-                // Prevent user from editing
-                fs.chmodSync(pth, 0o400);
                 return pointer.#data;
             }
             /**
              * @returns {Promise<any[]>}
              */
-            static read = async () => 
+            static read = async () =>
                 pointer.#data[Schema.schem]
             /**
              * @param {object} obj 
@@ -168,19 +187,13 @@ export default class JsonDB {
              */
             static clear = async () => {
                 pointer.#data[Schema.schem] = {};
-                // Open the file for writing
-                fs.chmodSync(pth, 0o600);
                 await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
-                // Prevent user from editing
-                fs.chmodSync(pth, 0o400);
             }
             /**
              * @param {object} obj 
              * @param {boolean} except
              */
             static deleteMatch = async (obj = undefined, except = false) => {
-                // Open the file for writing
-                fs.chmodSync(pth, 0o600);
                 let schem = pointer.#data[Schema.schem];
                 if (obj)
                     for (let i in obj)
@@ -192,10 +205,13 @@ export default class JsonDB {
                     schem = [];
                 pointer.#data[Schema.schem] = schem;
                 await fs.promises.writeFile(pth, JSON.stringify(pointer.#data, null, 4));
-                // Prevent user from editing
-                fs.chmodSync(pth, 0o400);
             }
         }
+        pointer.#schemas.push({
+            name: name,
+            schem: sch
+        });
+        return sch;
     }
     /**
      * @param {object} obj 
@@ -203,7 +219,7 @@ export default class JsonDB {
      * @param {boolean} except
      */
     #find = async (schem, obj = undefined, except = false) => {
-        if (!this.#schemas.includes(schem))
+        if (!this.#schemas.map((/** @type {{ name: any; }} */ val) => val.name).includes(schem))
             throw new Error("Invalid schema");
         const result = [];
         if (obj)
@@ -222,7 +238,7 @@ export default class JsonDB {
      * @param {boolean} except
      */
     #findOne = async (schem, obj = undefined, except = false) => {
-        if (!this.#schemas.includes(schem))
+        if (!this.#schemas.map((/** @type {{ name: any; }} */ val) => val.name).includes(schem))
             throw new Error("Invalid schema");
         for (let e of this.#data[schem]) {
             if (obj)
@@ -238,26 +254,17 @@ export default class JsonDB {
     /**
      * @returns {Promise<void>} 
      */
-    clear = async () => {
-        // Open this file for writing
-        fs.chmodSync(this.filePath, 0o600);
+    clear = async () =>
         await fs.promises.writeFile(this.filePath, "{}");
-        // Prevent user from editing
-        fs.chmodSync(this.filePath, 0o400);
-    }
     /**
      * @param {Function} schema
      */
     drop = async schema => {
-        // Open this file for writing
-        fs.chmodSync(this.filePath, 0o600);
         // @ts-ignore
         const { [schema.schem]: _, ...rest } = this.#data;
         this.#data = rest;
         // @ts-ignore
         this.schemas.splice(this.schemas.indexOf(schema.schem), 1);
         await fs.promises.writeFile(this.filePath, JSON.stringify(this.#data, null, 4));
-        // Prevent user from editing
-        fs.chmodSync(this.filePath, 0o400);
     }
 }
