@@ -104,7 +104,6 @@ await new NodeServer()
 - JsonDB is a type of local database which data is stored in a local `.json` file.
 - JsonDB is lightweight (Only 275 lines of codes).
 - Database is independent to the server.
-- (Changes) JsonDB files is editable since 0.3.3
 
 ### Examples
 
@@ -150,4 +149,14 @@ await new NodeServer()
  // 6
  await db.clear();
  ```
+## Changes
+- 0.3.4
+    + Declaration is improved
+    + User can now import type `Schema` for using `db.schema`
+    + `schem` argument in `JsonDB.prototype.schema(name: string, schem: object)` is optional. Not providing it will return the schema with the matches name
+- 0.3.3
+    + `.json` file is now editable
+    + Add `deleteMatch` method
+    + Add declarations
+
 - Example code: https://github.com/aquapi/async-server/tree/main/example
