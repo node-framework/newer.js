@@ -9,7 +9,7 @@ import { JsonDB } from "../../src/main.js";
  */
 const db = new JsonDB("./example/JsonDB/db/db.json");
 
-const User = db.get("User"); // Schema
+const User = db.schema("User"); // Schema
 
 const test = new User({
     name: "Alex",

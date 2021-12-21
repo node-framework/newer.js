@@ -48,13 +48,17 @@ const getSchemFrom = obj => {
     return schem;
 }
 
+/**
+ * @typedef {({ new (obj: object): { save: () => Promise<object>; del: () => Promise<object>;}, read: () => Promise<any[]>, match: (obj: object) => boolean, schem: string, find: (obj?: object, except?: boolean) => Promise<any[]>, findOne: (obj?: object, except?: boolean) => Promise<any>, clear: () => Promise<void>, deleteMatch: (obj?: object, except?: boolean) => Promise<void> })} Schema
+ */
+
 export default class JsonDB {
     /**
      * @type {object}
      */
     #data;
     /**
-     * @type {{ name: string, schem: Function }[]}
+     * @type {{ name: string, schem: Schema }[]}
      */
     #schemas;
     /**
@@ -98,15 +102,12 @@ export default class JsonDB {
         return this.#filePath;
     }
     /**
-     * @param {string} name 
-     */
-    get = name =>
-        this.#schemas.filter(val => val.name === name)[0].schem;
-    /**
      * @param {object} schem 
      * @param {string} name
      */
-    schema = (name, schem) => {
+    schema = (name, schem = undefined) => {
+        if (!schem)
+            return this.#schemas.filter(val => val.name === name)[0].schem;
         const pth = this.filePath;
         if (this.#schemas.map((/** @type {{ name: any; }} */ val) => val.name).includes(name))
             throw new Error("Invalid schema name");
@@ -257,14 +258,13 @@ export default class JsonDB {
     clear = async () =>
         await fs.promises.writeFile(this.filePath, "{}");
     /**
-     * @param {Function} schema
+     * @param {Schema} schema
      */
     drop = async schema => {
         // @ts-ignore
         const { [schema.schem]: _, ...rest } = this.#data;
         this.#data = rest;
-        // @ts-ignore
-        this.schemas.splice(this.schemas.indexOf(schema.schem), 1);
+        this.#schemas = this.#schemas.filter(val => val.name !== schema.schem);
         await fs.promises.writeFile(this.filePath, JSON.stringify(this.#data, null, 4));
     }
 }

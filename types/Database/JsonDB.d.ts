@@ -1,3 +1,6 @@
+/**
+ * @typedef {({ new (obj: object): { save: () => Promise<object>; del: () => Promise<object>;}, read: () => Promise<any[]>, match: (obj: object) => boolean, schem: string, find: (obj?: object, except?: boolean) => Promise<any[]>, findOne: (obj?: object, except?: boolean) => Promise<any>, clear: () => Promise<void>, deleteMatch: (obj?: object, except?: boolean) => Promise<void> })} Schema
+ */
 export default class JsonDB {
     /**
      * @param {string[]} filePaths
@@ -8,68 +11,31 @@ export default class JsonDB {
      */
     get filePath(): string;
     /**
-     * @param {string} name
-     */
-    get: (name: string) => Function;
-    /**
      * @param {object} schem
      * @param {string} name
      */
-    schema: (name: string, schem: object) => {
-        new (obj: object): {
-            /**
-             * @type {object}
-             */
-            "__#3@#obj": object;
-            /**
-             * @returns {Promise<object>} the object after saving
-             */
-            save: () => Promise<object>;
-            /**
-             * @returns {Promise<object>} data before deleting
-             */
-            del: () => Promise<object>;
-        };
-        /**
-         * @returns {Promise<any[]>}
-         */
-        read: () => Promise<any[]>;
-        /**
-         * @param {object} obj
-         */
-        match: (obj: object) => boolean;
-        /**
-         * @returns {string} this schema name
-         */
-        readonly schem: string;
-        /**
-         * @param {object} obj
-         * @param {boolean} except
-         */
-        find: (obj?: object, except?: boolean) => Promise<any[]>;
-        /**
-         * @param {object} obj
-         * @param {boolean} except
-         */
-        findOne: (obj?: object, except?: boolean) => Promise<any>;
-        /**
-         * @returns {Promise<void>}
-         */
-        clear: () => Promise<void>;
-        /**
-         * @param {object} obj
-         * @param {boolean} except
-         */
-        deleteMatch: (obj?: object, except?: boolean) => Promise<void>;
-    };
+    schema: (name: string, schem?: object) => Schema;
     /**
      * @returns {Promise<void>}
      */
     clear: () => Promise<void>;
     /**
-     * @param {Function} schema
+     * @param {Schema} schema
      */
-    drop: (schema: Function) => Promise<void>;
+    drop: (schema: Schema) => Promise<void>;
     #private;
 }
+export type Schema = {
+    new (obj: object): {
+        save: () => Promise<object>;
+        del: () => Promise<object>;
+    };
+    read: () => Promise<any[]>;
+    match: (obj: object) => boolean;
+    schem: string;
+    find: (obj?: object, except?: boolean) => Promise<any[]>;
+    findOne: (obj?: object, except?: boolean) => Promise<any>;
+    clear: () => Promise<void>;
+    deleteMatch: (obj?: object, except?: boolean) => Promise<void>;
+};
 //# sourceMappingURL=JsonDB.d.ts.map
