@@ -16,7 +16,14 @@ const test = new User({
     id: 358300
 });
 
+// Save to database
 await test.save();
+
+// Update the document
+await test.update({
+    name: "Alex",
+    id: 959305
+});
 
 // Find all user
 await User.read().then(console.log); // Then console.log
