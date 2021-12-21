@@ -1,4 +1,4 @@
-import { JsonDB } from "../../src/main.js";
+import { JsonDB } from "../../lib/main.js";
 
 /**
  * Given

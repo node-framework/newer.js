@@ -2,7 +2,7 @@
   "name": "async-server",
   "version": "0.3.4",
   "description": "A lightweight framework",
-  "main": "src/main.js",
+  "main": "lib/main.js",
   "directories": {
     "lib": "src",
     "example": "example"
