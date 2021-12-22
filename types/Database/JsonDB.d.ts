@@ -1,3 +1,4 @@
+import Reviver from "./Reviver.js";
 /**
  * Schema instance
  * Result after calling new Schema(obj: object)
@@ -30,7 +31,7 @@ export default class JsonDB {
      * @param reviver to restore objects from a string that is parsed using JSON.parse
      * @constructor
      */
-    constructor(filePaths: string, reviver?: (key: string, value: any) => void);
+    constructor(filePaths: string, reviver?: Reviver);
     /**
      * Returns the current database paths
      */
