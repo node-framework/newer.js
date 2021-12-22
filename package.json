@@ -1,6 +1,6 @@
 {
   "name": "async-server",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "A lightweight framework",
   "main": "lib/main.js",
   "directories": {
@@ -12,7 +12,8 @@
     "server",
     "framework",
     "lightweight",
-    "express-like"
+    "express-like",
+    "db-support"
   ],
   "author": "reve-node",
   "license": "MIT",
