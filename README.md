@@ -150,6 +150,10 @@ await new NodeServer()
  await db.clear();
  ```
 ## Changes
+- 0.3.5
+    + Add `SchemaInstance`
+    + Add `Schema.create` and `Schema.update` 
+    + Add `SchemeInstance.update`
 - 0.3.4
     + Declaration is improved
     + User can now import type `Schema` for using `db.schema`

@@ -1,9 +1,11 @@
+/// <reference types="node" />
+import http from "http";
 export default class NodeServer {
     #private;
     routes: {
-        [route: string]: (req: import("http").IncomingMessage, res: import("http").ServerResponse) => Promise<void> | void;
+        [route: string]: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void;
     };
-    plugins: ((req: import("http").IncomingMessage, res: import("http").ServerResponse, server: NodeServer) => Promise<void> | void)[];
+    plugins: ((req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void)[];
     port: number;
     hostname: string;
     staticPath: string;
@@ -13,16 +15,9 @@ export default class NodeServer {
     });
     start: () => Promise<NodeServer>;
     stop: () => Promise<NodeServer>;
-    register: (route: string, listener: (req: import("http").IncomingMessage, res: import("http").ServerResponse) => Promise<void> | void) => this;
-    /**
-     * @description Middlewares
-     * @returns {NodeServer} this server
-     */
-    use: (...listener: ((req: import("http").IncomingMessage, res: import("http").ServerResponse, server: NodeServer) => Promise<void> | void)[]) => NodeServer;
-    /**
-     * @returns {NodeServer} this server
-     */
+    register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void) => this;
+    use: (...listener: ((req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void)[]) => NodeServer;
     useStaticPath: (pathname: string) => NodeServer;
-    callback: () => (req: import("http").IncomingMessage, res: import("http").ServerResponse) => Promise<void>;
+    callback: () => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 }
 //# sourceMappingURL=nodeserver.d.ts.map
