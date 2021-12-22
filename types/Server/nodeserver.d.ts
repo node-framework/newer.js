@@ -16,7 +16,14 @@ export default class NodeServer {
     start: () => Promise<NodeServer>;
     stop: () => Promise<NodeServer>;
     register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void) => this;
+    /**
+     * @description Middlewares
+     * @returns {NodeServer} this server
+     */
     use: (...listener: ((req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void)[]) => NodeServer;
+    /**
+     * @returns {NodeServer} this server
+     */
     useStaticPath: (pathname: string) => NodeServer;
     callback: () => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 }
