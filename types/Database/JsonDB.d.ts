@@ -27,9 +27,10 @@ export default class JsonDB {
     #private;
     /**
      * @param filePaths file paths to join into 1 path
+     * @param reviver to restore objects from a string that is parsed using JSON.parse
      * @constructor
      */
-    constructor(...filePaths: string[]);
+    constructor(filePaths: string, reviver?: (key: string, value: any) => void);
     /**
      * Returns the current database paths
      */
