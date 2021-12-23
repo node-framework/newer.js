@@ -2,7 +2,8 @@
     "User": [
         {
             "name": "Alex",
-            "accountCreated": 539590
+            "id": 539590,
+            "accountCreated": "2021-12-23T16:01:30.000Z"
         }
     ]
 }

@@ -25,15 +25,27 @@ export declare type Schema = {
 export default class JsonDB {
     #private;
     /**
+     * Database data
+     */
+    private data;
+    /**
+     * Database schemas
+     */
+    private schemas;
+    /**
+     * Database path
+     */
+    readonly filePath: string;
+    /**
+     * Reviver
+     */
+    readonly reviver: (key: string, value: any) => any;
+    /**
      * @param filePath file path
      * @param reviver to restore objects from a string that is parsed using JSON.parse
      * @constructor
      */
-    constructor(filePath: string);
-    /**
-     * Returns the current database paths
-     */
-    get filePath(): string;
+    constructor(filePath: string, reviver?: (key: string, value: any) => any);
     /**
      * @param name Schema name
      * @param schem Schema model
