@@ -10,4 +10,3 @@ declare const _default: {
     serveStatic: (home?: string) => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<any>;
 };
 export default _default;
-//# sourceMappingURL=middlewares.d.ts.map

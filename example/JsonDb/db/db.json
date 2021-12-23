@@ -1,3 +1,8 @@
 {
-    "User": []
+    "User": [
+        {
+            "name": "Alex",
+            "accountCreated": 539590
+        }
+    ]
 }

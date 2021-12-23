@@ -27,4 +27,3 @@ export default class NodeServer {
     useStaticPath: (pathname: string) => NodeServer;
     callback: () => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 }
-//# sourceMappingURL=nodeserver.d.ts.map

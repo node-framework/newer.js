@@ -1,4 +1,3 @@
-import Reviver from "./Reviver.js";
 /**
  * Schema instance
  * Result after calling new Schema(obj: object)
@@ -22,16 +21,15 @@ export declare type Schema = {
     update: (obj: object, updateObj: object) => Promise<object>;
     clear: () => Promise<void>;
     deleteMatch: (obj?: object, except?: boolean) => Promise<void>;
-    docs: object[];
 };
 export default class JsonDB {
     #private;
     /**
-     * @param filePaths file paths to join into 1 path
+     * @param filePath file path
      * @param reviver to restore objects from a string that is parsed using JSON.parse
      * @constructor
      */
-    constructor(filePaths: string, reviver?: Reviver);
+    constructor(filePath: string);
     /**
      * Returns the current database paths
      */
@@ -51,4 +49,3 @@ export default class JsonDB {
      */
     drop: (schema?: Schema | string) => Promise<void>;
 }
-//# sourceMappingURL=JsonDB.d.ts.map
