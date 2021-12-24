@@ -8,8 +8,10 @@
     "example": "example"
   },
   "keywords": [
-    "async",
+    "asynchronous",
+    "async-support",
     "server",
+    "backend",
     "framework",
     "lightweight",
     "express-like",
