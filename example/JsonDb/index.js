@@ -1,10 +1,9 @@
 import { JsonDB, JsonReviver } from "../../lib/main.js";
 
+// Reviver
 const reviver = new JsonReviver;
-
 // Set reviver of property accountCreated
 reviver.setReviverOf("accountCreated", e => new Date(e));
-
 // Database
 const DB = new JsonDB("./example/JsonDB/db/db.json", reviver.callback());
 // Print saved item
