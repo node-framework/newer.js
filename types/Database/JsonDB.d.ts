@@ -8,6 +8,10 @@ export declare type SchemaInstance = {
     update: (obj: object) => Promise<object>;
 };
 /**
+ * Database events
+ */
+export declare type DBEvents = "save-item" | "update-item" | "delete-item" | "update-item" | "clear-schema" | "clear-database" | "drop-database" | "drop-schema";
+/**
  * Schema type
  */
 export declare type Schema = {
@@ -23,7 +27,7 @@ export declare type Schema = {
     deleteMatch: (obj?: object, except?: boolean) => Promise<void>;
 };
 export default class JsonDB {
-    #private;
+    private events;
     /**
      * Database data
      */
@@ -47,11 +51,35 @@ export default class JsonDB {
      */
     constructor(filePath: string, reviver?: (key: string, value: any) => any);
     /**
+     * @param event to handle
+     * @param listener to handle event
+     */
+    on: (event: DBEvents, listener: (...args: any[]) => void) => any;
+    /**
+     * @param data loaded data
+     * @returns current data after loading all the schemas
+     */
+    private loadSchemas;
+    /**
      * @param name Schema name
      * @param schem Schema model
      * @returns the created schema
      */
     schema: (name: string, schem?: object) => Schema;
+    /**
+     * @param schem a schema to find object in
+     * @param obj find objects that matches this object
+     * @param except set to true will find objects that don't match that object
+     * @returns objects that is found
+     */
+    find: (schem: string, obj?: object, except?: boolean) => Promise<any[]>;
+    /**
+     * @param schem a schema to find object in
+     * @param obj find the first object that matches this object
+     * @param except set to true will find the first object that don't match that object
+     * @returns the first object that is found
+     */
+    findOne: (schem: string, obj?: object, except?: boolean) => Promise<any>;
     /**
      * @returns a promise after clearing the database
      */
