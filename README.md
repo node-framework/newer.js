@@ -150,6 +150,12 @@ await new NodeServer()
  await db.clear();
  ```
 ## Changes
+- 0.3.6
+    + Add `JsonReducer` to create a reducer for JsonDB
+    + Add `schema.drop` to drop schema docs
+    + Add type `DBEvents` all database event
+    + Add `JsonDB.prototype.on` to handle events
+    + Add middleware `serveStatic` which take an argument of `home`, default to `/index`
 - 0.3.5
     + Add `SchemaInstance`
     + Add `Schema.create` and `Schema.update` 
