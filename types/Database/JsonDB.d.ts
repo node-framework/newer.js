@@ -16,15 +16,15 @@ export declare type DBEvents = "save-item" | "update-item" | "delete-item" | "up
  */
 export declare type Schema = {
     new (obj: object): SchemaInstance;
-    read: () => Promise<any[]>;
+    read: () => object[];
     match: (obj: object) => boolean;
     schem: string;
-    find: (obj?: object, except?: boolean) => Promise<any[]>;
-    findOne: (obj?: object, except?: boolean) => Promise<any>;
+    find: (obj?: object, except?: boolean) => Promise<object[]>;
     create: (...obj: object[]) => SchemaInstance[];
     update: (obj: object, updateObj: object) => Promise<object>;
     clear: () => Promise<void>;
     deleteMatch: (obj?: object, except?: boolean) => Promise<void>;
+    drop: () => Promise<void>;
 };
 export default class JsonDB {
     private events;
@@ -66,20 +66,6 @@ export default class JsonDB {
      * @returns the created schema
      */
     schema: (name: string, schem?: object) => Schema;
-    /**
-     * @param schem a schema to find object in
-     * @param obj find objects that matches this object
-     * @param except set to true will find objects that don't match that object
-     * @returns objects that is found
-     */
-    find: (schem: string, obj?: object, except?: boolean) => Promise<any[]>;
-    /**
-     * @param schem a schema to find object in
-     * @param obj find the first object that matches this object
-     * @param except set to true will find the first object that don't match that object
-     * @returns the first object that is found
-     */
-    findOne: (schem: string, obj?: object, except?: boolean) => Promise<any>;
     /**
      * @returns a promise after clearing the database
      */

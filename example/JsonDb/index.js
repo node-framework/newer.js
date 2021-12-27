@@ -19,7 +19,9 @@ let user = new User({
 // Save the document an trigger "save-item"
 await user.save();
 // Find all user
-await User.read().then(console.log); // Print all documents in User schema
+await User.find({
+    name: "Reve"
+}).then(e => console.log(e[0].id)); // Print all documents in User schema
 
 /**
  * @description Fork this repo and run the example 

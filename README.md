@@ -149,24 +149,5 @@ await new NodeServer()
  // 6
  await db.clear();
  ```
-## Changes
-- 0.3.6
-    + Add `JsonReducer` to create a reducer for JsonDB
-    + Add `schema.drop` to drop schema docs
-    + Add type `DBEvents` all database event
-    + Add `JsonDB.prototype.on` to handle events
-    + Add middleware `serveStatic` which take an argument of `home`, default to `/index`
-- 0.3.5
-    + Add `SchemaInstance`
-    + Add `Schema.create` and `Schema.update` 
-    + Add `SchemeInstance.update`
-- 0.3.4
-    + Declaration is improved
-    + User can now import type `Schema` for using `db.schema`
-    + `schem` argument in `JsonDB.prototype.schema(name: string, schem: object)` is optional. Not providing it will return the schema with the matches name
-- 0.3.3
-    + `.json` file is now editable
-    + Add `deleteMatch` method
-    + Add declarations
 
-- Example code: https://github.com/aquapi/async-server/tree/main/example
+- Examples: https://github.com/aquapi/async-server/tree/main/example
