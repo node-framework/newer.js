@@ -19,7 +19,7 @@ export declare type Schema = {
     read: () => object[];
     match: (obj: object) => boolean;
     schem: string;
-    find: (obj?: object, except?: boolean) => Promise<object[]>;
+    find: (obj?: object, count?: number, except?: boolean) => Promise<object[] | object>;
     create: (...obj: object[]) => SchemaInstance[];
     update: (obj: object, updateObj: object) => Promise<object>;
     clear: () => Promise<void>;
