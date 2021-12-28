@@ -1,6 +1,6 @@
 {
   "name": "async-server",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "A lightweight framework",
   "main": "lib/main.js",
   "directories": {

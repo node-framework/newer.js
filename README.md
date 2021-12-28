@@ -110,8 +110,7 @@ await new NodeServer()
 ## JsonDB
 
 - JsonDB is a type of local database which data is stored in a local `.json` file.
-- JsonDB is lightweight (Only 275 lines of codes).
-- Database is independent to the server.
+- Suitable for publishing web apps to cloud
 
 ### Examples
 
