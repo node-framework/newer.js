@@ -14,13 +14,13 @@ const User = DB.schema("User");
 let user = new User({
     name: "Reve",
     id: 503850,
-    accountCreated: new Date(938693603683)
+    accountCreated: new Date(99869369536)
 });
 // Save the document an trigger "save-item"
 await user.save();
 // Find all user
 await User.find({
-    name: "Reve"
+    name: "Alex"
 }, 1).then(console.log); // Print all documents in User schema
 
 /**
