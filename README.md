@@ -162,3 +162,6 @@ await db.clear();
 
 - Examples: https://github.com/aquapi/async-server/tree/main/doc/example
 
+## Full docs
+- NodeServer: https://github.com/aquapi/async-server/tree/main/doc/server.md
+
