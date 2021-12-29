@@ -23,10 +23,9 @@ stop: () => Promise<NodeServer>
 // Register a route (can be async)
 register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void) => NodeServer
 
+// Use middlewares
 use: (...listener: (
     (req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void
-
-// Use middlewares
 )[]) => NodeServer
 
 // Set static path
