@@ -1,13 +1,10 @@
-/// <reference types="node" />
 import http from "http";
 export default class NodeServer {
-    #private;
-    routes: {
-        [route: string]: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void;
-    };
-    plugins: ((req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void)[];
-    port: number;
-    hostname: string;
+    private routes;
+    private plugins;
+    private server;
+    readonly port: number;
+    readonly hostname: string;
     staticPath: string;
     constructor({ port, hostname }?: {
         port?: number;
