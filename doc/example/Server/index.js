@@ -1,4 +1,4 @@
-import { NodeServer, Middlewares } from "../../lib/main.js";
+import { NodeServer, Middlewares } from "../../../lib/main.js";
 
 // Create the server
 await new NodeServer()

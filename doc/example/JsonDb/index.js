@@ -1,4 +1,4 @@
-import { JsonDB, JsonReviver } from "../../lib/main.js";
+import { JsonDB, JsonReviver } from "../../../lib/main.js";
 
 // Reviver
 const reviver = new JsonReviver;
