@@ -33,7 +33,17 @@ useStaticPath: (pathname: string) => NodeServer
 
 // Returns the handler of the server, which can be used as listener of http.createServer or https.createServer
 callback: () =>
-    async (req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+    async (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>
+```
+
+## Built-in response methods
+
+```typescript
+// Redirect to another page
+res.redirect = (url: string) => http.ServerResponse;
+
+// Write content of a page to another
+res.writePage = (url: string) => http.ServerResponse;
 ```
 
 ## Middlewares
