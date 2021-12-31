@@ -1,39 +1,42 @@
 ## NodeServer
 
 ```typescript
-// The port the server will be listening to
-port: number
+class NodeServer {
+    // The port the server will be listening to
+    readonly port: number;
 
-// The hostname the server will be listening to
-hostname: string
+    // The hostname the server will be listening to
+    readonly hostname: string;
 
-// The static path
-staticPath: string
+    // The server static path
+    staticPath: string;
 
-// The constructor contains one argument as the server option
-// contains 'port' default to 8080 and 'hostname' default to '127.0.0.1' which is localhost
-constructor: ({ port?: number; hostname?: string }) => NodeServer
+    // Constructor has 1 argument which has 2 options:
+    // port: the port the server will be listening to
+    // hostname: the hostname the server will be listening to
+    constructor({ port, hostname }?: {
+        port?: number;
+        hostname?: string;
+    });
 
-// Start the server
-start: () => Promise<NodeServer>
+    // Start the server and returns this server in promise
+    start: () => Promise<NodeServer>;
 
-// Stop the server
-stop: () => Promise<NodeServer>
+    // Stop the server and returns this server in promise
+    stop: () => Promise<NodeServer>;
 
-// Register a route (can be async)
-register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void) => NodeServer
+    // Register a route
+    register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void) => this;
+    
+    // Use middlewares
+    use: (...listener: ((req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void)[]) => NodeServer;
+    
+    // Set static path
+    useStaticPath: (pathname: string) => NodeServer;
 
-// Use middlewares
-use: (...listener: (
-    (req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void
-)[]) => NodeServer
-
-// Set static path
-useStaticPath: (pathname: string) => NodeServer
-
-// Returns the handler of the server, which can be used as listener of http.createServer or https.createServer
-callback: () =>
-    async (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>
+    // Returns the server callback which can be used as listener for http.createServer and https.createServer
+    callback: () => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
+}
 ```
 
 ## Built-in response methods
@@ -49,19 +52,23 @@ res.writePage = (url: string) => http.ServerResponse;
 ## Middlewares
 
 ```typescript
-// Get query of a GET request
-queryParser: (req: http.IncomingMessage) => {
-    [k: string]: string;
+
+// Exports of middlewares.js which can be imported all as Middleware
+const exports: {
+    // get query of a GET request
+    queryParser: (req: http.IncomingMessage) => {
+        [k: string]: string;
+    };
+
+    // get body of a POST request
+    bodyParser: (req: http.IncomingMessage) => Promise<qs.ParsedQuery<string>>;
+
+    // Support 2 functions to render HTML: render and renderSync
+    renderHTML: (_: any, res: http.ServerResponse, server: NodeServer) => void;
+
+    // Serve static HTML
+    serveStatic: (home?: string) => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<any>;
 };
-
-// Get body of a POST request
-bodyParser: (req: http.IncomingMessage) => Promise<import("query-string").ParsedQuery>;
-
-// Render HTML using res.render and res.renderSync
-renderHTML: (_: any, res: http.ServerResponse, server: NodeServer) => void;
-
-// Serve static HTML files. Use with renderHTML middleware
-serveStatic: (home?: string) => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<any>;
 ```
 
 ## JsonDB
@@ -81,9 +88,10 @@ type SchemaInstance = {
 };
 
 // Database events
-type DBEvents = "save-item" | "update-item" | "delete-item" 
-            | "update-item" | "clear-schema" | "clear-database" 
-            | "drop-database" | "drop-schema";
+type DBEvents = "save-item" | "update-item" 
+            | "delete-item" | "clear-schema" 
+            | "clear-database" | "drop-database" 
+            | "drop-schema";
 /**
  * Schema type
  */
@@ -123,7 +131,7 @@ type Schema = {
     // Drop the schema and trigger drop-schema event
     drop: () => Promise<void>;
 };
-export default class JsonDB {
+class JsonDB {
     // The reviver
     readonly filePath: string;
     
