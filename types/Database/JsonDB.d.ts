@@ -10,7 +10,7 @@ export declare type SchemaInstance = {
 /**
  * Database events
  */
-export declare type DBEvents = "save-item" | "update-item" | "delete-item" | "update-item" | "clear-schema" | "clear-database" | "drop-database" | "drop-schema";
+export declare type DBEvents = "save-item" | "update-item" | "delete-item" | "clear-schema" | "clear-database" | "drop-database" | "drop-schema";
 /**
  * Schema type
  */
