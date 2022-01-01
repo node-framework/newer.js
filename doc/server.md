@@ -1,40 +1,43 @@
 ## NodeServer
 
 ```typescript
+
+// Server options
+type ServerOptions = {
+    port?: number;
+    hostname?: string;
+} & http.ServerOptions;
+
+// Middlewares and route handlers type 
+type ServerHandlers = (req: http.IncomingMessage, res: http.ServerResponse, raise: (err: Error) => void) => Promise<void> | void;
+
+// The server
 class NodeServer {
-    // The port the server will be listening to
+    // The port
     readonly port: number;
 
-    // The hostname the server will be listening to
+    // The hostname
     readonly hostname: string;
 
-    // The server static path
-    staticPath: string;
-
-    // Constructor has 1 argument which has 2 options:
-    // port: the port the server will be listening to
-    // hostname: the hostname the server will be listening to
-    constructor({ port, hostname }?: {
-        port?: number;
-        hostname?: string;
-    });
-
-    // Start the server and returns this server in promise
+    // param `options`: server options, type ServerOptions
+    constructor(options?: ServerOptions);
+    
+    // Register an error handler
+    onError: (fn: (err: Error) => void) => this;
+    
+    // Start the server
     start: () => Promise<NodeServer>;
-
-    // Stop the server and returns this server in promise
+    
+    // Stop the server
     stop: () => Promise<NodeServer>;
-
+    
     // Register a route
-    register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> | void) => this;
+    register: (route: string, listener: (req: http.IncomingMessage, res: http.ServerResponse, raise: (err: Error) => void) => Promise<void> | void) => this;
     
-    // Use middlewares
-    use: (...listener: ((req: http.IncomingMessage, res: http.ServerResponse, server: NodeServer) => Promise<void> | void)[]) => NodeServer;
+    // Use the middleware
+    use: (...listener: ((req: http.IncomingMessage, res: http.ServerResponse, raise: (err: any) => void) => Promise<void> | void)[]) => NodeServer;
     
-    // Set static path
-    useStaticPath: (pathname: string) => NodeServer;
-
-    // Returns the server callback which can be used as listener for http.createServer and https.createServer
+    // Returns a callback which can be used as listener for http.createServer or https.createServer
     callback: () => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 }
 ```
@@ -62,12 +65,6 @@ const exports: {
 
     // get body of a POST request
     bodyParser: (req: http.IncomingMessage) => Promise<qs.ParsedQuery<string>>;
-
-    // Support 2 functions to render HTML: render and renderSync
-    renderHTML: (_: any, res: http.ServerResponse, server: NodeServer) => void;
-
-    // Serve static HTML
-    serveStatic: (home?: string) => (req: http.IncomingMessage, res: http.ServerResponse) => Promise<any>;
 };
 ```
 
