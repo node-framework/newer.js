@@ -17,10 +17,6 @@ export default class NodeServer {
      */
     private routes;
     /**
-     * Error raised by middleware or routes during the process
-     */
-    private err;
-    /**
      * The error handler if error raised
      */
     private errHandler;
