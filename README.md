@@ -110,30 +110,23 @@ await new NodeServer()
 ## JsonDB
 
 - JsonDB is a type of local database which data is stored in a local `.json` file.
-- Suitable for publishing web apps to cloud
+- JsonDB is fast and lightweight
 
-### Examples
-
-1. Creating a database,
-2. create a schema called user with `name` property typed `string` and `id` property typed `number`
-3. create objects that matched the schema and save it to the database
-4. Search for user with name equals `Alex` and object count set to 1 to returns only 1 object
-5. Clear all the objects belong to the schema that was created before
-6. Clear the database
+### Example
 
 ```javascript
 import { JsonDB } from "async-server";
 
-// 1
+// Create a database
 const db = new JsonDB("Your json file path");
 
-// 2
+// Create a schema called user with `name` property typed `string` and `id` property typed `number`
 const User = db.schema("User", {
     name: String,
     id: Number
 });
 
-// 3
+// Create objects that matched the schema and save it to the database
 let user = new User({
     name: "Reve", // Matches type "String"
     id: 863068 // Matches type "Number"
@@ -148,15 +141,15 @@ let user1 = new User({
 
 await user1.save(); // Save to database
 
-// 4
+// Search for user with name equals `Alex` and object count set to 1 to returns only 1 object
 await User.find({
     name: "Alex"
 }, 1).then(console.log);
 
-// 5
+// Clear all the objects belong to the schema that was created before
 await User.clear();
 
-// 6
+// Clear the database
 await db.clear();
 ```
 
