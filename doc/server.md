@@ -1,7 +1,6 @@
 ## NodeServer
 
 ```typescript
-
 // Server options
 type ServerOptions = {
     port?: number;
@@ -42,18 +41,7 @@ class NodeServer {
 }
 ```
 
-## Built-in response methods
-
-```typescript
-// Redirect to another page
-res.redirect = (url: string) => http.ServerResponse;
-
-// Write content of a page to another
-res.writePage = (url: string) => http.ServerResponse;
-```
-
 ## Middlewares
-
 ```typescript
 
 // Exports of middlewares.js which can be imported all as Middleware
@@ -69,7 +57,6 @@ const exports: {
 ```
 
 ## JsonDB
-
 ```typescript
 // A schema instance
 // Result after calling new Schema
