@@ -1,12 +1,12 @@
 import { NodeServer } from "../../../lib/main.js";
 
-console.time("App");
 // Create the server
-await new NodeServer()
+await new NodeServer({
+    port: 80
+})
     // Homepage
-    .register("/", (req, res, raise) => {
-        res.write("Hello world");
+    .register("/index", (req, res, raise) => {
+        res.end("Hello world");
     })
     // Start the server
     .start();
-console.timeEnd('App');

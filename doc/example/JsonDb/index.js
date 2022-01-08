@@ -9,7 +9,11 @@ const DB = new JsonDB("./doc/example/JsonDB/db/db.json", reviver.callback());
 // Print saved item
 DB.on("save-item", console.log);
 // Schema
-const User = DB.schema("User");
+const User = DB.schema("User", {
+    name: String,
+    id: Number,
+    accountCreated: Date
+});
 // Create an user and save the document (this action will trigger the save-item event)
 await new User({
     name: "Reve",
