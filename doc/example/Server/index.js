@@ -1,12 +1,14 @@
-import { NodeServer } from "../../../lib/main.js";
+import { Server } from "../../../lib/main.js";
+
+class Home {
+    invoke(ctx) {
+        ctx.response += "Hello world"
+    }
+}
 
 // Create the server
-await new NodeServer({
-    port: 80
-})
+await new Server()
     // Homepage
-    .register("/index", (req, res, raise) => {
-        res.end("Hello world");
-    })
+    .route("/index", new Home())
     // Start the server
-    .start();
+    .listen(80);
