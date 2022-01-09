@@ -5,6 +5,6 @@ new Server()
         async invoke(ctx: Context) {
             ctx.response += "Hello";
         };
-        method = "get";
+        readonly method = "Get";
     })
     .listen(80);
