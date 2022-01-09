@@ -61,7 +61,7 @@ import { Server } from "async-server";
 // Create the server
 await new Server()
   // Register the route
-  .register("/index", new class IndexPage {
+  .route("/index", new class IndexPage {
         method = "GET" // or lowercase if you want
         async invoke(ctx) {
             ctx.response = "Hello world";
