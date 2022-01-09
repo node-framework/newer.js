@@ -1,9 +1,10 @@
 import { Server } from "../../../lib/main.js";
 
 class Home {
-    invoke(ctx) {
+    async invoke(ctx) {
         ctx.response += "Hello"
     }
+    method = "get";
 }
 
 // Create the server

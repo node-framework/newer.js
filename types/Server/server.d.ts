@@ -12,13 +12,16 @@ export interface Context {
 }
 export interface Handler {
     readonly invoke: (ctx: Context) => Promise<void>;
+    readonly method: string;
 }
 export default class Server {
     private server;
+    private staticDir;
     private routes;
     constructor();
     route(routeName: string, route: Handler): this;
+    static(path: string): void;
     callback(): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
-    listen(port?: number, host?: string, backlog?: number): Promise<void>;
-    close(): Promise<void>;
+    listen(port?: number, host?: string, backlog?: number): Promise<Server>;
+    close(): Promise<Server>;
 }

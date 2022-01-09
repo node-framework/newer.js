@@ -27,8 +27,5 @@
     "url": "https://github.com/aquapi/async-server"
   },
   "type": "module",
-  "types": "types/main.d.ts",
-  "devDependencies": {
-    "ts-node": "^10.4.0"
-  }
+  "types": "types/main.d.ts"
 }
