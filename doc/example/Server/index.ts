@@ -1,4 +1,4 @@
-import { Server, Context, Handler } from "../../../src/main.js";
+import { Server, Context, Handler } from "../../../src/main";
 
 new Server()
     .route("/", new class implements Handler {
