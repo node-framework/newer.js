@@ -14,6 +14,10 @@ export interface Context {
      */
     response: string;
     /**
+     * Status code
+     */
+    statusCode: number;
+    /**
      * Parsed query
      */
     readonly query: {
