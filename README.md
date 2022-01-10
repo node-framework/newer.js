@@ -75,6 +75,8 @@ await new Server()
 - To get the current url use `ctx.url`
 - To get the current request use `ctx.request`
 
+- Examples: https://github.com/aquapi/async-server-example
+
 ## JsonDB
 
 - JsonDB is a type of local database which data is stored in a local `.json` file.
@@ -121,8 +123,6 @@ await User.clear();
 await db.clear();
 ```
 
-- Examples: https://github.com/aquapi/async-server/tree/main/doc/example
-
-- Full docs: https://github.com/aquapi/async-server/tree/main/doc/server.md
+- Full docs: https://github.com/aquapi/async-server/tree/main/doc/doc.md
 
  
