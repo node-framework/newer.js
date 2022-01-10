@@ -31,6 +31,10 @@ export interface Context {
      * The page url
      */
     readonly url: string;
+    /**
+     * Content type
+     */
+    contentType: string;
 }
 /**
  * A route handler
