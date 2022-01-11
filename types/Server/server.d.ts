@@ -48,14 +48,10 @@ export interface Context {
  * A route handler
  */
 export interface Handler {
-    /**
-     * @param ctx the context of the request
-     */
-    readonly invoke: (ctx: Context) => Promise<void> | ((ctx: Context) => Promise<void>)[];
-    /**
-     * The method to handle
-     */
-    readonly method: string | string[];
+    GET?: (ctx: Context) => Promise<void>;
+    POST?: (ctx: Context) => Promise<void>;
+    PUT?: (ctx: Context) => Promise<void>;
+    DELETE?: (ctx: Context) => Promise<void>;
 }
 export default class Server {
     private server;

@@ -70,15 +70,10 @@ export interface Context {
  * A route handler
  */
 export interface Handler {
-    /**
-     * @param ctx the context of the request
-     */
-    readonly invoke: (ctx: Context) => Promise<void> | ((ctx: Context) => Promise<void>)[];
-
-    /**
-     * The method to handle
-     */
-    readonly method: string | string[];
+    GET?: (ctx: Context) => Promise<void>,
+    POST?: (ctx: Context) => Promise<void>,
+    PUT?: (ctx: Context) => Promise<void>,
+    DELETE?: (ctx: Context) => Promise<void>
 }
 
 export default class Server {
@@ -171,23 +166,14 @@ export default class Server {
                 if (!fs.existsSync(dir + req.url))
                     fs.appendFileSync(dir + req.url, "");
             }
-            // Get the route
-            let route = this.routes[req.url];
-            // Check route method
-            if (route?.method) {
-                if (typeof route.method === "string" && route.method.toUpperCase() === req.method)
-                    // Invoke the route
-                    await route.invoke(c);
-                else if (typeof route?.method !== "string" && req.method in route.method)
-                    // Invoke the route
-                    await route.invoke[route.method.indexOf(req.method)](c);
-                // Set has handler to true
-                hasHandler = true;
-                // Set the status code
-                statusCode = c.statusCode;
-                // Set the content type
-                res.setHeader("Content-Type", c.contentType);
-            }
+            // Invoke route
+            await this.routes[req.url][req.method](c);
+            // Set has handler to true
+            hasHandler = true;
+            // Set the status code
+            statusCode = c.statusCode;
+            // Set the content type
+            res.setHeader("Content-Type", c.contentType);
             // Check whether any route handler has been called
             if (!hasHandler) {
                 // Check whether the static dir is set
