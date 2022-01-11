@@ -23,7 +23,7 @@ const app = new Server();
 class IndexPage {
     method = "GET" // or lowercase if you want
     async invoke(ctx) {
-      ctx.response = "Hello world";
+        ctx.response = "Hello world";
     }
 }
 
@@ -39,8 +39,7 @@ import { NodeServer } from "async-server";
 const app = new Server();
 
 class IndexPage {
-    method = "GET" // or lowercase if you want
-    async invoke(ctx) {
+    async GET(ctx) {
       ctx.response = "Hello world";
     }
 }
@@ -62,8 +61,7 @@ import { Server } from "async-server";
 await new Server()
   // Register the route
   .route("/index", new class IndexPage {
-        method = "GET" // or lowercase if you want
-        async invoke(ctx) {
+        async GET(ctx) {
             ctx.response = "Hello world";
         }
   })
@@ -125,4 +123,4 @@ await db.clear();
 
 - Full docs: https://github.com/aquapi/async-server/tree/main/doc/doc.md
 
- 
+- Important: Don't download Beta or Alpha versions
