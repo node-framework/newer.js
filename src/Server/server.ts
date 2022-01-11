@@ -127,8 +127,10 @@ export default class Server {
         return async (req: http.IncomingMessage, res: http.ServerResponse) => {
             // The current status code
             let statusCode: number;
+
             // Check whether this route has handler
             let hasHandler: boolean = false;
+            
             // The context
             const c: Context = {
                 // Default status code
@@ -153,14 +155,17 @@ export default class Server {
                     c.response += this.readFile(path) ?? "";
                 },
             };
+
             // Favicon
             if (req.url === "/favicon.ico") {
                 let dir = this.staticDir ?? ".";
                 if (!fs.existsSync(dir + req.url))
                     fs.appendFileSync(dir + req.url, "");
             }
+
             // Get the route
             let target = this.routes[req.url];
+
             // Check whether this route has been registered
             if (target && target[req.method]) {
                 // Invoke route
@@ -172,6 +177,7 @@ export default class Server {
                 // Set the content type
                 res.setHeader("Content-Type", c.contentType);
             }
+
             // Check whether any route handler has been called
             if (!hasHandler) {
                 // Check whether the static dir is set
@@ -184,17 +190,21 @@ export default class Server {
                     // Set status code to 404
                     statusCode = 404;
             }
+
             // Check whether content and status code is set
             if (!c.response && !statusCode)
                 // Set status code to 404 or 204
                 statusCode = c.response === null ? 404 : 204;
+
             // Check whether redirect URL is set
             if (c.redirect) {
                 statusCode = 307;
                 res.setHeader("Location", c.redirect);
             }
+
             // Write status code if status code not equals 307
             res.writeHead(statusCode ?? 200);
+
             // End the response
             res.end(c.response);
         }
