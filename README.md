@@ -90,7 +90,7 @@ const db = new JsonDB("Your json file path");
 // Create a schema called user with `name` property typed `string` and `id` property typed `number`
 const User = db.schema("User", {
     name: String,
-    id: Number
+    id: Number 
 });
 
 // Create objects that matched the schema and save it to the database

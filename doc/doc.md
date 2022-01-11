@@ -23,7 +23,7 @@ type DBEvents = "save-item" | "update-item"
             | "drop-schema";
 /**
  * Schema type
- */
+ */ 
 type Schema = {
     // Constructor has 1 argument
     // obj: the object to check if match the schema

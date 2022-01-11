@@ -64,7 +64,7 @@ const typeChecker = (schema: object) => class {
 const getSchemFrom = (obj: object): object => {
     let schem = {};
     for (let i in obj)
-        schem[i] = (
+        schem[i] = ( 
             getWrapper(obj[i]) !== Object
                 ? getWrapper
                 : getSchemFrom

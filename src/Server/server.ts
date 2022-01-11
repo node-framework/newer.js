@@ -176,7 +176,7 @@ export default class Server {
                         (_: any) => { }
                     )
                 )(c);
-                // Set has handler to true
+                // Set has handler to true 
                 hasHandler = true;
                 // Set the status code
                 statusCode = c.statusCode;

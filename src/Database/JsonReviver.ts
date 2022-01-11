@@ -13,5 +13,5 @@ export default class JsonReviver {
                 if (key === i && typeof value === 'string')
                     return (this.reviver[i])(value);
             return value;
-        }
+        } 
 }

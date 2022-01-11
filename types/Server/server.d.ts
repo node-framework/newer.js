@@ -77,7 +77,7 @@ export default class Server {
      * @returns a listener that can be use for http.createServer or https.createServer
      */
     callback(): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
-    /**
+    /** 
      * Start the server
      * @param port the port to listen to
      * @param host the hostname to listen to
