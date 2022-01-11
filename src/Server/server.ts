@@ -53,17 +53,17 @@ export interface Context {
      */
     readonly url: string;
     /**
-     * URL to redirect
-     */
-    redirect: string;
-    /**
      * Send a file
      */
     readonly writeFile: (path: string) => void;
     /**
      * Get or set headers
      */
-    readonly header: (name?: string, value?: string | number | readonly string[], headers?: { [name: string]: string | number | readonly string[] }) => void | string | number | string[];
+    readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
+    /**
+     * Set multiple headers
+     */
+    readonly headers: (headers: { [name: string]: string | number | readonly string[] }) => void;
 }
 
 /**
@@ -151,28 +151,23 @@ export default class Server {
                 // The request url
                 url: req.url,
 
-                // Redirect url
-                redirect: null,
-
                 // Send file
                 writeFile: path => {
                     // Set response to file content
                     c.response += this.readFile(path) ?? "";
                 },
 
-                // Headers get and set
-                header: (name, value, headers) => {
-                    if (!headers) 
-                        // Get or set a header
-                        return value 
-                            ? void res.setHeader(name, value) 
-                            : res.getHeader(name)
-                    else {
-                        // Set multiple headers
-                        if (value || name) throw new Error("Illegal argument");
-                        for (let name in headers) 
-                            res.setHeader(name, headers[name]);
-                    }
+                // Header get and set
+                header: (name, value) =>
+                    // Get or set a header
+                    value
+                        ? void res.setHeader(name, value)
+                        : res.getHeader(name),
+
+                // Set multiple headers
+                headers: headers => {
+                    for (let name in headers)
+                        res.setHeader(name, headers[name])
                 }
             };
 
@@ -219,12 +214,6 @@ export default class Server {
             if (!c.response && !statusCode)
                 // Set status code to 404 or 204
                 statusCode = c.response === null ? 404 : 204;
-
-            // Check whether redirect URL is set
-            if (c.redirect) {
-                statusCode = 307;
-                res.setHeader("Location", c.redirect);
-            }
 
             // Write status code if status code not equals 307
             res.writeHead(statusCode ?? 200);

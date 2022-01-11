@@ -32,19 +32,19 @@ export interface Context {
      */
     readonly url: string;
     /**
-     * URL to redirect
-     */
-    redirect: string;
-    /**
      * Send a file
      */
     readonly writeFile: (path: string) => void;
     /**
      * Get or set headers
      */
-    readonly header: (name?: string, value?: string | number | readonly string[], headers?: {
+    readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
+    /**
+     * Set multiple headers
+     */
+    readonly headers: (headers: {
         [name: string]: string | number | readonly string[];
-    }) => void | string | number | string[];
+    }) => void;
 }
 /**
  * A route handler
