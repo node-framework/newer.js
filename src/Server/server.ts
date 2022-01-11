@@ -78,7 +78,7 @@ export interface Handler {
     /**
      * The method to handle
      */
-    readonly method: string;
+    readonly method: string | string[];
 }
 
 export default class Server {
@@ -130,6 +130,7 @@ export default class Server {
      */
     callback() {
         return async (req: http.IncomingMessage, res: http.ServerResponse) => {
+            // The current status code
             let statusCode: number;
             // Check whether this route has handler
             let hasHandler: boolean = false;
@@ -175,7 +176,18 @@ export default class Server {
                 // Get the route
                 let route = this.routes[req.url];
                 // Check route method
-                if (route?.method?.toUpperCase() === req.method) {
+                if (
+                    route?.method 
+                    && (
+                        (
+                            typeof route?.method === "string" 
+                            && route?.method?.toUpperCase() === req.method
+                        ) !== (
+                            typeof route?.method !== "string" 
+                            && req.method in route.method
+                        )
+                    )
+                ) {
                     // Invoke the route
                     await route.invoke(c);
                     // Set has handler to true
