@@ -1,6 +1,7 @@
 import http from "http";
 import qs from "query-string";
 import fs from "fs";
+import { Socket } from "net";
 
 // Get the body of a request
 const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
@@ -64,6 +65,10 @@ export interface Context {
      * Set multiple headers
      */
     readonly headers: (headers: { [name: string]: string | number | readonly string[] }) => void;
+    /**
+     * Socket
+     */
+    readonly socket: Socket;
 }
 
 /**
@@ -168,7 +173,10 @@ export default class Server {
                 headers: headers => {
                     for (let name in headers)
                         res.setHeader(name, headers[name])
-                }
+                },
+
+                // Socket
+                socket: res.socket,
             };
 
             // Favicon

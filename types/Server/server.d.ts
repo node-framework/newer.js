@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import http from "http";
 import qs from "query-string";
+import { Socket } from "net";
 /**
  * Context of a request
  */
@@ -45,6 +46,10 @@ export interface Context {
     readonly headers: (headers: {
         [name: string]: string | number | readonly string[];
     }) => void;
+    /**
+     * Socket
+     */
+    readonly socket: Socket;
 }
 /**
  * A route handler
