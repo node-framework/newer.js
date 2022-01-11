@@ -4,7 +4,7 @@ import qs from "query-string";
 /**
  * Context of a request
  */
-export interface Context {
+export declare type Context = {
     /**
      * The request
      */
@@ -32,10 +32,6 @@ export interface Context {
      */
     readonly url: string;
     /**
-     * Content type
-     */
-    contentType: string;
-    /**
      * URL to redirect
      */
     redirect: string;
@@ -43,7 +39,11 @@ export interface Context {
      * Send a file
      */
     readonly writeFile: (path: string) => void;
-}
+    /**
+     * Set header
+     */
+    readonly header: (name: string, value: string | number | readonly string[]) => void;
+};
 /**
  * A route handler
  */

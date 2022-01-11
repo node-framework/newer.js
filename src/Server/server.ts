@@ -25,7 +25,7 @@ const getQuery = (url: string) =>
 /**
  * Context of a request
  */
-export interface Context {
+export type Context = {
     /**
      * The request
      */
@@ -53,10 +53,6 @@ export interface Context {
      */
     readonly url: string;
     /**
-     * Content type
-     */
-    contentType: string;
-    /**
      * URL to redirect
      */
     redirect: string;
@@ -64,6 +60,10 @@ export interface Context {
      * Send a file
      */
     readonly writeFile: (path: string) => void;
+    /**
+     * Set header
+     */
+    readonly header: (name: string, value: string | number | readonly string[]) => void;
 }
 
 /**
@@ -130,7 +130,7 @@ export default class Server {
 
             // Check whether this route has handler
             let hasHandler: boolean = false;
-            
+
             // The context
             const c: Context = {
                 // Default status code
@@ -145,8 +145,6 @@ export default class Server {
                 body: await getBody(req),
                 // The request url
                 url: req.url,
-                // Default content type
-                contentType: "text/plain",
                 // Redirect url
                 redirect: null,
                 // Send file
@@ -154,6 +152,8 @@ export default class Server {
                     // Set response to file content
                     c.response += this.readFile(path) ?? "";
                 },
+                // Headers
+                header: res.setHeader
             };
 
             // Favicon
@@ -174,8 +174,6 @@ export default class Server {
                 hasHandler = true;
                 // Set the status code if status code not equals 307
                 statusCode = c.statusCode;
-                // Set the content type
-                res.setHeader("Content-Type", c.contentType);
             }
 
             // Check whether any route handler has been called
