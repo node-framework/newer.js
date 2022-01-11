@@ -167,7 +167,10 @@ export default class Server {
                     fs.appendFileSync(dir + req.url, "");
             }
             // Invoke route
-            await this.routes[req.url][req.method](c);
+            await (
+                (this.routes[req.url] ?? [])
+                [req.method] ?? (() => {})
+            )(c);
             // Set has handler to true
             hasHandler = true;
             // Set the status code
