@@ -153,7 +153,7 @@ export default class Server {
                     c.response += this.readFile(path) ?? "";
                 },
                 // Headers
-                header: res.setHeader
+                header: (name: string, value: string | number | readonly string[]) => res.setHeader(name, value),
             };
 
             // Favicon
