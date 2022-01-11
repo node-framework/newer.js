@@ -51,7 +51,7 @@ export interface Handler {
     /**
      * @param ctx the context of the request
      */
-    readonly invoke: (ctx: Context) => Promise<void>;
+    readonly invoke: (ctx: Context) => Promise<void> | ((ctx: Context) => Promise<void>)[];
     /**
      * The method to handle
      */

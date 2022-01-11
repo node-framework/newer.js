@@ -73,7 +73,7 @@ export interface Handler {
     /**
      * @param ctx the context of the request
      */
-    readonly invoke: (ctx: Context) => Promise<void>;
+    readonly invoke: (ctx: Context) => Promise<void> | ((ctx: Context) => Promise<void>)[];
 
     /**
      * The method to handle
@@ -171,32 +171,22 @@ export default class Server {
                 if (!fs.existsSync(dir + req.url))
                     fs.appendFileSync(dir + req.url, "");
             }
-            // Invoke the route
-            if (req.url !== "/favicon.ico") {
-                // Get the route
-                let route = this.routes[req.url];
-                // Check route method
-                if (
-                    route?.method 
-                    && (
-                        (
-                            typeof route?.method === "string" 
-                            && route?.method?.toUpperCase() === req.method
-                        ) !== (
-                            typeof route?.method !== "string" 
-                            && req.method in route.method
-                        )
-                    )
-                ) {
+            // Get the route
+            let route = this.routes[req.url];
+            // Check route method
+            if (route?.method) {
+                if (typeof route.method === "string" && route.method.toUpperCase() === req.method)
                     // Invoke the route
                     await route.invoke(c);
-                    // Set has handler to true
-                    hasHandler = true;
-                    // Set the status code
-                    statusCode = c.statusCode;
-                    // Set the content type
-                    res.setHeader("Content-Type", c.contentType);
-                }
+                else if (typeof route?.method !== "string" && req.method in route.method)
+                    // Invoke the route
+                    await route.invoke[route.method.indexOf(req.method)](c);
+                // Set has handler to true
+                hasHandler = true;
+                // Set the status code
+                statusCode = c.statusCode;
+                // Set the content type
+                res.setHeader("Content-Type", c.contentType);
             }
             // Check whether any route handler has been called
             if (!hasHandler) {
