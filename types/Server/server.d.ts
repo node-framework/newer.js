@@ -4,7 +4,7 @@ import qs from "query-string";
 /**
  * Context of a request
  */
-export declare type Context = {
+export interface Context {
     /**
      * The request
      */
@@ -40,10 +40,12 @@ export declare type Context = {
      */
     readonly writeFile: (path: string) => void;
     /**
-     * Set header
+     * Get or set headers
      */
-    readonly header: (name: string, value: string | number | readonly string[]) => void;
-};
+    readonly header: (name?: string, value?: string | number | readonly string[], headers?: {
+        [name: string]: string | number | readonly string[];
+    }) => void | string | number | string[];
+}
 /**
  * A route handler
  */

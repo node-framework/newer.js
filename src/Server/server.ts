@@ -25,7 +25,7 @@ const getQuery = (url: string) =>
 /**
  * Context of a request
  */
-export type Context = {
+export interface Context {
     /**
      * The request
      */
@@ -61,9 +61,9 @@ export type Context = {
      */
     readonly writeFile: (path: string) => void;
     /**
-     * Set header
+     * Get or set headers
      */
-    readonly header: (name: string, value: string | number | readonly string[]) => void;
+    readonly header: (name?: string, value?: string | number | readonly string[], headers?: { [name: string]: string | number | readonly string[] }) => void | string | number | string[];
 }
 
 /**
@@ -73,7 +73,7 @@ export interface Handler {
     GET?: (ctx: Context) => Promise<void>,
     POST?: (ctx: Context) => Promise<void>,
     PUT?: (ctx: Context) => Promise<void>,
-    DELETE?: (ctx: Context) => Promise<void>
+    DELETE?: (ctx: Context) => Promise<void>,
 }
 
 export default class Server {
@@ -135,30 +135,53 @@ export default class Server {
             const c: Context = {
                 // Default status code
                 statusCode: 200,
+
                 // The request
                 request: req,
+
                 // The response, default to empty
                 response: "",
+
                 // The query of the URL
                 query: getQuery(req.url),
+
                 // The body of the request
                 body: await getBody(req),
+
                 // The request url
                 url: req.url,
+
                 // Redirect url
                 redirect: null,
+
                 // Send file
-                writeFile: (path: string) => {
+                writeFile: path => {
                     // Set response to file content
                     c.response += this.readFile(path) ?? "";
                 },
-                // Headers
-                header: (name: string, value: string | number | readonly string[]) => res.setHeader(name, value),
+
+                // Headers get and set
+                header: (name, value, headers) => {
+                    if (!headers) 
+                        // Get or set a header
+                        return value 
+                            ? void res.setHeader(name, value) 
+                            : res.getHeader(name)
+                    else {
+                        // Set multiple headers
+                        if (value || name) throw new Error("Illegal argument");
+                        for (let name in headers) 
+                            res.setHeader(name, headers[name]);
+                    }
+                }
             };
 
             // Favicon
             if (req.url === "/favicon.ico") {
+                // Get parent directory
                 let dir = this.staticDir ?? ".";
+
+                // Create favicon if it does not exists
                 if (!fs.existsSync(dir + req.url))
                     fs.appendFileSync(dir + req.url, "");
             }
@@ -170,9 +193,11 @@ export default class Server {
             if (target && target[req.method]) {
                 // Invoke route
                 await target[req.method](c);
+
                 // Set has handler to true 
                 hasHandler = true;
-                // Set the status code if status code not equals 307
+
+                // Set the status code 
                 statusCode = c.statusCode;
             }
 
@@ -183,6 +208,7 @@ export default class Server {
                     // Set the response to the read data
                     c.response = this.readFile(this.staticDir + req.url);
                 }
+
                 // If status code in not set and static dir is not set
                 else if (!statusCode)
                     // Set status code to 404
