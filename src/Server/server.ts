@@ -57,9 +57,9 @@ export interface Context {
      */
     contentType: string;
     /**
-     * Redirect to another url
+     * URL to redirect
      */
-    readonly redirect: (url: string) => void;
+    redirect: string;
     /**
      * Send a file
      */
@@ -145,15 +145,8 @@ export default class Server {
                 url: req.url,
                 // Default content type
                 contentType: "text/plain",
-                // Redirect function
-                redirect: (url: string) => {
-                    // Redirect
-                    res.writeHead(307, {
-                        "Location": url
-                    });
-                    // Set status code to 307
-                    c.statusCode = 307;
-                },
+                // Redirect url
+                redirect: null,
                 // Send file
                 writeFile: (path: string) => {
                     // Set response to file content
@@ -169,16 +162,12 @@ export default class Server {
             // Get the route
             let target = this.routes[req.url];
             // Check whether this route has been registered
-            if (target) {
+            if (target && target[req.method]) {
                 // Invoke route
-                await (
-                    target[req.method] ?? (
-                        (_: any) => { }
-                    )
-                )(c);
+                await target[req.method](c);
                 // Set has handler to true 
                 hasHandler = true;
-                // Set the status code
+                // Set the status code if status code not equals 307
                 statusCode = c.statusCode;
                 // Set the content type
                 res.setHeader("Content-Type", c.contentType);
@@ -199,7 +188,12 @@ export default class Server {
             if (!c.response && !statusCode)
                 // Set status code to 404 or 204
                 statusCode = c.response === null ? 404 : 204;
-            // Write status code
+            // Check whether redirect URL is set
+            if (c.redirect) {
+                statusCode = 307;
+                res.setHeader("Location", c.redirect);
+            }
+            // Write status code if status code not equals 307
             res.writeHead(statusCode ?? 200);
             // End the response
             res.end(c.response);

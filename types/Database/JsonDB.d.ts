@@ -8,7 +8,7 @@ export declare type SchemaInstance = {
     update: (obj: object) => Promise<object>;
 };
 /**
- * Database events 
+ * Database events
  */
 export declare type DBEvents = "save-item" | "update-item" | "delete-item" | "clear-schema" | "clear-database" | "drop-database" | "drop-schema";
 /**
