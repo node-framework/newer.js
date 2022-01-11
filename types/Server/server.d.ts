@@ -35,6 +35,14 @@ export interface Context {
      * Content type
      */
     contentType: string;
+    /**
+     * Redirect to another url
+     */
+    redirect: (url: string) => void;
+    /**
+     * Send a file
+     */
+    writeFile: (path: string) => void;
 }
 /**
  * A route handler
@@ -68,6 +76,7 @@ export default class Server {
      * @returns this server for chaining
      */
     static(path: string): this;
+    private readFile;
     /**
      * @returns a listener that can be use for http.createServer or https.createServer
      */

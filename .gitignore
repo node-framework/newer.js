@@ -3,6 +3,5 @@ package-lock.json
 .npmignore
 *.d.ts.map
 tsconfig.json
-src
 bin 
 test

@@ -1,23 +1,10 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const http_1 = __importDefault(require("http"));
-const query_string_1 = __importDefault(require("query-string"));
-const fs_1 = __importDefault(require("fs"));
+import http from "http";
+import qs from "query-string";
+import fs from "fs";
+
 // Get the body of a request
-const getBody = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((res, rej) => {
+const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
+    new Promise((res, rej) => {
         let body = '';
         req.on('data', data => {
             body += data;
@@ -26,55 +13,128 @@ const getBody = (req) => __awaiter(void 0, void 0, void 0, function* () {
                 rej();
             }
         });
-        req.on('end', () => res(query_string_1.default.parse(body)));
+        req.on('end', () => res(qs.parse(body)));
     });
-});
+
 // Get query of an URL
-const getQuery = (url) => Object.fromEntries(new URLSearchParams(url.split("?")[1]).entries());
-class Server {
+const getQuery = (url: string) =>
+    Object.fromEntries(
+        new URLSearchParams(url.split("?")[1]).entries()
+    );
+
+/**
+ * Context of a request
+ */
+export interface Context {
+    /**
+     * The request
+     */
+    readonly request: http.IncomingMessage;
+    /**
+     * The response
+     */
+    response: string;
+    /**
+     * Status code
+     */
+    statusCode: number;
+    /**
+     * Parsed query
+     */
+    readonly query: {
+        [k: string]: string;
+    };
+    /**
+     * Parsed body
+     */
+    readonly body: qs.ParsedQuery;
+    /**
+     * The page url
+     */
+    readonly url: string;
+    /**
+     * Content type
+     */
+    contentType: string;
+    /**
+     * Redirect to another url
+     */
+    readonly redirect: (url: string) => void;
+    /**
+     * Send a file
+     */
+    readonly writeFile: (path: string) => void;
+}
+
+/**
+ * A route handler
+ */
+export interface Handler {
+    /**
+     * @param ctx the context of the request
+     */
+    readonly invoke: (ctx: Context) => Promise<void>;
+
+    /**
+     * The method to handle
+     */
+    readonly method: string;
+}
+
+export default class Server {
+    private server: http.Server;
+
+    private staticDir: string;
+
+    private routes: {
+        [routeName: string]: Handler
+    };
+
     /**
      * The constructor
      */
     constructor() {
         this.routes = {};
     }
+
     /**
      * @param routeName the route name
      * @param route the route handler
      * @returns this server for chaining
      */
-    route(routeName, route) {
+    route(routeName: string, route: Handler) {
         this.routes[routeName] = route;
         return this;
     }
+
     /**
      * @param path the static path
      * @returns this server for chaining
      */
-    static(path) {
+    static(path: string) {
         this.staticDir = path;
         return this;
     }
+
     // Read file if file not found return null
-    readFile(path) {
+    private readFile(path: string): string | null {
         try {
-            return fs_1.default.readFileSync(path).toString();
-        }
-        catch (e) {
+            return fs.readFileSync(path).toString();
+        } catch (e) {
             return null;
         }
     }
+
     /**
      * @returns a listener that can be use for http.createServer or https.createServer
      */
     callback() {
-        return (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
-            let statusCode;
+        return async (req: http.IncomingMessage, res: http.ServerResponse) => {
+            let statusCode: number;
             // Check whether this route has handler
-            let hasHandler = false;
+            let hasHandler: boolean = false;
             // The context
-            const c = {
+            const c: Context = {
                 // Default status code
                 statusCode: 200,
                 // The request
@@ -84,41 +144,40 @@ class Server {
                 // The query of the URL
                 query: getQuery(req.url),
                 // The body of the request
-                body: yield getBody(req),
+                body: await getBody(req),
                 // The request url
                 url: req.url,
                 // Default content type
                 contentType: "text/plain",
                 // Redirect function
-                redirect: (url) => {
+                redirect: (url: string) => {
                     // Redirect
                     res.writeHead(307, {
                         "Location": url
                     });
                     // Set status code to 307
-                    statusCode = 307;
+                    c.statusCode = 307;
                 },
                 // Send file
-                writeFile: (path) => {
-                    var _a;
+                writeFile: (path: string) => {
                     // Set response to file content
-                    c.response += (_a = this.readFile(path)) !== null && _a !== void 0 ? _a : "";
+                    c.response += this.readFile(path) ?? "";
                 },
             };
             // Favicon
             if (req.url === "/favicon.ico") {
-                let dir = (_a = this.staticDir) !== null && _a !== void 0 ? _a : ".";
-                if (!fs_1.default.existsSync(dir + req.url))
-                    fs_1.default.appendFileSync(dir + req.url, "");
+                let dir = this.staticDir ?? ".";
+                if (!fs.existsSync(dir + req.url))
+                    fs.appendFileSync(dir + req.url, "");
             }
             // Invoke the route
             if (req.url !== "/favicon.ico") {
                 // Get the route
                 let route = this.routes[req.url];
                 // Check route method
-                if (((_b = route === null || route === void 0 ? void 0 : route.method) === null || _b === void 0 ? void 0 : _b.toUpperCase()) === req.method) {
+                if (route?.method?.toUpperCase() === req.method) {
                     // Invoke the route
-                    yield route.invoke(c);
+                    await route.invoke(c);
                     // Set has handler to true
                     hasHandler = true;
                     // Set the status code
@@ -144,11 +203,12 @@ class Server {
                 // Set status code to 404 or 204
                 statusCode = c.response === null ? 404 : 204;
             // Write status code
-            res.writeHead(statusCode !== null && statusCode !== void 0 ? statusCode : 200);
+            res.writeHead(statusCode ?? 200);
             // End the response
             res.end(c.response);
-        });
+        }
     }
+
     /**
      * Start the server
      * @param port the port to listen to
@@ -156,25 +216,21 @@ class Server {
      * @param backlog the backlog
      * @returns this server for chaining
      */
-    listen(port, host, backlog) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise(res => {
-                this.server = http_1.default
-                    .createServer(this.callback())
-                    .listen(port !== null && port !== void 0 ? port : 8080, host !== null && host !== void 0 ? host : "127.0.0.1", backlog !== null && backlog !== void 0 ? backlog : 0, () => res(this));
-            });
+    async listen(port?: number, host?: string, backlog?: number) {
+        return new Promise<Server>(res => {
+            this.server = http
+                .createServer(this.callback())
+                .listen(port ?? 8080, host ?? "127.0.0.1", backlog ?? 0, () => res(this));
         });
     }
+
     /**
      * Close the server
      * @returns this server for chaining
      */
-    close() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((res, rej) => {
-                this.server.close(err => err ? rej(err) : res(this));
-            });
+    async close() {
+        return new Promise<Server>((res, rej) => {
+            this.server.close(err => err ? rej(err) : res(this));
         });
     }
 }
-exports.default = Server;
