@@ -38,11 +38,11 @@ export interface Context {
     /**
      * Redirect to another url
      */
-    redirect: (url: string) => void;
+    readonly redirect: (url: string) => void;
     /**
      * Send a file
      */
-    writeFile: (path: string) => void;
+    readonly writeFile: (path: string) => void;
 }
 /**
  * A route handler
@@ -55,7 +55,7 @@ export interface Handler {
     /**
      * The method to handle
      */
-    readonly method: string;
+    readonly method: string | string[];
 }
 export default class Server {
     private server;
