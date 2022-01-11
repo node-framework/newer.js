@@ -21,8 +21,7 @@ import { Server } from "async-server";
 const app = new Server();
 
 class IndexPage {
-    method = "GET" // or lowercase if you want
-    async invoke(ctx) {
+    async GET(ctx) {
         ctx.response = "Hello world";
     }
 }
@@ -40,7 +39,7 @@ const app = new Server();
 
 class IndexPage {
     async GET(ctx) {
-      ctx.response = "Hello world";
+        ctx.response = "Hello world";
     }
 }
 
