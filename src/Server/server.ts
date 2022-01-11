@@ -166,17 +166,23 @@ export default class Server {
                 if (!fs.existsSync(dir + req.url))
                     fs.appendFileSync(dir + req.url, "");
             }
-            // Invoke route
-            await (
-                (this.routes[req.url] ?? [])
-                [req.method] ?? (() => {})
-            )(c);
-            // Set has handler to true
-            hasHandler = true;
-            // Set the status code
-            statusCode = c.statusCode;
-            // Set the content type
-            res.setHeader("Content-Type", c.contentType);
+            // Get the route
+            let target = this.routes[req.url];
+            // Check whether this route has been registered
+            if (target) {
+                // Invoke route
+                await (
+                    target[req.method] ?? (
+                        (_: any) => { }
+                    )
+                )(c);
+                // Set has handler to true
+                hasHandler = true;
+                // Set the status code
+                statusCode = c.statusCode;
+                // Set the content type
+                res.setHeader("Content-Type", c.contentType);
+            }
             // Check whether any route handler has been called
             if (!hasHandler) {
                 // Check whether the static dir is set
