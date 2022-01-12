@@ -120,6 +120,4 @@ await User.clear();
 await db.clear();
 ```
 
-- Full docs: https://github.com/aquapi/async-server/tree/main/doc/doc.md
-
 - Important: Don't download Beta or Alpha versions
