@@ -68,9 +68,12 @@ await new Server()
   .listen(80);
 ```
 
-- To get query and body of a request use `ctx.body` or `ctx.query`
-- To get the current url use `ctx.url`
-- To get the current request use `ctx.request`
+### Context
+
+- `ctx.query`: Get query of current request
+- `ctx.body`: Get body of current request
+- `ctx.url`: Get URL of current request
+- `ctx.statusCode`: To get or set the status code (if `ctx.statusCode` is not set it will return `undefined`)
 
 - Examples: https://github.com/node-framework/newer.js-example
 
