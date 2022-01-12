@@ -80,6 +80,7 @@ export default class Server {
      */
     constructor();
     /**
+     * Register a route
      * @param routeName the route name
      * @param route the route handler
      * @returns this server for chaining

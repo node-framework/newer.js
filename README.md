@@ -120,4 +120,4 @@ await User.clear();
 await db.clear();
 ```
 
-- Important: Don't download Beta or Alpha versions
+- Important: Don't download Beta or Alpha or Test versions

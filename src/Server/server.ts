@@ -112,6 +112,7 @@ export default class Server {
     }
 
     /**
+     * Register a route
      * @param routeName the route name
      * @param route the route handler
      * @returns this server for chaining
@@ -154,9 +155,6 @@ export default class Server {
      */
     callback() {
         return async (req: http.IncomingMessage, res: http.ServerResponse) => {
-            // Check whether this route has handler
-            let hasHandler: boolean = false;
-
             // The context
             const c: Context = {
                 // Default status code
@@ -223,16 +221,12 @@ export default class Server {
             let target = this.routes[req.url];
 
             // Check whether this route has been registered
-            if (target && target[req.method]) {
+            if (target && target[req.method]) 
                 // Invoke route
                 await target[req.method](c);
 
-                // Set has handler to true 
-                hasHandler = true;
-            }
-
-            // Check whether any route handler has been called
-            if (!hasHandler && !c.response) {
+            // Check whether response is not empty
+            if (!c.response) {
                 // Check whether the static dir is set
                 if (this.staticDir) {
                     // Set the response to the read data
