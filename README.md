@@ -1,4 +1,6 @@
 # Newer.js
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_shield)
+
 
 - Async server is a lightweight Express-like framework
 - Build with native Node.js HTTP
@@ -124,3 +126,6 @@ await db.clear();
 ```
 
 - Important: Don't download Beta or Alpha or Test versions
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_large)
