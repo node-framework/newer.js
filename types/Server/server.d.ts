@@ -60,10 +60,17 @@ export interface Handler {
     PUT?: (ctx: Context) => Promise<void>;
     DELETE?: (ctx: Context) => Promise<void>;
 }
+/**
+ * A middleware
+ */
+export interface Middleware {
+    readonly invoke: (ctx: Context) => object | void;
+}
 export default class Server {
     private server;
     private staticDir;
     private routes;
+    private mds;
     /**
      * The constructor
      */
@@ -74,6 +81,12 @@ export default class Server {
      * @returns this server for chaining
      */
     route(routeName: string, route: Handler): this;
+    /**
+     * Add middleware
+     * @param m middleware
+     * @returns this server for chaining
+     */
+    middleware(m: Middleware): this;
     /**
      * @param path the static path
      * @returns this server for chaining

@@ -81,6 +81,13 @@ export interface Handler {
     DELETE?: (ctx: Context) => Promise<void>,
 }
 
+/**
+ * A middleware
+ */
+export interface Middleware {
+    readonly invoke: (ctx: Context) => object | void;
+}
+
 export default class Server {
     private server: http.Server;
 
@@ -90,11 +97,14 @@ export default class Server {
         [routeName: string]: Handler
     };
 
+    private mds: Middleware[];
+
     /**
      * The constructor
      */
     constructor() {
         this.routes = {};
+        this.mds = [];
     }
 
     /**
@@ -106,6 +116,16 @@ export default class Server {
         this.routes[routeName] = route;
         return this;
     }
+
+    /**
+     * Add middleware
+     * @param m middleware 
+     * @returns this server for chaining
+     */
+    middleware(m: Middleware) {
+        this.mds.push(m);
+        return this;
+    }   
 
     /**
      * @param path the static path
@@ -130,16 +150,13 @@ export default class Server {
      */
     callback() {
         return async (req: http.IncomingMessage, res: http.ServerResponse) => {
-            // The current status code
-            let statusCode: number;
-
             // Check whether this route has handler
             let hasHandler: boolean = false;
 
             // The context
             const c: Context = {
                 // Default status code
-                statusCode: 200,
+                statusCode: undefined,
 
                 // The request
                 request: req,
@@ -156,9 +173,9 @@ export default class Server {
                 // The request url
                 url: req.url,
 
-                // Send file
+                // Append file content
                 writeFile: path => {
-                    // Set response to file content
+                    // Append file content to response
                     c.response += this.readFile(path) ?? "";
                 },
 
@@ -178,6 +195,10 @@ export default class Server {
                 // Socket
                 socket: res.socket,
             };
+
+            // Invoke middlewares
+            for (let md of this.mds) 
+                md.invoke(c);
 
             // Favicon
             if (req.url === "/favicon.ico") {
@@ -199,13 +220,10 @@ export default class Server {
 
                 // Set has handler to true 
                 hasHandler = true;
-
-                // Set the status code 
-                statusCode = c.statusCode;
             }
 
             // Check whether any route handler has been called
-            if (!hasHandler) {
+            if (!hasHandler && !c.response) {
                 // Check whether the static dir is set
                 if (this.staticDir) {
                     // Set the response to the read data
@@ -213,18 +231,18 @@ export default class Server {
                 }
 
                 // If status code in not set and static dir is not set
-                else if (!statusCode)
+                else if (!c.statusCode)
                     // Set status code to 404
-                    statusCode = 404;
+                    c.statusCode = 404;
             }
 
             // Check whether content and status code is set
-            if (!c.response && !statusCode)
+            if (!c.response && !c.statusCode)
                 // Set status code to 404 or 204
-                statusCode = c.response === null ? 404 : 204;
+                c.statusCode = c.response === null ? 404 : 204;
 
             // Write status code if status code not equals 307
-            res.writeHead(statusCode ?? 200);
+            res.writeHead(c.statusCode ?? 200);
 
             // End the response
             res.end(c.response);
