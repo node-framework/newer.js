@@ -1,6 +1,6 @@
 {
-  "name": "async-server",
-  "version": "newer.js",
+  "name": "newer.js",
+  "version": "0.0.2-beta",
   "description": "A lightweight framework",
   "main": "lib/main.js",
   "directories": {
@@ -20,7 +20,7 @@
     "query-string": "^7.0.1"
   },
   "repository": {
-    "url": "https://github.com/node-framework/async-server"
+    "url": "https://github.com/node-framework/newer.js"
   },
   "types": "types/main.d.ts",
   "devDependencies": {

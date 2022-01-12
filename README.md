@@ -1,4 +1,4 @@
-# Async server
+# Newer.js
 
 - Async server is a lightweight Express-like framework
 - Build with native Node.js HTTP
@@ -72,7 +72,7 @@ await new Server()
 - To get the current url use `ctx.url`
 - To get the current request use `ctx.request`
 
-- Examples: https://github.com/aquapi/async-server-example
+- Examples: https://github.com/node-framework/newer.js-example
 
 ## JsonDB
 
