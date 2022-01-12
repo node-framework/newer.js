@@ -28,10 +28,6 @@ const getQuery = (url: string) =>
  */
 export interface Context {
     /**
-     * The request
-     */
-    readonly request: http.IncomingMessage;
-    /**
      * The response
      */
     response: string;
@@ -54,21 +50,29 @@ export interface Context {
      */
     readonly url: string;
     /**
-     * Send a file
+     * Append a file content to response
      */
     readonly writeFile: (path: string) => void;
     /**
-     * Get or set headers
+     * Get or set response headers
      */
     readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
     /**
-     * Set multiple headers
+     * Set multiple headers or get request headers
      */
-    readonly headers: (headers: { [name: string]: string | number | readonly string[] }) => void;
+    readonly headers: (headers?: { [name: string]: string | number | readonly string[] }) => void | http.IncomingHttpHeaders;
     /**
-     * Socket
+     * Request socket
      */
     readonly socket: Socket;
+    /**
+     * Request method
+     */
+    readonly method: string;
+    /**
+     * Request HTTP version
+     */
+    readonly httpVersion: string;
 }
 
 /**
@@ -158,9 +162,6 @@ export default class Server {
                 // Default status code
                 statusCode: undefined,
 
-                // The request
-                request: req,
-
                 // The response, default to empty
                 response: "",
 
@@ -186,14 +187,22 @@ export default class Server {
                         ? void res.setHeader(name, value)
                         : res.getHeader(name),
 
-                // Set multiple headers
+                // Set multiple headers or get request headers
                 headers: headers => {
+                    if (!headers)
+                        return req.headers;
                     for (let name in headers)
                         res.setHeader(name, headers[name])
                 },
 
                 // Socket
                 socket: res.socket,
+
+                // Method
+                method: req.method,
+
+                // HTTP version
+                httpVersion: req.httpVersion
             };
 
             // Invoke middlewares

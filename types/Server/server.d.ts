@@ -7,10 +7,6 @@ import { Socket } from "net";
  */
 export interface Context {
     /**
-     * The request
-     */
-    readonly request: http.IncomingMessage;
-    /**
      * The response
      */
     response: string;
@@ -33,23 +29,31 @@ export interface Context {
      */
     readonly url: string;
     /**
-     * Send a file
+     * Append a file content to response
      */
     readonly writeFile: (path: string) => void;
     /**
-     * Get or set headers
+     * Get or set response headers
      */
     readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
     /**
-     * Set multiple headers
+     * Set multiple headers or get request headers
      */
-    readonly headers: (headers: {
+    readonly headers: (headers?: {
         [name: string]: string | number | readonly string[];
-    }) => void;
+    }) => void | http.IncomingHttpHeaders;
     /**
-     * Socket
+     * Request socket
      */
     readonly socket: Socket;
+    /**
+     * Request method
+     */
+    readonly method: string;
+    /**
+     * Request HTTP version
+     */
+    readonly httpVersion: string;
 }
 /**
  * A route handler
