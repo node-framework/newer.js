@@ -132,7 +132,7 @@ export default class Server {
         return this;
     }   
 
-    /**
+    /** 
      * @param path the static path
      * @returns this server for chaining
      */

@@ -4,3 +4,4 @@ export default class JsonReviver {
     setReviverOf: (propName: string, converter: (value: any) => any) => (value: any) => any;
     callback: () => (key: string, value: any) => any;
 }
+ 

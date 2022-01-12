@@ -5,7 +5,7 @@ export default class JsonReviver {
     constructor() {
         this.reviver = {};
     }
-    setReviverOf = (propName: string, converter: (value: any) => any) =>
+    setReviverOf = (propName: string, converter: (value: any) => any) => 
         this.reviver[propName] = converter;
     callback = () =>
         (key: string, value: any) => {

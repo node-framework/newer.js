@@ -83,7 +83,7 @@ await new Server()
 - JsonDB is fast and lightweight
 
 ### Example
-
+ 
 ```javascript
 import { JsonDB } from "newer.js";
 
