@@ -27,7 +27,7 @@ export declare type Schema = {
     drop: () => Promise<void>;
 };
 export default class JsonDB {
-    private events; 
+    private events;
     /**
      * Database data
      */

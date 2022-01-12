@@ -2,6 +2,10 @@ import http from "http";
 import qs from "query-string";
 import fs from "fs";
 import { Socket } from "net";
+import { createContext } from "vm";
+
+// Request methods
+export type Method = "GET" | "POST" | "PUT" | "DELETE";
 
 // Get the body of a request
 const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
@@ -26,7 +30,7 @@ const getQuery = (url: string) =>
 /**
  * Context of a request
  */
-export interface Context {
+export interface Context extends Record<string, any> {
     /**
      * The response
      */
@@ -68,7 +72,7 @@ export interface Context {
     /**
      * Request method
      */
-    readonly method: string;
+    readonly method: Method;
     /**
      * Request HTTP version
      */
@@ -197,7 +201,7 @@ export default class Server {
                 socket: res.socket,
 
                 // Method
-                method: req.method,
+                method: <Method>req.method,
 
                 // HTTP version
                 httpVersion: req.httpVersion

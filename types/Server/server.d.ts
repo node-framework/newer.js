@@ -2,6 +2,7 @@
 import http from "http";
 import qs from "query-string";
 import { Socket } from "net";
+export declare type Method = "GET" | "POST" | "PUT" | "DELETE";
 /**
  * Context of a request
  */
@@ -34,7 +35,7 @@ export interface Context {
     readonly writeFile: (path: string) => void;
     /**
      * Get or set response headers
-     */ 
+     */
     readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
     /**
      * Set multiple headers or get request headers
@@ -49,11 +50,15 @@ export interface Context {
     /**
      * Request method
      */
-    readonly method: string;
+    readonly method: Method;
     /**
      * Request HTTP version
      */
     readonly httpVersion: string;
+    /**
+     * For extensible only
+     */
+    [name: string]: any;
 }
 /**
  * A route handler
