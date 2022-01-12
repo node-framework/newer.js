@@ -8,7 +8,7 @@
 - To create a server, use:
 
 ```javascript
-import { Server } from "async-server";
+import { Server } from "newer.js";
 
 const app = new Server();
 ```
@@ -16,7 +16,7 @@ const app = new Server();
 - Next, we will register a route called `/index` and write out "Hello World"
 
 ```javascript
-import { Server } from "async-server";
+import { Server } from "newer.js";
 
 const app = new Server();
 
@@ -33,7 +33,7 @@ app.route("/index", new IndexPage());
 - Finally listen to localhost and port 80
 
 ```javascript
-import { NodeServer } from "async-server";
+import { NodeServer } from "newer.js";
 
 const app = new Server();
 
@@ -54,7 +54,7 @@ await app.listen(80);
 - Async server supports chaining so the code above can be shorten:
 
 ```javascript
-import { Server } from "async-server";
+import { Server } from "newer.js";
 
 // Create the server
 await new Server()
@@ -82,7 +82,7 @@ await new Server()
 ### Example
 
 ```javascript
-import { JsonDB } from "async-server";
+import { JsonDB } from "newer.js";
 
 // Create a database
 const db = new JsonDB("Your json file path");
