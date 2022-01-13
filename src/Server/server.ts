@@ -2,7 +2,6 @@ import http from "http";
 import qs from "query-string";
 import fs from "fs";
 import { Socket } from "net";
-import { createContext } from "vm";
 
 // Request methods
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
@@ -93,7 +92,7 @@ export interface Handler {
  * A middleware
  */
 export interface Middleware {
-    readonly invoke: (ctx: Context) => object | void;
+    readonly invoke: (ctx: Context) => Promise<void>;
 }
 
 export default class Server {
@@ -201,7 +200,7 @@ export default class Server {
                 socket: res.socket,
 
                 // Method
-                method: <Method>req.method,
+                method: req.method as Method,
 
                 // HTTP version
                 httpVersion: req.httpVersion

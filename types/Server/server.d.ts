@@ -6,7 +6,7 @@ export declare type Method = "GET" | "POST" | "PUT" | "DELETE";
 /**
  * Context of a request
  */
-export interface Context {
+export interface Context extends Record<string, any> {
     /**
      * The response
      */
@@ -55,10 +55,6 @@ export interface Context {
      * Request HTTP version
      */
     readonly httpVersion: string;
-    /**
-     * For extensible only
-     */
-    [name: string]: any;
 }
 /**
  * A route handler
@@ -73,7 +69,7 @@ export interface Handler {
  * A middleware
  */
 export interface Middleware {
-    readonly invoke: (ctx: Context) => object | void;
+    readonly invoke: (ctx: Context) => Promise<void>;
 }
 export default class Server {
     private server;
