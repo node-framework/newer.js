@@ -87,8 +87,12 @@ export interface Context extends Record<string, any> {
     /**
      * Server address
      */
-    readonly address: string;}
-
+    readonly address: string;
+    /**
+     * Server origin
+     */
+    readonly origin: string;
+}
 
 /**
  * A route handler
@@ -239,6 +243,9 @@ export default class Server {
 
                 // Server address
                 address: req.socket.remoteAddress,
+
+                // Server origin
+                origin: req.headers.origin
             };
 
             // Invoke middlewares
@@ -270,7 +277,7 @@ export default class Server {
             const target = this.routes[req.url];
 
             // Check whether this route has been registered
-            if (target && target[req.method] && c.host === c.address)
+            if (target && target[req.method] && c.host === c.origin)
                 // Invoke route
                 await target[req.method](c);
 

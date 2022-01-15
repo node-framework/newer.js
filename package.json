@@ -1,6 +1,6 @@
 {
   "name": "newer.js",
-  "version": "0.0.4-alpha.1",
+  "version": "0.0.4-alpha.2",
   "description": "A lightweight framework",
   "main": "lib/main.js",
   "directories": {

@@ -67,6 +67,10 @@ export interface Context extends Record<string, any> {
      * Server address
      */
     readonly address: string;
+    /**
+     * Server origin
+     */
+    readonly origin: string;
 }
 /**
  * A route handler
