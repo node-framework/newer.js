@@ -1,79 +1,51 @@
-# Newer.js
+# Get started with Newer.js
 
-- Async server is a lightweight Express-like framework
-- Build with native Node.js HTTP
+Start develop a web app with Newer.js!
 
-## Getting started
+## Installation
 
-- To create a server, use:
+|        NPM       |         Yarn        |
+|:----------------:|:-------------------:|
+| `npm i newer.js` | `yarn add newer.js` |
 
-```javascript
-import { Server } from "newer.js";
+## Creating a simple page
 
-const app = new Server();
-```
-
-- Next, we will register a route called `/index` and write out "Hello World"
+Create a file named `index.mjs` and insert the following code:
 
 ```javascript
+// Import server from NewerJS
 import { Server } from "newer.js";
 
+// Creating a new server
 const app = new Server();
 
-class IndexPage {
-    async GET(ctx) {
-        ctx.response = "Hello world";
+// Handle request to "/" route
+app.route("/", {
+    // Handle GET request
+    GET: async ctx => {
+        ctx.response += "Hello world";
     }
-}
+});
 
-// Register the route
-app.route("/index", new IndexPage());
+// Listen to port 8080
+await app.listen(8080);
 ```
 
-- Finally listen to localhost and port 80
+Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080)
 
-```javascript
-import { NodeServer } from "newer.js";
+### Context object
 
-const app = new Server();
-
-class IndexPage {
-    async GET(ctx) {
-        ctx.response = "Hello world";
-    }
-}
-
-// Register the route
-app.route("/index", new IndexPage());
-
-// Port default to 8080, host default to localhost, backlog default to 0
-await app.listen(80);
-```
-
-- Go to http://localhost:8080/index and you should see the text "Hello World"
-- Async server supports chaining so the code above can be shorten:
-
-```javascript
-import { Server } from "newer.js";
-
-// Create the server
-await new Server()
-  // Register the route
-  .route("/index", new class IndexPage {
-        async GET(ctx) {
-            ctx.response = "Hello world";
-        }
-  })
-  // Start the server
-  .listen(80);
-```
-
-### Context
-
-- `ctx.query`: Get query of current request
-- `ctx.body`: Get body of current request
-- `ctx.url`: Get URL of current request
+- `ctx.response`: The response to the client
+- `ctx.query`: Get query of current request. This field is read-only
+- `ctx.body`: Get body of current request. This field is read-only
+- `ctx.url`: Get URL of current request. This field is read-only
 - `ctx.statusCode`: To get or set the status code (if `ctx.statusCode` is not set it will return `undefined`)
+- `ctx.writeFile(path: string)`: Append content of a file to the response
+- `ctx.header(name: string, value?: string | number | readonly string[])`: Getor set a single header
+- `ctx.headers(headers?: { [name: string]: string | number | readonly string[] })`: Set headers or get all headers if the argument is a falsy value
+- `ctx.socket`: The request socket. This field is read-only
+- `ctx.method`: The request method. This method is read-only
+- `ctx.httpVersion`: The request HTTP version. This method is read-only
 
 - Examples: https://github.com/node-framework/newer.js-example
 
@@ -123,6 +95,12 @@ await User.clear();
 await db.clear();
 ```
 
-- Important: Don't download Beta or Alpha or Test versions
+## Warnings
 
+- Don't download Beta or Alpha versions. Using them may break your application
+- Don't download old versions. They may have some bugs that are fixed in later versions
+
+## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_large)
+
+

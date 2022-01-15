@@ -8,6 +8,10 @@ export declare type Method = "GET" | "POST" | "PUT" | "DELETE";
  */
 export interface Context extends Record<string, any> {
     /**
+     * End the response manually
+     */
+    responseEnded: boolean;
+    /**
      * The response
      */
     response: string;
@@ -99,6 +103,7 @@ export default class Server {
      */
     static(path: string): this;
     private readFile;
+    private endResponse;
     /**
      * @returns a listener that can be use for http.createServer or https.createServer
      */

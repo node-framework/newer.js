@@ -14,7 +14,7 @@ const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
             body += data;
             if (body.length > 1e7) {
                 req.socket.destroy();
-                rej();
+                rej("Request data to long");
             }
         });
         req.on('end', () => res(qs.parse(body)));
@@ -30,6 +30,10 @@ const getQuery = (url: string) =>
  * Context of a request
  */
 export interface Context extends Record<string, any> {
+    /**
+     * End the response manually
+     */
+    responseEnded: boolean;
     /**
      * The response
      */
@@ -133,7 +137,7 @@ export default class Server {
     middleware(m: Middleware) {
         this.mds.push(m);
         return this;
-    }   
+    }
 
     /** 
      * @param path the static path
@@ -153,6 +157,20 @@ export default class Server {
         }
     }
 
+    // End the response
+    private endResponse(ctx: Context, res: http.ServerResponse) {
+        // Check whether content and status code is set
+        if (!ctx.response && !ctx.statusCode)
+            // Set status code to 404 or 204
+            ctx.statusCode = ctx.response === null ? 404 : 204;
+
+        // Write status code 
+        res.writeHead(ctx.statusCode ?? 200);
+
+        // End the response
+        res.end(ctx.response);
+    }
+
     /**
      * @returns a listener that can be use for http.createServer or https.createServer
      */
@@ -160,6 +178,9 @@ export default class Server {
         return async (req: http.IncomingMessage, res: http.ServerResponse) => {
             // The context
             const c: Context = {
+                // End the response manually
+                responseEnded: false,
+
                 // Default status code
                 statusCode: undefined,
 
@@ -207,8 +228,14 @@ export default class Server {
             };
 
             // Invoke middlewares
-            for (let md of this.mds) 
-                md.invoke(c);
+            for (let md of this.mds) {
+                await md.invoke(c);
+                // Check whether response ended
+                if (c.responseEnded) {
+                    this.endResponse(c, res);
+                    return;
+                }
+            }
 
             // Favicon
             if (req.url === "/favicon.ico") {
@@ -221,12 +248,18 @@ export default class Server {
             }
 
             // Get the route
-            let target = this.routes[req.url];
+            const target = this.routes[req.url];
 
             // Check whether this route has been registered
-            if (target && target[req.method]) 
+            if (target && target[req.method])
                 // Invoke route
                 await target[req.method](c);
+
+            // Check whether response ended
+            if (c.responseEnded) {
+                this.endResponse(c, res);
+                return;
+            }
 
             // Check whether response is not empty
             if (!c.response) {
@@ -242,16 +275,8 @@ export default class Server {
                     c.statusCode = 404;
             }
 
-            // Check whether content and status code is set
-            if (!c.response && !c.statusCode)
-                // Set status code to 404 or 204
-                c.statusCode = c.response === null ? 404 : 204;
-
-            // Write status code if status code not equals 307
-            res.writeHead(c.statusCode ?? 200);
-
             // End the response
-            res.end(c.response);
+            this.endResponse(c, res);
         }
     }
 
