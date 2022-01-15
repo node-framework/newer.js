@@ -80,7 +80,15 @@ export interface Context extends Record<string, any> {
      * Request HTTP version
      */
     readonly httpVersion: string;
-}
+    /**
+     * The current host
+     */
+    readonly host: string;
+    /**
+     * Server address
+     */
+    readonly address: string;}
+
 
 /**
  * A route handler
@@ -224,15 +232,26 @@ export default class Server {
                 method: req.method as Method,
 
                 // HTTP version
-                httpVersion: req.httpVersion
+                httpVersion: req.httpVersion,
+
+                // Current subdomain
+                host: req.headers.host,
+
+                // Server address
+                address: req.socket.remoteAddress,
             };
 
             // Invoke middlewares
             for (let md of this.mds) {
+                // Invoke the middleware with current context
                 await md.invoke(c);
+
                 // Check whether response ended
                 if (c.responseEnded) {
+                    // End the response
                     this.endResponse(c, res);
+
+                    // End the function
                     return;
                 }
             }
@@ -240,18 +259,18 @@ export default class Server {
             // Favicon
             if (req.url === "/favicon.ico") {
                 // Get parent directory
-                let dir = this.staticDir ?? ".";
+                let path = (this.staticDir ?? ".") + req.url;
 
                 // Create favicon if it does not exists
-                if (!fs.existsSync(dir + req.url))
-                    fs.appendFileSync(dir + req.url, "");
+                if (!fs.existsSync(path))
+                    fs.appendFileSync(path, "");
             }
 
             // Get the route
             const target = this.routes[req.url];
 
             // Check whether this route has been registered
-            if (target && target[req.method])
+            if (target && target[req.method] && c.host === c.address)
                 // Invoke route
                 await target[req.method](c);
 

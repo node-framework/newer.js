@@ -59,6 +59,14 @@ export interface Context extends Record<string, any> {
      * Request HTTP version
      */
     readonly httpVersion: string;
+    /**
+     * The current host
+     */
+    readonly host: string;
+    /**
+     * Server address
+     */
+    readonly address: string;
 }
 /**
  * A route handler
