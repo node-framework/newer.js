@@ -87,11 +87,7 @@ export interface Context extends Record<string, any> {
     /**
      * Server address
      */
-    readonly address: string;
-    /**
-     * Server origin
-     */
-    readonly origin: string;
+    readonly remoteAddress: string;
 }
 
 /**
@@ -242,10 +238,7 @@ export default class Server {
                 host: req.headers.host,
 
                 // Server address
-                address: req.socket.remoteAddress,
-
-                // Server origin
-                origin: req.headers.origin
+                remoteAddress: req.socket.remoteAddress,
             };
 
             // Invoke middlewares
@@ -277,7 +270,7 @@ export default class Server {
             const target = this.routes[req.url];
 
             // Check whether this route has been registered
-            if (target && target[req.method] && c.host === c.origin)
+            if (target && target[req.method])
                 // Invoke route
                 await target[req.method](c);
 
@@ -317,7 +310,7 @@ export default class Server {
         return new Promise<Server>(res => {
             this.server = http
                 .createServer(this.callback())
-                .listen(port ?? 8080, host ?? "127.0.0.1", backlog ?? 0, () => res(this));
+                .listen(port ?? 8080, host ?? "localhost", backlog ?? 0, () => res(this));
         });
     }
 
