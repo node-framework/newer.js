@@ -49,6 +49,26 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 
 - Examples: https://github.com/node-framework/newer.js-example
 
+## Not into these type of frameworks?
+
+- `SimpleServer` is the type of server which use Deno-like syntax
+
+- This code below creates a simple "Hello world" server:
+
+```javascript
+import { SimpleServer } from "newer.js";
+
+// Create a new server
+const server = new SimpleServer();
+
+// Listen to port 8080
+server.listen(8080);
+
+for await (const { request, response } of server.requests()) {
+   response.end("Hello world");
+}
+```
+
 ## JsonDB
 
 - JsonDB is a type of local database which data is stored in a local `.json` file.
