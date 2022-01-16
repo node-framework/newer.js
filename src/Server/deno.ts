@@ -1,7 +1,7 @@
 import https from "https";
 import http from "http";
 
-export default class Server {
+export default class SimpleServer {
     readonly server: http.Server | https.Server;
     private done: boolean;
 
