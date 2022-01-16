@@ -13,11 +13,11 @@ Start develop a web app with Newer.js!
 Create a file named `index.mjs` and insert the following code:
 
 ```javascript
-// Import server from NewerJS
-import { Server } from "newer.js";
+// Import from NewerJS
+import NewerJS from "newer.js";
 
 // Creating a new server
-const app = new Server();
+const app = new NewerJS.Server();
 
 // Handle request to "/" route
 app.route("/", {
@@ -56,10 +56,11 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 - This code below creates a simple "Hello world" server:
 
 ```javascript
-import { SimpleServer } from "newer.js";
+// Import from NewerJS
+import NewerJS from "newer.js";
 
 // Create a new server
-const server = new SimpleServer();
+const server = new NewerJS.SimpleServer();
 
 // Listen to port 8080
 server.listen(8080);
@@ -77,10 +78,11 @@ for await (const { request, response } of server.requests()) {
 ### Example
  
 ```javascript
-import { JsonDB } from "newer.js";
+// Import from NewerJS
+import NewerJS from "newer.js";
 
 // Create a database
-const db = new JsonDB("Your json file path");
+const db = new NewerJS.JsonDB("Your json file path");
 
 // Create a schema called user with `name` property typed `string` and `id` property typed `number`
 const User = db.schema("User", {
