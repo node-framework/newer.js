@@ -81,10 +81,6 @@ export interface Context extends Record<string, any> {
      */
     readonly httpVersion: string;
     /**
-     * The current host
-     */
-    readonly host: string;
-    /**
      * Server address
      */
     readonly remoteAddress: string;
@@ -233,9 +229,6 @@ export default class Server {
 
                 // HTTP version
                 httpVersion: req.httpVersion,
-
-                // Current subdomain
-                host: req.headers.host,
 
                 // Server address
                 remoteAddress: req.socket.remoteAddress,

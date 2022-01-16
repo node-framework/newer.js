@@ -1,11 +1,10 @@
 {
   "name": "newer.js",
-  "version": "0.0.4-alpha.3",
+  "version": "0.0.4-beta",
   "description": "A lightweight framework",
   "main": "lib/main.js",
   "directories": {
-    "lib": "lib", 
-    "example": "doc/example"
+    "lib": "lib"
   },
   "keywords": [
     "backend",
