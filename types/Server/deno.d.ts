@@ -23,18 +23,10 @@ export interface SimpleOptions {
      */
     backlog?: number;
 }
-declare const _default: (opts?: SimpleOptions) => {
-    [Symbol.asyncIterator](): {
-        next(): Promise<{
-            done: boolean;
-            value: {
-                request: http.IncomingMessage;
-                response: http.ServerResponse;
-            };
-        }>;
-    };
-    close: () => void;
-};
+declare const _default: (opts?: SimpleOptions) => AsyncGenerator<{
+    request: http.IncomingMessage;
+    response: http.ServerResponse;
+}, never, unknown>;
 /**
  * Create a simple server
  */
