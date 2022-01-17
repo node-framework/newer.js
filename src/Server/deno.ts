@@ -45,12 +45,12 @@ export default (opts: SimpleOptions = {}) =>
                         // Prevent registering too many listeners
                         .on('request',
                             (request, response) => {
-                                server.removeAllListeners("request");
-                                result({ request, response })
+                                server.removeAllListeners();
+                                result({ request, response });
                             }
                         )
                         .on('error', err => {
-                            server.removeAllListeners("error");
+                            server.removeAllListeners();
                             done = true;
                             reject(err);
                         })
