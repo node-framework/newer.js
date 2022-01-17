@@ -60,14 +60,14 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 import NewerJS from "newer.js";
 
 // Create a new server
-const server = new NewerJS.SimpleServer();
+const server = NewerJS.simple({
+    // Listen to port 8080
+    port: 8080    
+});
 
-// Listen to port 8080
-server.listen(8080);
-
-for await (const { request, response } of server.requests()) {
-   response.end("Hello world");
-}
+for await (const { request, response } of server.requests) 
+    // End the response
+    response.end("Hello world");
 ```
 
 ## JsonDB
