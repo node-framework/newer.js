@@ -46,6 +46,7 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 - `ctx.socket`: The request socket. This field is read-only
 - `ctx.method`: The request method. This method is read-only
 - `ctx.httpVersion`: The request HTTP version. This method is read-only
+- `ctx.remoteAddress`: The server IPv4
 
 - Examples: https://github.com/node-framework/newer.js-example
 
