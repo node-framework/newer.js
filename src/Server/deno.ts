@@ -46,27 +46,19 @@ export default class Simple {
      * @returns requests in asynchronous iterator
      */
     get requests() {
-        let pointer = this;
-        return {
-            [Symbol.asyncIterator]() {
-                return {
-                    async next() {
-                        return {
-                            done: pointer.done,
-                            value: await new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
-                                (result, reject) => {
-                                    pointer.server.on('request', (request, response) =>
-                                        result({ request, response })
-                                    );
+        let p = this;
+        return (async function* () {
+            while (!p.done)
+                yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
+                    (result, reject) => {
+                        p.server.on('request', (request, response) =>
+                            result({ request, response })
+                        );
 
-                                    pointer.server.on('error', reject);
-                                }
-                            )
-                        };
+                        p.server.on('error', reject);
                     }
-                }
-            }
-        }
+                )
+        })();
     }
 
     /**

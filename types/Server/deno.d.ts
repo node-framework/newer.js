@@ -37,17 +37,10 @@ export default class Simple {
      *
      * @returns requests in asynchronous iterator
      */
-    get requests(): {
-        [Symbol.asyncIterator](): {
-            next(): Promise<{
-                done: boolean;
-                value: {
-                    request: http.IncomingMessage;
-                    response: http.ServerResponse;
-                };
-            }>;
-        };
-    };
+    get requests(): AsyncGenerator<{
+        request: http.IncomingMessage;
+        response: http.ServerResponse;
+    }, void, unknown>;
     /**
      * Close the server
      *
