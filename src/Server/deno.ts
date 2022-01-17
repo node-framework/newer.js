@@ -43,12 +43,14 @@ export default (opts: SimpleOptions = {}) =>
                     server
                         // Use once instead of on
                         // Prevent registering too many listeners
-                        .once('request',
+                        .on('request',
                             (request, response) => {
+                                server.removeAllListeners("request");
                                 result({ request, response })
                             }
                         )
-                        .once('error', err => {
+                        .on('error', err => {
+                            server.removeAllListeners("error");
                             done = true;
                             reject(err);
                         })
