@@ -8,7 +8,7 @@ declare const _default: {
     JsonDB: typeof JsonDB;
     JsonReviver: typeof JsonReviver;
     Server: typeof Server;
-    simple: (init: {
+    simple: (init?: {
         options?: import("http").ServerOptions | import("https").ServerOptions;
         port?: number;
         hostname?: string;

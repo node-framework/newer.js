@@ -2,7 +2,7 @@
 import https from "https";
 import http from "http";
 export interface Simple {
-    requests: {
+    readonly requests: {
         [Symbol.asyncIterator](): {
             next(): Promise<{
                 done: boolean;
@@ -13,9 +13,9 @@ export interface Simple {
             }>;
         };
     };
-    close: () => void;
+    readonly close: () => void;
 }
-declare const _default: (init: {
+declare const _default: (init?: {
     options?: http.ServerOptions | https.ServerOptions;
     port?: number;
     hostname?: string;

@@ -2,7 +2,7 @@ import https from "https";
 import http from "http";
 
 export interface Simple {
-    requests: {
+    readonly requests: {
         [Symbol.asyncIterator](): {
             next(): Promise<{
                 done: boolean;
@@ -14,7 +14,7 @@ export interface Simple {
         };
     },
 
-    close: () => void;
+    readonly close: () => void;
 }
 
 class SimpleServer {
@@ -89,12 +89,12 @@ export default (init: {
     hostname?: string, 
     backlog?: number,
     httpsMode?: boolean
-}): Simple => {
+} = {}): Simple => {
     const { options, httpsMode, port, hostname, backlog } = init;
     const server = new SimpleServer(options, httpsMode);
-    server.listen(port, hostname, backlog);
+    server.listen(port ?? 80, hostname ?? "localhost", backlog ?? 0);
     return {
         requests: server.requests(),
-        close: () => server.close(),
+        close: () => { server.close(); },
     };
 }
