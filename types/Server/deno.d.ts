@@ -1,8 +1,43 @@
 /// <reference types="node" />
 import https from "https";
 import http from "http";
-export interface Simple {
-    readonly requests: {
+export interface SimpleOptions {
+    /**
+     * Server options
+     */
+    options?: http.ServerOptions | https.ServerOptions;
+    /**
+     * Toggle HTTPS mode
+     */
+    httpsMode?: boolean;
+    /**
+     * Target port
+     */
+    port?: number;
+    /**
+     * Target hostname
+     */
+    hostname?: string;
+    /**
+     * Backlog
+     */
+    backlog?: number;
+}
+export default class Simple {
+    private server;
+    private done;
+    /**
+     * Create and start a server
+     *
+     * @param opts server options
+     */
+    constructor(opts: SimpleOptions);
+    /**
+     * Get requests in asynchronous iterator
+     *
+     * @returns requests in asynchronous iterator
+     */
+    get requests(): {
         [Symbol.asyncIterator](): {
             next(): Promise<{
                 done: boolean;
@@ -13,13 +48,10 @@ export interface Simple {
             }>;
         };
     };
-    readonly close: () => void;
+    /**
+     * Close the server
+     *
+     * @returns this object
+     */
+    close(): this;
 }
-declare const _default: (init?: {
-    options?: http.ServerOptions | https.ServerOptions;
-    port?: number;
-    hostname?: string;
-    backlog?: number;
-    httpsMode?: boolean;
-}) => Simple;
-export default _default;
