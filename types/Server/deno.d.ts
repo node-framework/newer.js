@@ -31,10 +31,10 @@ export interface SimpleOptions {
      */
     backlog?: number;
 }
-declare const _default: (opts?: SimpleOptions) => Promise<AsyncGenerator<{
+declare const _default: (opts?: SimpleOptions) => AsyncGenerator<{
     request: http.IncomingMessage;
     response: http.ServerResponse;
-}, void, unknown>>;
+}, void, unknown>;
 /**
  * Create a simple server
  */

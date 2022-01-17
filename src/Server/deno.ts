@@ -83,7 +83,4 @@ class Simple {
 /**
  * Create a simple server
  */
-export default async (opts?: SimpleOptions) => {
-    const server = new Simple(opts);
-    return server.requests;
-}
+export default (opts?: SimpleOptions) => new Simple(opts).requests;
