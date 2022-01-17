@@ -29,6 +29,7 @@ export interface SimpleOptions {
  */
 export default (opts: SimpleOptions = {}) =>
     (async function* () {
+        let done = false;
         const server = (opts.httpsMode ? https : http)
             .createServer(opts.options)
             .listen(
@@ -36,21 +37,21 @@ export default (opts: SimpleOptions = {}) =>
                 opts.hostname ?? "localhost",
                 opts.backlog ?? 0
             );
-        while (true)
+        while (!done)
             yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
-                (result, reject) => {
+                (result, reject) => 
                     server
-                        .on('request',
+                        // Use once instead of on
+                        // Prevent registering too many listeners
+                        .once('request',
                             (request, response) => {
-                                server.removeAllListeners();
                                 result({ request, response })
                             }
                         )
-                        .on('error', err => {
-                            server.removeAllListeners();
+                        .once('error', err => {
+                            done = true;
                             reject(err);
                         })
-                }
             );
     })();
 

@@ -26,7 +26,7 @@ export interface SimpleOptions {
 declare const _default: (opts?: SimpleOptions) => AsyncGenerator<{
     request: http.IncomingMessage;
     response: http.ServerResponse;
-}, never, unknown>;
+}, void, unknown>;
 /**
  * Create a simple server
  */
