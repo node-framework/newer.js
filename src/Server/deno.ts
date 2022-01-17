@@ -1,15 +1,6 @@
 import https from "https";
 import http from "http";
 
-declare global {
-    interface AsyncGenerator {
-        /**
-         * Close the server
-         */
-        close(): void;
-    }
-}
-
 export interface SimpleOptions {
     /**
      * Server options
@@ -54,24 +45,27 @@ class Simple {
      * 
      * @returns requests in asynchronous iterator
      */
-    get requests(): AsyncGenerator<{
-        request: http.IncomingMessage;
-        response: http.ServerResponse;
-    }, void, unknown> {
+    get requests() {
         let p = this;
         return {
-            ...(async function* () {
-                while (!p.done)
-                    yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
-                        (result, reject) => {
-                            p.server.on('request', (request, response) =>
-                                result({ request, response })
-                            );
-
-                            p.server.on('error', reject);
+            [Symbol.asyncIterator]() {
+                return {
+                    async next() {
+                        return {
+                            done: p.done,
+                            value: await new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
+                                (result, reject) => {
+                                    p.server.on('request', (request, response) =>
+                                        result({ request, response })
+                                    );
+        
+                                    p.server.on('error', reject);
+                                }
+                            )
                         }
-                    )
-            })(),
+                    }
+                }
+            },
             close: () => {
                 this.server.close();
                 this.done = true;

@@ -1,14 +1,6 @@
 /// <reference types="node" />
 import https from "https";
 import http from "http";
-declare global {
-    interface AsyncGenerator {
-        /**
-         * Close the server
-         */
-        close(): void;
-    }
-}
 export interface SimpleOptions {
     /**
      * Server options
@@ -31,10 +23,18 @@ export interface SimpleOptions {
      */
     backlog?: number;
 }
-declare const _default: (opts?: SimpleOptions) => AsyncGenerator<{
-    request: http.IncomingMessage;
-    response: http.ServerResponse;
-}, void, unknown>;
+declare const _default: (opts?: SimpleOptions) => {
+    [Symbol.asyncIterator](): {
+        next(): Promise<{
+            done: boolean;
+            value: {
+                request: http.IncomingMessage;
+                response: http.ServerResponse;
+            };
+        }>;
+    };
+    close: () => void;
+};
 /**
  * Create a simple server
  */
