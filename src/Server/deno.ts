@@ -27,7 +27,7 @@ export interface SimpleOptions {
 /**
  * Create a simple server
  */
-export default (opts?: SimpleOptions) => {
+export default (opts: SimpleOptions = {}) => {
     const server = (opts.httpsMode ? https : http)
         .createServer(opts.options)
         .listen(opts.port ?? 80, opts.hostname ?? "localhost", opts.backlog ?? 0);
