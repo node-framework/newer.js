@@ -41,11 +41,15 @@ export default (opts: SimpleOptions = {}) =>
                 (result, reject) => {
                     server
                         .on('request',
-                            (request, response) =>
+                            (request, response) => {
+                                server.removeAllListeners();
                                 result({ request, response })
+                            }
                         )
-                        .on('error', reject)
-                        .removeAllListeners();
+                        .on('error', err => {
+                            server.removeAllListeners();
+                            reject(err);
+                        })
                 }
             );
     })();
