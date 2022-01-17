@@ -3,7 +3,7 @@ import JsonReviver from "./Database/JsonReviver";
 import Server, { Context, Handler, Middleware, Method } from "./Server/server";  
 import Simple, { SimpleOptions } from "./Server/deno";
  
-export default { 
+export { 
     JsonDB, 
     JsonReviver, 
     Server, 

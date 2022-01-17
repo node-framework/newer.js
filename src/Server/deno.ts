@@ -33,7 +33,7 @@ export default class Simple {
      * 
      * @param opts server options
      */
-    constructor(opts: SimpleOptions) {
+    constructor(opts: SimpleOptions = {}) {
         this.server = (opts.httpsMode ? https : http)
             .createServer(opts.options)
             .listen(opts.port, opts.hostname, opts.backlog);

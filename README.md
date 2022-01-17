@@ -14,10 +14,10 @@ Create a file named `index.mjs` and insert the following code:
 
 ```javascript
 // Import from NewerJS
-import NewerJS from "newer.js";
+import { Server } from "newer.js";
 
 // Creating a new server
-const app = new NewerJS.Server();
+const app = new Server();
 
 // Handle request to "/" route
 app.route("/", {
@@ -57,10 +57,10 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 
 ```javascript
 // Import from NewerJS
-import NewerJS from "newer.js";
+import { Simple } from "newer.js";
 
 // Create a new server
-const server = NewerJS.simple({
+const server = new Simple({
     // Listen to port 8080
     port: 8080    
 });
@@ -79,10 +79,10 @@ for await (const { request, response } of server.requests)
  
 ```javascript
 // Import from NewerJS
-import NewerJS from "newer.js";
+import { JsonDB } from "newer.js";
 
 // Create a database
-const db = new NewerJS.JsonDB("Your json file path");
+const db = new JsonDB("Your json file path");
 
 // Create a schema called user with `name` property typed `string` and `id` property typed `number`
 const User = db.schema("User", {

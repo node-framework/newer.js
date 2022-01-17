@@ -31,7 +31,7 @@ export default class Simple {
      *
      * @param opts server options
      */
-    constructor(opts: SimpleOptions);
+    constructor(opts?: SimpleOptions);
     /**
      * Get requests in asynchronous iterator
      *
