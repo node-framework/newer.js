@@ -27,19 +27,24 @@ export interface SimpleOptions {
 /**
  * Create a simple server
  */
-export default (opts: SimpleOptions = {}) => {
-    const server = (opts.httpsMode ? https : http)
-        .createServer(opts.options)
-        .listen(opts.port ?? 80, opts.hostname ?? "localhost", opts.backlog ?? 0);
-    return (async function* () {
+export default (opts: SimpleOptions = {}) =>
+    (async function* () {
         while (true)
             yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
                 (result, reject) => {
-                    server.on('request', (request, response) =>
-                        result({ request, response })
-                    );
-                    server.on('error', reject);
+                    (opts.httpsMode ? https : http)
+                        .createServer(opts.options)
+                        .listen(
+                            opts.port ?? 80, 
+                            opts.hostname ?? "localhost", 
+                            opts.backlog ?? 0
+                        )
+                        .on('request', 
+                            (request, response) => 
+                                result({ request, response })
+                        )
+                        .on('error', reject);
                 }
             );
     })();
-};
+
