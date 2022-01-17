@@ -44,7 +44,8 @@ export default (opts: SimpleOptions = {}) =>
                             (request, response) =>
                                 result({ request, response })
                         )
-                        .on('error', reject);
+                        .on('error', reject)
+                        .removeAllListeners();
                 }
             );
     })();
