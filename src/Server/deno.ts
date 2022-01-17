@@ -46,6 +46,7 @@ class Simple {
     constructor(opts: SimpleOptions = {}) {
         this.server = (opts.httpsMode ? https : http)
             .createServer(opts.options);
+        this.opts = opts;
     }
 
     /**
