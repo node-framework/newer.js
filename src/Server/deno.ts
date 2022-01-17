@@ -36,7 +36,6 @@ export interface SimpleOptions {
 class Simple {
     private server: http.Server | https.Server;
     private done: boolean;
-    private opts: SimpleOptions;
 
     /**
      * Create and start a server
@@ -45,15 +44,8 @@ class Simple {
      */
     constructor(opts: SimpleOptions = {}) {
         this.server = (opts.httpsMode ? https : http)
-            .createServer(opts.options);
-        this.opts = opts;
-    }
-
-    /**
-     * Start the server
-     */
-    async ready() {
-        this.server.listen(this.opts.port ?? 80, this.opts.hostname ?? "localhost", this.opts.backlog ?? 0);
+            .createServer(opts.options)
+            .listen(opts.port ?? 80, opts.hostname ?? "localhost", opts.backlog ?? 0);
         this.done = false;
     }
 
@@ -93,6 +85,5 @@ class Simple {
  */
 export default async (opts?: SimpleOptions) => {
     const server = new Simple(opts);
-    await server.ready();
     return server.requests;
 }
