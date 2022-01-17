@@ -60,12 +60,12 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 import { Simple } from "newer.js";
 
 // Create a new server
-const server = await new Simple({
+const server = await simple({
     // Listen to port 8080
     port: 8080    
 });
 
-for await (const { request, response } of server.requests) 
+for await (const { request, response } of server) 
     // End the response
     response.end("Hello world");
 ```

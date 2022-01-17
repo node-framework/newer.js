@@ -1,6 +1,15 @@
 import https from "https";
 import http from "http";
 
+declare global {
+    interface AsyncGenerator {
+        /**
+         * Close the server
+         */
+        close(): void;
+    }
+}
+
 export interface SimpleOptions {
     /**
      * Server options
@@ -24,9 +33,10 @@ export interface SimpleOptions {
     backlog?: number
 }
 
-export default class Simple {
+class Simple {
     private server: http.Server | https.Server;
     private done: boolean;
+    private opts: SimpleOptions;
 
     /**
      * Create and start a server
@@ -35,8 +45,14 @@ export default class Simple {
      */
     constructor(opts: SimpleOptions = {}) {
         this.server = (opts.httpsMode ? https : http)
-            .createServer(opts.options)
-            .listen(opts.port ?? 80, opts.hostname ?? "localhost", opts.backlog ?? 0);
+            .createServer(opts.options);
+    }
+
+    /**
+     * Start the server
+     */
+    async ready() {
+        this.server.listen(this.opts.port ?? 80, this.opts.hostname ?? "localhost", this.opts.backlog ?? 0);
         this.done = false;
     }
 
@@ -45,30 +61,37 @@ export default class Simple {
      * 
      * @returns requests in asynchronous iterator
      */
-    get requests() {
+    get requests(): AsyncGenerator<{
+        request: http.IncomingMessage;
+        response: http.ServerResponse;
+    }, void, unknown> {
         let p = this;
-        return (async function* () {
-            while (!p.done)
-                yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
-                    (result, reject) => {
-                        p.server.on('request', (request, response) =>
-                            result({ request, response })
-                        );
+        return {
+            ...(async function* () {
+                while (!p.done)
+                    yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
+                        (result, reject) => {
+                            p.server.on('request', (request, response) =>
+                                result({ request, response })
+                            );
 
-                        p.server.on('error', reject);
-                    }
-                )
-        })();
+                            p.server.on('error', reject);
+                        }
+                    )
+            })(),
+            close: () => {
+                this.server.close();
+                this.done = true;
+            }
+        };
     }
+}
 
-    /**
-     * Close the server
-     * 
-     * @returns this object
-     */
-    close() {
-        this.server.close();
-        this.done = true;
-        return this;
-    }
+/**
+ * Create a simple server
+ */
+export default async (opts?: SimpleOptions) => {
+    const server = new Simple(opts);
+    await server.ready();
+    return server.requests;
 }
