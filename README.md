@@ -52,13 +52,17 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 
 ## Not into these type of frameworks?
 
-- `SimpleServer` is the type of server which use Deno-like syntax
+- `simple` is the type of server which use Deno-like syntax
+- `simple` is created with only 58 lines of codes (without comments)
+- Speed comparison (10 tests): 
+    + https://github.com/node-framework/newer.js/blob/main/tests/simple.mjs: `simple`
+    + https://github.com/node-framework/newer.js/blob/main/tests/native.mjs: Node.js HTTP
 
 - This code below creates a simple "Hello world" server:
 
 ```javascript
 // Import from NewerJS
-import { Simple } from "newer.js";
+import { simple } from "newer.js";
 
 // Create a new server
 const server = simple({
@@ -121,7 +125,6 @@ await db.clear();
 ## Warnings
 
 - Don't download Beta or Alpha versions. Using them may break your application
-- Don't download old versions. They may have some bugs that are fixed in later versions
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_large)
