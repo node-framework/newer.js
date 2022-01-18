@@ -35,32 +35,24 @@ export default async function* (opts: SimpleOptions = {}) {
             opts.port ?? 80,
             opts.hostname ?? "localhost",
             opts.backlog ?? 0
-        ),
-        getRequestListener =
-            (result: (value: {
-                request: http.IncomingMessage;
-                response: http.ServerResponse;
-            }) => void) => (
-                (request: http.IncomingMessage, response: http.ServerResponse) =>
-                    result({ request, response })
-            ),
-        getErrorListener =
-            (reject: (reason?: any) => void) => (
-                (err: any) => {
-                    done = true;
-                    reject(err);
-                }
-            );
+        )
+        .setMaxListeners(1);
     while (!done)
         yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
             (result, reject) => {
                 server
-                    // Prevent registering too many listeners
-                    .removeListener('request', getRequestListener(result))
-                    .removeListener('error', getErrorListener(reject))
+                    // Prevent adding so many listener
+                    .removeAllListeners('request')
+                    .removeAllListeners('error')
                     // Register event listeners
-                    .on('request', getRequestListener(result))
-                    .on('error', getErrorListener(reject));
+                    .on('request',
+                        (request: http.IncomingMessage, response: http.ServerResponse) =>
+                            result({ request, response })
+                    )
+                    .on('error', (err: any) => {
+                        done = true;
+                        reject(err);
+                    });
             }
         );
 };
