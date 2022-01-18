@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import http from "http";
+import https from "https";
 import qs from "query-string";
 import { Socket } from "net";
 export declare type Method = "GET" | "POST" | "PUT" | "DELETE";
@@ -80,14 +81,15 @@ export interface Middleware {
     readonly invoke: (ctx: Context) => Promise<void>;
 }
 export default class Server {
-    private server;
     private staticDir;
     private routes;
     private mds;
+    private options;
+    private httpsMode;
     /**
      * The constructor
      */
-    constructor();
+    constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean);
     /**
      * Register a route
      * @param routeName the route name
@@ -109,20 +111,10 @@ export default class Server {
     private readFile;
     private endResponse;
     /**
-     * @returns a listener that can be use for http.createServer or https.createServer
-     */
-    callback(): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
-    /**
      * Start the server
      * @param port the port to listen to
-     * @param host the hostname to listen to
+     * @param hostname the hostname to listen to
      * @param backlog the backlog
-     * @returns this server for chaining
      */
-    listen(port?: number, host?: string, backlog?: number): Promise<Server>;
-    /**
-     * Close the server
-     * @returns this server for chaining
-     */
-    close(): Promise<Server>;
+    listen(port?: number, hostname?: string, backlog?: number): Promise<void>;
 }

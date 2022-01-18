@@ -1,7 +1,9 @@
 import http from "http";
+import https from "https";
 import qs from "query-string";
 import fs from "fs";
 import { Socket } from "net";
+import simple from "./deno";
 
 // Request methods
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
@@ -104,8 +106,6 @@ export interface Middleware {
 }
 
 export default class Server {
-    private server: http.Server;
-
     private staticDir: string;
 
     private routes: {
@@ -114,10 +114,16 @@ export default class Server {
 
     private mds: Middleware[];
 
+    private options: http.ServerOptions | https.ServerOptions;
+
+    private httpsMode: boolean;
+
     /**
      * The constructor
      */
-    constructor() {
+    constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean) {
+        this.options = options;
+        this.httpsMode = httpsMode;
         this.routes = {};
         this.mds = [];
     }
@@ -176,10 +182,19 @@ export default class Server {
     }
 
     /**
-     * @returns a listener that can be use for http.createServer or https.createServer
+     * Start the server
+     * @param port the port to listen to
+     * @param hostname the hostname to listen to
+     * @param backlog the backlog
      */
-    callback() {
-        return async (req: http.IncomingMessage, res: http.ServerResponse) => {
+    async listen(port?: number, hostname?: string, backlog?: number) {
+        for await (const { request: req, response: res } of simple({
+            port, 
+            hostname, 
+            backlog, 
+            httpsMode: this.httpsMode,
+            options: this.options
+        })) {
             // The context
             const c: Context = {
                 // End the response manually
@@ -290,30 +305,5 @@ export default class Server {
             // End the response
             this.endResponse(c, res);
         }
-    }
-
-    /**
-     * Start the server
-     * @param port the port to listen to
-     * @param host the hostname to listen to
-     * @param backlog the backlog
-     * @returns this server for chaining
-     */
-    async listen(port?: number, host?: string, backlog?: number) {
-        return new Promise<Server>(res => {
-            this.server = http
-                .createServer(this.callback())
-                .listen(port ?? 8080, host ?? "localhost", backlog ?? 0, () => res(this));
-        });
-    }
-
-    /**
-     * Close the server
-     * @returns this server for chaining
-     */
-    async close() {
-        return new Promise<Server>((res, rej) => {
-            this.server.close(err => err ? rej(err) : res(this));
-        });
     }
 }

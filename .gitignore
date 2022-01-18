@@ -5,3 +5,4 @@ package-lock.json
 tsconfig.json
 bin 
 test  
+jsconfig.json
