@@ -23,11 +23,10 @@ export interface SimpleOptions {
      */
     backlog?: number;
 }
-declare const _default: (opts?: SimpleOptions) => AsyncGenerator<{
-    request: http.IncomingMessage;
-    response: http.ServerResponse;
-}, void, unknown>;
 /**
  * Create a simple server
  */
-export default _default;
+export default function (opts?: SimpleOptions): AsyncGenerator<{
+    request: http.IncomingMessage;
+    response: http.ServerResponse;
+}, void, unknown>;

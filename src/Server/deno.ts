@@ -27,33 +27,41 @@ export interface SimpleOptions {
 /**
  * Create a simple server
  */
-export default (opts: SimpleOptions = {}) =>
-    (async function* () {
-        let done = false;
-        const server = (opts.httpsMode ? https : http)
-            .createServer(opts.options)
-            .listen(
-                opts.port ?? 80,
-                opts.hostname ?? "localhost",
-                opts.backlog ?? 0
+export default async function* (opts: SimpleOptions = {}) {
+    let done = false;
+    const server = (opts.httpsMode ? https : http)
+        .createServer(opts.options)
+        .listen(
+            opts.port ?? 80,
+            opts.hostname ?? "localhost",
+            opts.backlog ?? 0
+        ),
+        getRequestListener =
+            (result: (value: {
+                request: http.IncomingMessage;
+                response: http.ServerResponse;
+            }) => void) => (
+                (request: http.IncomingMessage, response: http.ServerResponse) =>
+                    result({ request, response })
+            ),
+        getErrorListener =
+            (reject: (reason?: any) => void) => (
+                (err: any) => {
+                    done = true;
+                    reject(err);
+                }
             );
-        while (!done)
-            yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
-                (result, reject) => 
-                    server
-                        // Use once instead of on
-                        // Prevent registering too many listeners
-                        .on('request',
-                            (request, response) => {
-                                server.removeAllListeners();
-                                result({ request, response });
-                            }
-                        )
-                        .on('error', err => {
-                            server.removeAllListeners();
-                            done = true;
-                            reject(err);
-                        })
-            );
-    })();
+    while (!done)
+        yield new Promise<{ request: http.IncomingMessage, response: http.ServerResponse }>(
+            (result, reject) => {
+                server
+                    // Prevent registering too many listeners
+                    .removeListener('request', getRequestListener(result))
+                    .removeListener('error', getErrorListener(reject))
+                    // Register event listeners
+                    .on('request', getRequestListener(result))
+                    .on('error', getErrorListener(reject));
+            }
+        );
+};
 
