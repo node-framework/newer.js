@@ -15,6 +15,6 @@ for await (const { request, response } of server) {
     response.end(request.url);
 }
 
-// 0.5 is the average speed
+// 0.5ms is the average speed
 // 0.237ms is the fastest speed 
 // 1.016ms is the slowest speed
