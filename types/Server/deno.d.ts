@@ -1,6 +1,9 @@
 /// <reference types="node" />
 import https from "https";
 import http from "http";
+/**
+ * Server options
+ */
 export interface SimpleOptions {
     /**
      * Server options
@@ -27,6 +30,12 @@ export interface SimpleOptions {
  * Create a simple server
  */
 export default function (opts?: SimpleOptions): AsyncGenerator<{
+    /**
+     * The requests
+     */
     request: http.IncomingMessage;
+    /**
+     * The response
+     */
     response: http.ServerResponse;
 }, void, unknown>;
