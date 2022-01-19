@@ -1,6 +1,6 @@
 {
   "name": "newer.js",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A lightweight framework",
   "main": "lib/main.js",
   "directories": {
@@ -11,7 +11,8 @@
     "framework", 
     "lightweight",
     "express-like",
-    "database"
+    "database",
+    "fast"
   ],
   "author": "reve-node",
   "license": "MIT",
