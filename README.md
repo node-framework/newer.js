@@ -58,19 +58,14 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
     + https://github.com/node-framework/newer.js/blob/main/tests/simple.mjs: `simple`
     + https://github.com/node-framework/newer.js/blob/main/tests/native.mjs: Node.js HTTP
 
-- This code below creates a simple "Hello world" server:
+- This code below creates a simple "Hello world" server on [localhost](http://localhost):
 
 ```javascript
 // Import from NewerJS
 import { simple } from "newer.js";
 
-// Create a new server
-const server = simple({
-    // Listen to port 8080
-    port: 8080    
-});
-
-for await (const { request, response } of server) 
+// Create a new server and handle each requests
+for await (const { request, response } of simple()) 
     // End the response
     response.end("Hello world");
 ```

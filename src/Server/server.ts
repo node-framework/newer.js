@@ -3,7 +3,7 @@ import https from "https";
 import qs from "query-string";
 import fs from "fs";
 import { Socket } from "net";
-import simple from "./deno";
+import simple from "./simple";
 
 // Request methods
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
@@ -61,15 +61,15 @@ export interface Context extends Record<string, any> {
     /**
      * Append a file content to response
      */
-    readonly writeFile: (path: string) => void;
+    writeFile(path: string): void;
     /**
      * Get or set response headers
      */
-    readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
+    header(name?: string, value?: string | number | readonly string[]): void | string | number | string[];
     /**
      * Set multiple headers or get request headers
      */
-    readonly headers: (headers?: { [name: string]: string | number | readonly string[] }) => void | http.IncomingHttpHeaders;
+    headers(headers?: { [name: string]: string | number | readonly string[] }): void | http.IncomingHttpHeaders;
     /**
      * Request socket
      */
@@ -83,7 +83,7 @@ export interface Context extends Record<string, any> {
      */
     readonly httpVersion: string;
     /**
-     * Server address
+     * Server IPv4 address
      */
     readonly remoteAddress: string;
 }
@@ -92,17 +92,17 @@ export interface Context extends Record<string, any> {
  * A route handler
  */
 export interface Handler {
-    GET?: (ctx: Context) => Promise<void>,
-    POST?: (ctx: Context) => Promise<void>,
-    PUT?: (ctx: Context) => Promise<void>,
-    DELETE?: (ctx: Context) => Promise<void>,
+    GET?(ctx: Context): Promise<void>,
+    POST?(ctx: Context): Promise<void>,
+    PUT?(ctx: Context): Promise<void>,
+    DELETE?(ctx: Context): Promise<void>,
 }
 
 /**
  * A middleware
  */
 export interface Middleware {
-    readonly invoke: (ctx: Context) => Promise<void>;
+    invoke(ctx: Context): Promise<void>;
 }
 
 export default class Server {
@@ -189,10 +189,11 @@ export default class Server {
      */
     async listen(port?: number, hostname?: string, backlog?: number) {
         for await (const { request: req, response: res } of simple({
-            port, 
-            hostname, 
-            backlog, 
-            options: this.options
+            port,
+            hostname,
+            backlog,
+            options: this.options,
+            httpsMode: this.httpsMode
         })) {
             // The context
             const c: Context = {
@@ -200,7 +201,7 @@ export default class Server {
                 responseEnded: false,
 
                 // Default status code
-                statusCode: undefined,
+                statusCode: req.statusCode,
 
                 // The response, default to empty
                 response: "",
@@ -244,8 +245,8 @@ export default class Server {
                 // HTTP version
                 httpVersion: req.httpVersion,
 
-                // Server address
-                remoteAddress: req.socket.remoteAddress,
+                // Server IPv4 address
+                remoteAddress: req.socket.remoteAddress
             };
 
             // Invoke middlewares

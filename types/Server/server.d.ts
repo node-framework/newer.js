@@ -37,17 +37,17 @@ export interface Context extends Record<string, any> {
     /**
      * Append a file content to response
      */
-    readonly writeFile: (path: string) => void;
+    writeFile(path: string): void;
     /**
      * Get or set response headers
      */
-    readonly header: (name?: string, value?: string | number | readonly string[]) => void | string | number | string[];
+    header(name?: string, value?: string | number | readonly string[]): void | string | number | string[];
     /**
      * Set multiple headers or get request headers
      */
-    readonly headers: (headers?: {
+    headers(headers?: {
         [name: string]: string | number | readonly string[];
-    }) => void | http.IncomingHttpHeaders;
+    }): void | http.IncomingHttpHeaders;
     /**
      * Request socket
      */
@@ -61,7 +61,7 @@ export interface Context extends Record<string, any> {
      */
     readonly httpVersion: string;
     /**
-     * Server address
+     * Server IPv4 address
      */
     readonly remoteAddress: string;
 }
@@ -69,16 +69,16 @@ export interface Context extends Record<string, any> {
  * A route handler
  */
 export interface Handler {
-    GET?: (ctx: Context) => Promise<void>;
-    POST?: (ctx: Context) => Promise<void>;
-    PUT?: (ctx: Context) => Promise<void>;
-    DELETE?: (ctx: Context) => Promise<void>;
+    GET?(ctx: Context): Promise<void>;
+    POST?(ctx: Context): Promise<void>;
+    PUT?(ctx: Context): Promise<void>;
+    DELETE?(ctx: Context): Promise<void>;
 }
 /**
  * A middleware
  */
 export interface Middleware {
-    readonly invoke: (ctx: Context) => Promise<void>;
+    invoke(ctx: Context): Promise<void>;
 }
 export default class Server {
     private staticDir;

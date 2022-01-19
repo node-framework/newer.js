@@ -30,7 +30,9 @@ export interface SimpleOptions {
 /**
  * Create a simple server
  */
-export default async function* (opts: SimpleOptions = {}) {
+export default async function* simple(opts: SimpleOptions = {}) {
+    let done = false;
+
     // The server
     const server =
         // Check HTTPS mode
@@ -47,7 +49,7 @@ export default async function* (opts: SimpleOptions = {}) {
             );
 
     // Handle each requests using yield
-    while (true) {
+    while (!done)
         // Get requests
         yield new Promise<{
             /**
@@ -63,13 +65,14 @@ export default async function* (opts: SimpleOptions = {}) {
                 // Register 'request event'
                 .once('request',
                     (request, response) => {
-                        result({ 
-                            request, 
+                        result({
+                            request,
                             response
                         });
                     }
-                );
+                )
+                .once("close", () => {
+                    done = true;
+                });
         });
-    }
 };
-

@@ -1,8 +1,8 @@
 import JsonDB, { Schema, SchemaInstance } from "./Database/JsonDB";
 import JsonReviver from "./Database/JsonReviver";
 import Server, { Context, Handler, Middleware, Method } from "./Server/server";  
-import simple, { SimpleOptions } from "./Server/deno";
- 
+import simple, { SimpleOptions } from "./Server/simple";
+
 export { 
     JsonDB, 
     JsonReviver, 

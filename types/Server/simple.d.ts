@@ -29,7 +29,7 @@ export interface SimpleOptions {
 /**
  * Create a simple server
  */
-export default function (opts?: SimpleOptions): AsyncGenerator<{
+export default function simple(opts?: SimpleOptions): AsyncGenerator<{
     /**
      * The requests
      */
