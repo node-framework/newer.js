@@ -11,9 +11,8 @@ const server = simple();
 console.timeEnd("web");
 
 // Handle requests from server
-for await (const { request, response } of server) {
+for await (const { request, response } of server) 
     response.end(request.url);
-}
 
 // 0.5ms is the average speed
 // 0.237ms is the fastest speed 

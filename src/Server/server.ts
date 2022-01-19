@@ -192,7 +192,6 @@ export default class Server {
             port, 
             hostname, 
             backlog, 
-            httpsMode: this.httpsMode,
             options: this.options
         })) {
             // The context
