@@ -46,7 +46,10 @@ export default async function* simple(opts: SimpleOptions = {}) {
                 opts.port ?? 80,
                 opts.hostname ?? "localhost",
                 opts.backlog ?? 0
-            );
+            )
+            .on("error", () => {
+                done = true;
+            });
 
     // Handle each requests using yield
     while (!done)
@@ -70,9 +73,6 @@ export default async function* simple(opts: SimpleOptions = {}) {
                             response
                         });
                     }
-                )
-                .once("close", () => {
-                    done = true;
-                });
+                );
         });
 };
