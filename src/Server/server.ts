@@ -260,7 +260,7 @@ export default class Server {
                     this.endResponse(c, res);
 
                     // End the function
-                    return;
+                    continue;
                 }
             }
 
@@ -285,7 +285,7 @@ export default class Server {
             // Check whether response ended
             if (c.responseEnded) {
                 this.endResponse(c, res);
-                return;
+                continue;
             }
 
             // Check whether response is not empty
