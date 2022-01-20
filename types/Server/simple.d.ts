@@ -38,4 +38,4 @@ export default function simple(opts?: SimpleOptions): AsyncGenerator<{
      * The response
      */
     response: http.ServerResponse;
-}, void, unknown>;
+}, never, unknown>;
