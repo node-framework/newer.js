@@ -29,13 +29,4 @@ export interface SimpleOptions {
 /**
  * Create a simple server
  */
-export default function simple(opts?: SimpleOptions): AsyncGenerator<{
-    /**
-     * The requests
-     */
-    request: http.IncomingMessage;
-    /**
-     * The response
-     */
-    response: http.ServerResponse;
-}, never, unknown>;
+export default function simple(opts?: SimpleOptions): AsyncGenerator<http.ServerResponse, any, unknown>;

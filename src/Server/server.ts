@@ -4,6 +4,7 @@ import qs from "query-string";
 import fs from "fs";
 import { Socket } from "net";
 import simple from "./simple";
+import { response } from "express";
 
 // Request methods
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
@@ -192,66 +193,70 @@ export default class Server {
         let requestEndResponse = false;
 
         // Loop through the requests
-        for await (const { request: req, response: res } of simple({
+        for await (const res of simple({
             port,
             hostname,
             backlog,
             options: this.options,
             httpsMode: this.httpsMode
         })) {
-            // The context
-            const c: Context = {
-                // End the response manually
-                responseEnded: false,
+            const
+                // The request
+                { req } = res,
 
-                // Default status code
-                statusCode: req.statusCode,
+                // The context
+                c: Context = {
+                    // End the response manually
+                    responseEnded: false,
 
-                // The response, default to empty
-                response: "",
+                    // Default status code
+                    statusCode: req.statusCode,
 
-                // The query of the URL
-                query: getQuery(req.url),
+                    // The response, default to empty
+                    response: "",
 
-                // The body of the request
-                body: await getBody(req),
+                    // The query of the URL
+                    query: getQuery(req.url),
 
-                // The request url
-                url: req.url,
+                    // The body of the request
+                    body: await getBody(req),
 
-                // Append file content
-                writeFile: path => {
-                    // Append file content to response
-                    c.response += this.readFile(path) ?? "";
-                },
+                    // The request url
+                    url: req.url,
 
-                // Header get and set
-                header: (name, value) =>
-                    // Get or set a header
-                    value
-                        ? void res.setHeader(name, value)
-                        : res.getHeader(name),
+                    // Append file content
+                    writeFile: path => {
+                        // Append file content to response
+                        c.response += this.readFile(path) ?? "";
+                    },
 
-                // Set multiple headers or get request headers
-                headers: headers => {
-                    if (!headers)
-                        return req.headers;
-                    for (let name in headers)
-                        res.setHeader(name, headers[name])
-                },
+                    // Header get and set
+                    header: (name, value) =>
+                        // Get or set a header
+                        value
+                            ? void res.setHeader(name, value)
+                            : res.getHeader(name),
 
-                // Socket
-                socket: res.socket,
+                    // Set multiple headers or get request headers
+                    headers: headers => {
+                        if (!headers)
+                            return req.headers;
+                        for (let name in headers)
+                            res.setHeader(name, headers[name])
+                    },
 
-                // Method
-                method: req.method as Method,
+                    // Socket
+                    socket: res.socket,
 
-                // HTTP version
-                httpVersion: req.httpVersion,
+                    // Method
+                    method: req.method as Method,
 
-                // Server IPv4 address
-                remoteAddress: req.socket.remoteAddress
-            };
+                    // HTTP version
+                    httpVersion: req.httpVersion,
+
+                    // Server IPv4 address
+                    remoteAddress: req.socket.remoteAddress
+                };
 
             // Invoke middlewares
             for (let md of this.mds) {
@@ -272,8 +277,10 @@ export default class Server {
             }
 
             // End the response
-            if (requestEndResponse)
+            if (requestEndResponse) {
+                requestEndResponse = false;
                 continue;
+            }
 
             // Favicon
             if (req.url === "/favicon.ico") {

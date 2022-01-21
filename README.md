@@ -65,7 +65,7 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 import { simple } from "newer.js";
 
 // Create a new server and handle each requests
-for await (const { request, response } of simple()) 
+for await (const response of simple()) 
     // End the response
     response.end("Hello world");
 ```
