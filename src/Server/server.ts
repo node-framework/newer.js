@@ -188,6 +188,10 @@ export default class Server {
      * @param backlog the backlog
      */
     async listen(port?: number, hostname?: string, backlog?: number) {
+        // Fix response ending in middleware
+        let requestEndResponse = false;
+
+        // Loop through the requests
         for await (const { request: req, response: res } of simple({
             port,
             hostname,
@@ -259,10 +263,17 @@ export default class Server {
                     // End the response
                     this.endResponse(c, res);
 
-                    // End the function
-                    continue;
+                    // Mark to skip this request
+                    requestEndResponse = true;
+
+                    // End the loop
+                    break;
                 }
             }
+
+            // End the response
+            if (requestEndResponse)
+                continue;
 
             // Favicon
             if (req.url === "/favicon.ico") {
@@ -285,6 +296,8 @@ export default class Server {
             // Check whether response ended
             if (c.responseEnded) {
                 this.endResponse(c, res);
+
+                // Next request
                 continue;
             }
 

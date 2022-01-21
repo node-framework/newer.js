@@ -13,7 +13,9 @@ app.static("./tests/public");
 app.middleware({
     invoke: async ctx => {
         // Set response as route name
-        ctx.response += ctx.url
+        ctx.response += ctx.url;
+        // End the response manually
+        ctx.responseEnded = true;
     }
 });
 
