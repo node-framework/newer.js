@@ -31,11 +31,8 @@ export interface SimpleOptions {
  * Create a simple server
  */
 export default async function* simple(opts: SimpleOptions = {}) {
-    let
-        // Check whether server is closed
-        done = false,
-        // Server error 
-        rejectReason: Error;
+    // Server error 
+    let rejectReason: Error;
 
     // The server 
     const server =
@@ -49,13 +46,11 @@ export default async function* simple(opts: SimpleOptions = {}) {
                 opts.hostname ?? "localhost",
                 opts.backlog ?? 0
             )
-            // End the loop if server closed
-            .on("close", () => { done = true; })
             // End the loop and throw error if error occured
-            .on("error", err => { rejectReason = err; });
+            .on("error", err => rejectReason = err);
 
     // Handle each requests
-    while (!done && !rejectReason) {
+    while (!rejectReason) 
         // Yield requests
         yield new Promise<{
             /**
@@ -72,10 +67,9 @@ export default async function* simple(opts: SimpleOptions = {}) {
                 result({ request, response })
             )
         );
-    }
+    
     // Close the server
-    if (!done)
-        server.close();
+    server.close();
 
     // Check whether error occured
     if (rejectReason)
