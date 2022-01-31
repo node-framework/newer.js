@@ -50,6 +50,44 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 
 - Examples: https://github.com/node-framework/newer.js-example
 
+## Router
+
+- Router is a middleware that handles a specific route and sub-route
+- Router can be used to handle subdomain:
+
+```javascript
+// Import from NewerJS
+import { Server, Router } from "newer.js";
+
+// Creating a new server
+const app = new Server();
+
+// Create a router
+const index = new Router("/index");
+
+// Create a handler of route index
+index.route("/", {
+    GET: async ctx => {
+        // Write the response
+        ctx.response += ctx.url;
+
+        // End the response manually
+        ctx.responseEnded = true;
+    }
+});
+
+// Router can be used as middleware (localhost/index)
+app.middleware(index);
+
+// Or subdomain handler (subdomain.localhost/index)
+app.sub("subdomain", index);
+
+// Listen to port 8080
+await app.listen(8080);
+```
+
+- And you can nest Routers using `router.middleware`
+
 ## Not into these type of frameworks?
 
 - `simple` is the type of server which use Deno-like syntax

@@ -1,5 +1,5 @@
 // Import simple function
-import { simple } from "../lib/main.js";
+import { simple } from "../../lib/main.js";
 
 // Start the timer
 console.time("web");

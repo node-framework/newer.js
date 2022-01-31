@@ -1,31 +1,6 @@
 /// <reference types="node" />
-import https from "https";
 import http from "http";
-/**
- * Server options
- */
-export interface SimpleOptions {
-    /**
-     * Server options
-     */
-    options?: http.ServerOptions | https.ServerOptions;
-    /**
-     * Toggle HTTPS mode
-     */
-    httpsMode?: boolean;
-    /**
-     * Target port
-     */
-    port?: number;
-    /**
-     * Target hostname
-     */
-    hostname?: string;
-    /**
-     * Backlog
-     */
-    backlog?: number;
-}
+import { SimpleOptions } from "./declarations";
 /**
  * Create a simple server
  */

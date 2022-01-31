@@ -1,13 +1,10 @@
 import http from "http";
 import https from "https";
-import qs from "query-string";
 import fs from "fs";
-import { Socket } from "net";
+import qs from "query-string";
 import simple from "./simple";
-import { response } from "express";
-
-// Request methods
-export type Method = "GET" | "POST" | "PUT" | "DELETE";
+import { Handler, Middleware, Context, Method } from "./declarations";
+import Router from "./router";
 
 // Get the body of a request
 const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
@@ -29,83 +26,6 @@ const getQuery = (url: string) =>
         new URLSearchParams(url.split("?")[1]).entries()
     );
 
-/**
- * Context of a request
- */
-export interface Context extends Record<string, any> {
-    /**
-     * End the response manually
-     */
-    responseEnded: boolean;
-    /**
-     * The response
-     */
-    response: string;
-    /**
-     * Status code
-     */
-    statusCode: number;
-    /**
-     * Parsed query
-     */
-    readonly query: {
-        [k: string]: string;
-    };
-    /**
-     * Parsed body
-     */
-    readonly body: qs.ParsedQuery;
-    /**
-     * The page url
-     */
-    readonly url: string;
-    /**
-     * Append a file content to response
-     */
-    writeFile(path: string): void;
-    /**
-     * Get or set response headers
-     */
-    header(name?: string, value?: string | number | readonly string[]): void | string | number | string[];
-    /**
-     * Set multiple headers or get request headers
-     */
-    headers(headers?: { [name: string]: string | number | readonly string[] }): void | http.IncomingHttpHeaders;
-    /**
-     * Request socket
-     */
-    readonly socket: Socket;
-    /**
-     * Request method
-     */
-    readonly method: Method;
-    /**
-     * Request HTTP version
-     */
-    readonly httpVersion: string;
-    /**
-     * Server IPv4 address
-     */
-    readonly remoteAddress: string;
-}
-
-/**
- * A route handler
- */
-export interface Handler {
-    GET?(ctx: Context): Promise<void>,
-    POST?(ctx: Context): Promise<void>,
-    PUT?(ctx: Context): Promise<void>,
-    DELETE?(ctx: Context): Promise<void>,
-}
-
-/**
- * A middleware
- */
-export interface Middleware {
-    invoke(ctx: Context): Promise<void>;
-}
-
 export default class Server {
     private staticDir: string;
 
@@ -114,6 +34,10 @@ export default class Server {
     };
 
     private mds: Middleware[];
+
+    private subhosts: {
+        [name: string]: Router
+    };
 
     private options: http.ServerOptions | https.ServerOptions;
 
@@ -127,6 +51,7 @@ export default class Server {
         this.httpsMode = httpsMode;
         this.routes = {};
         this.mds = [];
+        this.subhosts = {};
     }
 
     /**
@@ -138,6 +63,15 @@ export default class Server {
     route(routeName: string, route: Handler) {
         this.routes[routeName] = route;
         return this;
+    }
+
+    /**
+     * Handle a subdomain
+     * @param host the subhost
+     * @param route the Router
+     */
+    sub(host: string, route: Router) {
+        this.subhosts[host] = route;
     }
 
     /**
@@ -188,7 +122,7 @@ export default class Server {
      * @param hostname the hostname to listen to
      * @param backlog the backlog
      */
-    async listen(port?: number, hostname?: string, backlog?: number) {
+    async listen(port: number = 80, hostname: string = "localhost", backlog: number = 0) {
         // Fix response ending in middleware
         let requestEndResponse = false;
 
@@ -255,7 +189,10 @@ export default class Server {
                     httpVersion: req.httpVersion,
 
                     // Server IPv4 address
-                    remoteAddress: req.socket.remoteAddress
+                    remoteAddress: req.socket.remoteAddress,
+
+                    // Subhost
+                    subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
                 };
 
             // Invoke middlewares
@@ -292,6 +229,21 @@ export default class Server {
                     fs.appendFileSync(path, "");
             }
 
+            // Get host handler
+            const host = this.subhosts[c.subhost];
+
+            // Check whether handler is defined
+            if (host) {
+                // Handle the host
+                await host.invoke(c);
+
+                // End the response
+                this.endResponse(c, res);
+
+                // Next request
+                continue;
+            }
+
             // Get the route
             const target = this.routes[req.url];
 
@@ -307,6 +259,7 @@ export default class Server {
                 // Next request
                 continue;
             }
+
 
             // Check whether response is not empty
             if (!c.response) {
