@@ -43,6 +43,8 @@ export default class Server {
 
     private httpsMode: boolean;
 
+    private rawServer: http.Server | https.Server;
+
     /**
      * The constructor
      */
@@ -126,14 +128,20 @@ export default class Server {
         // Fix response ending in middleware
         let requestEndResponse = false;
 
-        // Loop through the requests
-        for await (const res of simple({
+        // Get requests
+        const requests = simple({
             port,
             hostname,
             backlog,
             options: this.options,
             httpsMode: this.httpsMode
-        })) {
+        });
+
+        // Http
+        this.rawServer = requests.server;
+
+        // Loop through the requests
+        for await (const res of requests) {
             const
                 // The request
                 { req } = res,
@@ -278,5 +286,12 @@ export default class Server {
             // End the response
             this.endResponse(c, res);
         }
+    }
+
+    /**
+     * Get the HTTP or HTTPS server
+     */
+    get http() {
+        return this.rawServer;
     }
 }

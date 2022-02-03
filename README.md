@@ -28,7 +28,12 @@ app.route("/", {
 });
 
 // Listen to port 8080
-await app.listen(8080);
+app.listen(8080);
+
+// Get the HTTP or HTTPS server
+app.http;
+
+// And some more code here...
 ```
 
 Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080)
@@ -50,7 +55,7 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 
 - Examples: https://github.com/node-framework/newer.js-example
 
-## Router
+### Router
 
 - Router is a middleware that handles a specific route and sub-route
 - Router can be used to handle subdomain:
@@ -83,7 +88,7 @@ app.middleware(index);
 app.sub("subdomain", index);
 
 // Listen to port 8080
-await app.listen(8080);
+app.listen(8080);
 ```
 
 - And you can nest Routers using `router.middleware`
@@ -107,6 +112,8 @@ for await (const response of simple())
     // End the response
     response.end("Hello world");
 ```
+
+- You can get the raw HTTP or HTTPS server via `simple().server`
 
 ## JsonDB
 

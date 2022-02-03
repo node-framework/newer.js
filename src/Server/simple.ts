@@ -5,7 +5,16 @@ import { SimpleOptions } from "./declarations";
 /**
  * Create a simple server
  */
-export default async function* simple(opts: SimpleOptions = {}) {
+export default function simple(opts: SimpleOptions = {}): { 
+    /**
+     * The simple HTTP or HTTPS server
+     */
+    readonly server: http.Server | https.Server; 
+    /**
+     * The generator
+     */
+    [Symbol.asyncIterator](): AsyncGenerator<http.ServerResponse, any, unknown>; 
+} {
     // The server 
     const server =
         // Check HTTPS mode
@@ -19,18 +28,23 @@ export default async function* simple(opts: SimpleOptions = {}) {
                 opts.backlog ?? 0
             );
 
-    try {
-        // Handle each requests
-        while (true)
-            // Yield requests
-            yield new Promise<http.ServerResponse>(result =>
-                // Register 'request' event
-                server.once('request', (_, response) => result(response))
-            );
-    } catch (e) {
-        return e;
-    } finally {
-        // Close the server
-        server.close();
+    return {
+        server,
+        async *[Symbol.asyncIterator]() {
+            try {
+                // Handle each requests
+                while (true)
+                    // Yield requests
+                    yield new Promise<http.ServerResponse>(result =>
+                        // Register 'request' event
+                        server.once('request', (_, response) => result(response))
+                    );
+            } catch (e) {
+                return e;
+            } finally {
+                // Close the server
+                server.close();
+            }
+        }
     }
 };

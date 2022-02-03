@@ -10,6 +10,7 @@ export default class Server {
     private subhosts;
     private options;
     private httpsMode;
+    private rawServer;
     /**
      * The constructor
      */
@@ -47,4 +48,8 @@ export default class Server {
      * @param backlog the backlog
      */
     listen(port?: number, hostname?: string, backlog?: number): Promise<void>;
+    /**
+     * Get the HTTP or HTTPS server
+     */
+    get http(): http.Server | https.Server;
 }
