@@ -4,7 +4,7 @@ import { Socket } from "net";
 import https from "https";
 
 // Request methods
-export type Method = "GET" | "POST" | "PUT" | "DELETE";
+export type Method = "GET" | "POST" | "PUT" | "DELETE" | "HEAD";
 
 /**
  * Context of a request
@@ -70,15 +70,13 @@ export interface Context extends Record<string, any> {
     readonly subhost: string;
 }
 
+
 /**
  * A route handler
  */
-export interface Handler {
-    GET?(ctx: Context): Promise<void>,
-    POST?(ctx: Context): Promise<void>,
-    PUT?(ctx: Context): Promise<void>,
-    DELETE?(ctx: Context): Promise<void>,
-}
+export type Handler = {
+    [method in Method]?: (ctx: Context) => Promise<void>;
+};
 
 /**
  * A middleware

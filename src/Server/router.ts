@@ -1,3 +1,4 @@
+import path from "path";
 import { Context, Handler, Middleware } from "./declarations";
 
 export default class Router implements Middleware {
@@ -13,7 +14,7 @@ export default class Router implements Middleware {
      * Create a router
      * @param routeName the route name
      */
-    constructor(routeName: string = "") {
+    constructor(routeName: string = "/") {
         this.routes = {};
         this.middlewares = [];
         this.routeName = routeName;
@@ -21,12 +22,17 @@ export default class Router implements Middleware {
 
     /**
      * Register a subroute
-     * @param routeName the route name
+     * @param routeName the route name (default to "/")
      * @param routeHandler the route handler
      * @returns This router for chaining
      */
     route(routeName: string, routeHandler: Handler) {
-        this.routes[routeName] = routeHandler;
+        this.routes[
+            path
+                .join(this.routeName, routeName)
+                // @ts-ignore
+                .replaceAll("\\", "/")
+        ] = routeHandler;
         return this;
     }
 
@@ -37,7 +43,10 @@ export default class Router implements Middleware {
      */
     middleware(md: Middleware) {
         if (md instanceof Router)
-            md.routeName = this.routeName + md.routeName;
+            md.routeName = path
+                .join(this.routeName, md.routeName)
+                // @ts-ignore
+                .replaceAll("\\", "/");
         this.middlewares.push(md);
         return this;
     }
@@ -59,7 +68,7 @@ export default class Router implements Middleware {
         }
 
         // Get the route
-        const target = this.routes[ctx.url.replace(this.routeName, "")];
+        const target = this.routes[ctx.url];
 
         // Check whether this route has been registered
         if (target && target[ctx.method])

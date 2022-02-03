@@ -10,7 +10,7 @@ export default class Router implements Middleware {
     constructor(routeName?: string);
     /**
      * Register a subroute
-     * @param routeName the route name
+     * @param routeName the route name (default to "/")
      * @param routeHandler the route handler
      * @returns This router for chaining
      */
