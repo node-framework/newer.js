@@ -7,9 +7,6 @@ console.time("web");
 // Create a server
 const app = new Server();
 
-// Static path
-app.static("./tests/Server/public");
-
 // Register a subdomain handler
 app.sub("another", index);
 

@@ -4,13 +4,13 @@ import https from "https";
 import { Handler, Middleware } from "./declarations";
 import Router from "./router";
 export default class Server {
-    private staticDir;
     private routes;
     private mds;
     private subhosts;
     private options;
     private httpsMode;
     private rawServer;
+    private iconPath;
     /**
      * The constructor
      */
@@ -23,6 +23,12 @@ export default class Server {
      */
     route(routeName: string, route: Handler): this;
     /**
+     * Set the icon path
+     * @param path the icon path
+     * @returns this server for chaining
+     */
+    icon(path: string): this;
+    /**
      * Handle a subdomain
      * @param host the subhost
      * @param route the Router
@@ -34,11 +40,6 @@ export default class Server {
      * @returns this server for chaining
      */
     middleware(m: Middleware): this;
-    /**
-     * @param path the static path
-     * @returns this server for chaining
-     */
-    static(path: string): this;
     private readFile;
     private endResponse;
     /**

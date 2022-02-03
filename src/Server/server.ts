@@ -27,8 +27,6 @@ const getQuery = (url: string) =>
     );
 
 export default class Server {
-    private staticDir: string;
-
     private routes: {
         [routeName: string]: Handler
     };
@@ -45,6 +43,8 @@ export default class Server {
 
     private rawServer: http.Server | https.Server;
 
+    private iconPath: string;
+
     /**
      * The constructor
      */
@@ -54,6 +54,7 @@ export default class Server {
         this.routes = {};
         this.mds = [];
         this.subhosts = {};
+        this.iconPath = "./favicon.ico";
     }
 
     /**
@@ -68,12 +69,24 @@ export default class Server {
     }
 
     /**
+     * Set the icon path
+     * @param path the icon path
+     * @returns this server for chaining
+     */
+    icon(path: string) {
+        this.iconPath = path;
+        return this;
+    }
+
+    /**
      * Handle a subdomain
      * @param host the subhost
      * @param route the Router
+     * @returns this server for chaining
      */
     sub(host: string, route: Router) {
         this.subhosts[host] = route;
+        return this;
     }
 
     /**
@@ -83,15 +96,6 @@ export default class Server {
      */
     middleware(m: Middleware) {
         this.mds.push(m);
-        return this;
-    }
-
-    /** 
-     * @param path the static path
-     * @returns this server for chaining
-     */
-    static(path: string) {
-        this.staticDir = path;
         return this;
     }
 
@@ -227,15 +231,9 @@ export default class Server {
                 continue;
             }
 
-            // Favicon
-            if (req.url === "/favicon.ico") {
-                // Get parent directory
-                let path = (this.staticDir ?? ".") + req.url;
-
-                // Create favicon if it does not exists
-                if (!fs.existsSync(path))
-                    fs.appendFileSync(path, "");
-            }
+            // Create favicon if it does not exists
+            if (req.url === "/favicon.ico" && !fs.existsSync(this.iconPath))
+                fs.appendFileSync(this.iconPath, "");
 
             // Get host handler
             const host = this.subhosts[c.subhost];
@@ -266,21 +264,6 @@ export default class Server {
 
                 // Next request
                 continue;
-            }
-
-
-            // Check whether response is not empty
-            if (!c.response) {
-                // Check whether the static dir is set
-                if (this.staticDir) {
-                    // Set the response to the read data
-                    c.response = this.readFile(this.staticDir + req.url);
-                }
-
-                // If status code in not set and static dir is not set
-                else if (!c.statusCode)
-                    // Set status code to 404
-                    c.statusCode = 404;
             }
 
             // End the response
