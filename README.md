@@ -20,10 +20,12 @@ import { Server } from "newer.js";
 const app = new Server();
 
 // Handle request to "/" route
-app.route("/", {
-    // Handle GET request
-    GET: async ctx => {
-        ctx.response += "Hello world";
+app.middleware({
+    invoke: async (ctx, next) => {
+        // Add data to response 
+        ctx.response += 'Hello world';
+        // Move to next middleware
+        await next();
     }
 });
 
@@ -36,7 +38,7 @@ app.http;
 // And some more code here...
 ```
 
-Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080)
+Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080) and every subdomains or routes
 
 ### Context object
 
@@ -76,15 +78,15 @@ index.route("/", {
         // Write the response
         ctx.response += ctx.url;
 
-        // End the response manually
+        // End the response manually (any middleware after this middleware can't write anything to response)
         ctx.responseEnded = true;
     }
 });
 
-// Router can be used as middleware (localhost/index)
+// Router can be used as middleware (`localhost/index`)
 app.middleware(index);
 
-// Or subdomain handler (subdomain.localhost/index)
+// Or subdomain handler (`subdomain.localhost/index`)
 app.sub("subdomain", index);
 
 // Listen to port 8080

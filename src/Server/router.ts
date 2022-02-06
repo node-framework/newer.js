@@ -1,5 +1,5 @@
 import path from "path";
-import { Context, Handler, Middleware } from "./declarations";
+import { Context, Handler, Middleware, NextFunction } from "./declarations";
 
 export default class Router implements Middleware {
     private routes: {
@@ -56,23 +56,48 @@ export default class Router implements Middleware {
      * @param ctx The context
      * @returns no result
      */
-    async invoke(ctx: Context): Promise<void> {
-        // Loop through middlewares
-        for (const md of this.middlewares) {
-            // Invoke the middleware
-            await md.invoke(ctx);
+    async invoke(ctx: Context, nxt?: NextFunction): Promise<void> {
+        // When there is no middlewares
+        if (this.middlewares.length === 0) {
+            // Get the route
+            const target = this.routes[ctx.url];
 
-            // Check whether response ended manually
-            if (ctx.responseEnded)
-                return;
+            // Check whether this route has been registered
+            if (target && target[ctx.method])
+                // Invoke route
+                await target[ctx.method](ctx);
         }
 
-        // Get the route
-        const target = this.routes[ctx.url];
+        // Else
+        const next = async (index: number, max: number) => {
+            // When the last middleware called `next()`
+            if (index === max) {
+                // Get the route
+                const target = this.routes[ctx.url];
 
-        // Check whether this route has been registered
-        if (target && target[ctx.method])
-            // Invoke route
-            await target[ctx.method](ctx);
+                // Check whether this route has been registered
+                if (target && target[ctx.method])
+                    // Invoke route
+                    await target[ctx.method](ctx);
+            }
+
+            // Else
+            else if (index < max) {
+                // When response ended
+                if (ctx.responseEnded)
+                    // End the function
+                    return;
+
+                // When not invoke the middleware
+                await this.middlewares[index + 1]?.invoke(ctx, async () => next(index + 1, max));
+            }
+        }
+
+        // Invoke the middleware
+        await this.middlewares[0]?.invoke(ctx, async () => next(0, this.middlewares.length));
+
+        if (nxt)
+            // End the function
+            await nxt();
     }
 }

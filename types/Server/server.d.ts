@@ -1,12 +1,9 @@
 /// <reference types="node" />
 import http from "http";
 import https from "https";
-import { Handler, Middleware } from "./declarations";
-import Router from "./router";
+import { Middleware } from "./declarations";
 export default class Server {
-    private routes;
     private mds;
-    private subhosts;
     private options;
     private httpsMode;
     private rawServer;
@@ -16,24 +13,11 @@ export default class Server {
      */
     constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean);
     /**
-     * Register a route
-     * @param routeName the route name
-     * @param route the route handler
-     * @returns this server for chaining
-     */
-    route(routeName: string, route: Handler): this;
-    /**
      * Set the icon path
      * @param path the icon path
      * @returns this server for chaining
      */
     icon(path: string): this;
-    /**
-     * Handle a subdomain
-     * @param host the subhost
-     * @param route the Router
-     */
-    sub(host: string, route: Router): void;
     /**
      * Add middleware
      * @param m middleware

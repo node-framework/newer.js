@@ -157,7 +157,7 @@ export default class JsonDB {
             JSON.parse(readerData, reviver)
         );
         // Weird thing happens here so I need to fix by using the next line
-        fs.writeFileSync(filePath, JSON.stringify(this.data, null, 4));
+        fs.writeFileSync(filePath, JSON.stringify(this.data));
     }
 
     /**
@@ -204,7 +204,7 @@ export default class JsonDB {
         // Create a type checker
         const SchemaObject = typeChecker(schem);
         // Write the created array to database file
-        fs.writeFileSync(pth, JSON.stringify(this.data, null, 4));
+        fs.writeFileSync(pth, JSON.stringify(this.data));
         // Create a class to use to manipulate the schema
         let sch = class Schema {
             /**
@@ -222,7 +222,7 @@ export default class JsonDB {
              */
             save = async (): Promise<object> => {
                 pointer.data[Schema.schem].push(this.obj);
-                await pfs.writeFile(pth, JSON.stringify(pointer.data, null, 4));
+                await pfs.writeFile(pth, JSON.stringify(pointer.data));
                 pointer.events.emit("save-item", this.obj);
                 return pointer.data;
             }
@@ -232,7 +232,7 @@ export default class JsonDB {
             del = async (): Promise<object> => {
                 let ref = pointer.data[Schema.schem];
                 ref.splice(ref.indexOf(this.obj), 1);
-                await pfs.writeFile(pth, JSON.stringify(pointer.data, null, 4));
+                await pfs.writeFile(pth, JSON.stringify(pointer.data));
                 pointer.events.emit("delete-item");
                 this.obj = undefined;
                 return pointer.data;
@@ -256,7 +256,7 @@ export default class JsonDB {
                     pointer.data[Schema.schem]
                         .indexOf(this.obj)
                 ] = obj;
-                await pfs.writeFile(pth, JSON.stringify(pointer.data, null, 4));
+                await pfs.writeFile(pth, JSON.stringify(pointer.data));
                 this.obj = obj;
                 pointer.events.emit("update-item", this.obj);
                 return obj;
@@ -280,7 +280,7 @@ export default class JsonDB {
                 if (!index)
                     throw new Error("Invalid object");
                 pointer.data[Schema.schem][index] = updateObj;
-                await pfs.writeFile(pth, JSON.stringify(pointer.data, null, 4));
+                await pfs.writeFile(pth, JSON.stringify(pointer.data));
                 pointer.events.emit("update-item", updateObj);
                 return updateObj;
             }
@@ -332,7 +332,7 @@ export default class JsonDB {
              */
             static clear = async (): Promise<void> => {
                 pointer.data[Schema.schem] = [];
-                await pfs.writeFile(pth, JSON.stringify(pointer.data, null, 4));
+                await pfs.writeFile(pth, JSON.stringify(pointer.data));
                 pointer.events.emit("clear-schema");
             }
             /**
@@ -351,7 +351,7 @@ export default class JsonDB {
                     schem = [];
                 pointer.data[Schema.schem] = schem;
                 pointer.events.emit("delete-item");
-                await pfs.writeFile(pth, JSON.stringify(pointer.data, null, 4));
+                await pfs.writeFile(pth, JSON.stringify(pointer.data));
             }
             /**
              * Drop the schema and all schema docs

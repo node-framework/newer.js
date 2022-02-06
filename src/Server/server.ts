@@ -3,7 +3,7 @@ import https from "https";
 import fs from "fs";
 import qs from "query-string";
 import simple from "./simple";
-import { Handler, Middleware, Context, Method } from "./declarations";
+import { Middleware, Context, Method } from "./declarations";
 import Router from "./router";
 
 // Get the body of a request
@@ -27,15 +27,7 @@ const getQuery = (url: string) =>
     );
 
 export default class Server {
-    private routes: {
-        [routeName: string]: Handler
-    };
-
     private mds: Middleware[];
-
-    private subhosts: {
-        [name: string]: Router
-    };
 
     private options: http.ServerOptions | https.ServerOptions;
 
@@ -51,21 +43,8 @@ export default class Server {
     constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean) {
         this.options = options;
         this.httpsMode = httpsMode;
-        this.routes = {};
         this.mds = [];
-        this.subhosts = {};
         this.iconPath = "./favicon.ico";
-    }
-
-    /**
-     * Register a route
-     * @param routeName the route name
-     * @param route the route handler
-     * @returns this server for chaining
-     */
-    route(routeName: string, route: Handler) {
-        this.routes[routeName] = route;
-        return this;
     }
 
     /**
@@ -75,17 +54,6 @@ export default class Server {
      */
     icon(path: string) {
         this.iconPath = path;
-        return this;
-    }
-
-    /**
-     * Handle a subdomain
-     * @param host the subhost
-     * @param route the Router
-     * @returns this server for chaining
-     */
-    sub(host: string, route: Router) {
-        this.subhosts[host] = route;
         return this;
     }
 
@@ -129,9 +97,6 @@ export default class Server {
      * @param backlog the backlog
      */
     async listen(port: number = 80, hostname: string = "localhost", backlog: number = 0) {
-        // Fix response ending in middleware
-        let requestEndResponse = false;
-
         // Get requests
         const requests = simple({
             port,
@@ -207,64 +172,25 @@ export default class Server {
                     subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
                 };
 
-            // Invoke middlewares
-            for (let md of this.mds) {
-                // Invoke the middleware with current context
-                await md.invoke(c);
-
-                // Check whether response ended
-                if (c.responseEnded) {
-                    // End the response
-                    this.endResponse(c, res);
-
-                    // Mark to skip this request
-                    requestEndResponse = true;
-
-                    // End the loop
-                    break;
-                }
-            }
-
-            // End the response
-            if (requestEndResponse) {
-                requestEndResponse = false;
-                continue;
-            }
-
             // Create favicon if it does not exists
             if (req.url === "/favicon.ico" && !fs.existsSync(this.iconPath))
                 fs.appendFileSync(this.iconPath, "");
 
-            // Get host handler
-            const host = this.subhosts[c.subhost];
+            // Next function
+            const next = async (index: number, max: number) => {
+                if (index < max) {
+                    // When response ended
+                    if (c.responseEnded)
+                        // End the function
+                        return;
 
-            // Check whether handler is defined
-            if (host) {
-                // Handle the host
-                await host.invoke(c);
-
-                // End the response
-                this.endResponse(c, res);
-
-                // Next request
-                continue;
+                    // Invoke the middleware
+                    await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
+                }
             }
 
-            // Get the route
-            const target = this.routes[req.url];
-
-            // Check whether this route has been registered
-            if (target && target[req.method])
-                // Invoke route
-                await target[req.method](c);
-
-            // Check whether response ended
-            if (c.responseEnded) {
-                this.endResponse(c, res);
-
-                // Next request
-                continue;
-            }
+            // Invoke the middleware
+            await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
 
             // End the response
             this.endResponse(c, res);

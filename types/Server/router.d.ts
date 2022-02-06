@@ -1,4 +1,4 @@
-import { Context, Handler, Middleware } from "./declarations";
+import { Context, Handler, Middleware, NextFunction } from "./declarations";
 export default class Router implements Middleware {
     private routes;
     private middlewares;
@@ -26,5 +26,5 @@ export default class Router implements Middleware {
      * @param ctx The context
      * @returns no result
      */
-    invoke(ctx: Context): Promise<void>;
+    invoke(ctx: Context, nxt?: NextFunction): Promise<void>;
 }

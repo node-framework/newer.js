@@ -76,10 +76,14 @@ export declare type Handler = {
     [method in Method]?: (ctx: Context) => Promise<void>;
 };
 /**
+ * Next function
+ */
+export declare type NextFunction = () => Promise<void>;
+/**
  * A middleware
  */
 export interface Middleware {
-    invoke(ctx: Context): Promise<void>;
+    invoke(ctx: Context, next?: NextFunction): Promise<void>;
 }
 /**
  * Server options

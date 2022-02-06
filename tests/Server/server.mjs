@@ -1,5 +1,5 @@
 import index from "./index.mjs";
-import { Server } from "../../lib/main.js";
+import { Server, SubDomain } from "../../lib/main.js";
 
 // Start the timer
 console.time("web");
@@ -7,8 +7,16 @@ console.time("web");
 // Create a server
 const app = new Server();
 
-// Register a subdomain handler
-app.sub("another", index);
+// Register the router
+app.middleware(new SubDomain("index", index));
+
+// Register a middleware
+app.middleware({
+    async invoke(ctx, next) {
+        ctx.response += "Hello and ";
+        await next();
+    }
+});
 
 // Start the server
 app.listen(80);

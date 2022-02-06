@@ -5,10 +5,8 @@ const index = new Router();
 
 // Add a route
 index.route("/index", {
-    GET: async ctx => {
-        ctx.response += "Hello";
-        ctx.responseEnded = true;
-    }
+    GET: async ctx => 
+        ctx.response += "Hello"
 });
 
 // Export the router
