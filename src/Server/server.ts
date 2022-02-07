@@ -1,29 +1,9 @@
 import http from "http";
 import https from "https";
 import fs from "fs";
-import qs from "query-string";
 import simple from "./simple";
 import { Middleware, Context, Method } from "../declarations";
-
-// Get the body of a request
-const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
-    new Promise((res, rej) => {
-        let body = '';
-        req.on('data', data => {
-            body += data;
-            if (body.length > 1e7) {
-                req.socket.destroy();
-                rej("Request data to long");
-            }
-        });
-        req.on('end', () => res(qs.parse(body)));
-    });
-
-// Get query of an URL
-const getQuery = (url: string) =>
-    Object.fromEntries(
-        new URLSearchParams(url.split("?")[1]).entries()
-    );
+import { getBody, getQuery } from "../Utils/BodyParser";
 
 export default class Server {
     private mds: Middleware[];
