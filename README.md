@@ -1,6 +1,6 @@
 # Get started with Newer.js
 
-Start develop a web app with Newer.js!
+Start easy development server with Newer.js!
 
 ## Installation
 ```sh
