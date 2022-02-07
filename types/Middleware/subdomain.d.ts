@@ -1,4 +1,4 @@
-import { Context, Middleware, NextFunction } from "./declarations";
+import { Context, Middleware, NextFunction } from "../declarations";
 export default class SubDomain implements Middleware {
     private domain;
     private mds;

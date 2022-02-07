@@ -1,5 +1,4 @@
-import { Context, Middleware, NextFunction } from "./declarations";
-import Router from "./router";
+import { Context, Middleware, NextFunction } from "../declarations";
 
 export default class SubDomain implements Middleware {
     private domain: string;

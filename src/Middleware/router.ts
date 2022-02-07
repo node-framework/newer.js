@@ -1,5 +1,5 @@
 import path from "path";
-import { Context, Handler, Middleware, NextFunction } from "./declarations";
+import { Context, Handler, Middleware, NextFunction } from "../declarations";
 
 export default class Router implements Middleware {
     private routes: {

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import EventEmitter from "events";
+import { Schema, DBEvents } from "../declarations";
 
 const pfs = fs.promises;
 
@@ -70,39 +71,6 @@ const getSchemFrom = (obj: object): object => {
                 : getSchemFrom
         )(obj[i]);
     return schem;
-}
-
-/**
- * Schema instance
- * Result after calling new Schema(obj: object)
- */
-export type SchemaInstance = {
-    save: () => Promise<object>;
-    del: () => Promise<object>;
-    update: (obj: object) => Promise<object>;
-}
-
-/**
- * Database events
- */
-export type DBEvents = "save-item" | "update-item" | "delete-item" |
-    "clear-schema" | "clear-database" |
-    "drop-database" | "drop-schema"
-
-/**
- * Schema type
- */
-export type Schema = {
-    new(obj: object): SchemaInstance,
-    read: () => object[],
-    match: (obj: object) => boolean,
-    schem: string,
-    find: (obj?: object, count?: number, except?: boolean) => Promise<object[] | object>,
-    create: (...obj: object[]) => SchemaInstance[];
-    update: (obj: object, updateObj: object) => Promise<object>,
-    clear: () => Promise<void>,
-    deleteMatch: (obj?: object, except?: boolean) => Promise<void>,
-    drop: () => Promise<void>
 }
 
 export default class JsonDB {

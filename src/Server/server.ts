@@ -3,8 +3,7 @@ import https from "https";
 import fs from "fs";
 import qs from "query-string";
 import simple from "./simple";
-import { Middleware, Context, Method } from "./declarations";
-import Router from "./router";
+import { Middleware, Context, Method } from "../declarations";
 
 // Get the body of a request
 const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery> =>
