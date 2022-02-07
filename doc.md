@@ -3,8 +3,7 @@
 ## SimpleOptions
 The simple server options
 
-### Type
-- `interface`
+Type: `interface`
 
 ### Properties 
 
@@ -31,8 +30,7 @@ The simple server options
 ## simple
 Simple use ES6+ syntax to create a simple HTTP or HTTPS server which handle `request` event
 
-### Type
-- `function`
+Type: `async generator`
 
 ### Returns
 - `server`: The HTTP or HTTPS server which is started
@@ -41,8 +39,7 @@ Simple use ES6+ syntax to create a simple HTTP or HTTPS server which handle `req
 ## Server
 Create a server using objects (which makes it easier to maintain)
 
-### Type
-- `class`
+Type: `class`
 
 ### Constructor
 - Accepts two arguments:
@@ -56,18 +53,6 @@ Create a server using objects (which makes it easier to maintain)
     + Remains `undefined` when the server is not running
 
 ### Methods
-- `route`
-    + Handle a specific route
-    + `routeName: string`: The route name to be handled
-    + `route: Handler`: The route handler object
-    + Returns the server for chaining
-
-- `sub`
-    + Handle a subdomain
-    + `host: string`: The subdomain name
-    + `route: Router`: The subdomain handler
-    + Returns the server for chaining
-
 - `middleware`
     + Register a middleware
     + `m: Middleware`: The middleware to add

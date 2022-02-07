@@ -60,49 +60,61 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 ### Router
 
 - Router is a middleware that handles a specific route and sub-route
-- Router can be used to handle subdomain:
 
 ```javascript
 // Import from NewerJS
-import { Server, Router } from "newer.js";
-
-// Creating a new server
-const app = new Server();
+import { Router } from "newer.js";
 
 // Create a router
 const index = new Router("/index");
+
+index.middleware({
+    invoke: async (ctx, next) => {
+        // Add to every response in route
+        ctx.response += "You are on path ";
+        // Go to next middleware or route handler
+        await next();
+    }
+});
 
 // Create a handler of route index
 index.route("/", {
     GET: async ctx => {
         // Write the response
         ctx.response += ctx.url;
-
-        // End the response manually (any middleware after this middleware can't write anything to response)
-        ctx.responseEnded = true;
     }
 });
-
-// Router can be used as middleware (`localhost/index`)
-app.middleware(index);
-
-// Or subdomain handler (`subdomain.localhost/index`)
-app.sub("subdomain", index);
-
-// Listen to port 8080
-app.listen(8080);
 ```
 
-- And you can nest Routers using `router.middleware`
+- You can nest Routers using `router.middleware`
+
+## SubDomain
+
+- SubDomain is a middleware that handles a specific subdomain
+
+```javascript
+// Import from NewerJS
+import { SubDomain } from "newer.js";
+
+// Create a new subdomain handler (example `sub.example.com`)
+const sub = new SubDomain("sub");
+
+// Register a middleware
+sub.middleware({
+    invoke: async (ctx, next) => {
+        // Add to response
+        ctx.response += "Hello, you are on subdomain 'sub'";
+        // Move to next middleware
+        await next();
+    }
+});
+```
+
+- You can nest subdomains using `sub.middleware`
 
 ## Not into these type of frameworks?
 
 - `simple` is the type of server which use Deno-like syntax
-- `simple` is created to be as fast as possible 
-- Speed comparison (10 tests): 
-    + https://github.com/node-framework/newer.js/blob/main/tests/simple.mjs: `simple`
-    + https://github.com/node-framework/newer.js/blob/main/tests/native.mjs: Node.js HTTP
-
 - This code below creates a simple "Hello world" server on [localhost](http://localhost):
 
 ```javascript
@@ -120,7 +132,6 @@ for await (const response of simple())
 ## JsonDB
 
 - JsonDB is a type of local database which data is stored in a local `.json` file.
-- JsonDB is fast and lightweight
 
 ### Example
  
@@ -163,12 +174,5 @@ await User.clear();
 // Clear the database
 await db.clear();
 ```
-
-## Warnings
-
-- Don't download Beta or Alpha versions. Using them may break your application
-
-## License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_large)
 
 

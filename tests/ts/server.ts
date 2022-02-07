@@ -1,3 +1,4 @@
+import { SubDomain } from "../../src/main";
 import { Server } from "../../src/main";
 import subindex from "./subindex";
 
@@ -5,10 +6,10 @@ import subindex from "./subindex";
 const app = new Server();
 
 // Register a subdomain
-app.sub("www", subindex);
-
-// Register the router
-app.middleware(subindex);
+app.middleware(
+    new SubDomain("www")
+        .middleware(subindex)
+);
 
 // Listen to port 80
 app.listen(80);

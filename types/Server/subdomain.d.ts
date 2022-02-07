@@ -1,16 +1,21 @@
 import { Context, Middleware, NextFunction } from "./declarations";
-import Router from "./router";
 export default class SubDomain implements Middleware {
     private domain;
-    private handler;
+    private mds;
     /**
      * @param domain the subdomain to handle
      */
-    constructor(domain: string, handler: Router);
+    constructor(domain?: string);
+    /**
+     * Register a middleware
+     * @param m the middleware
+     * @returns this middleware for chaining
+     */
+    middleware(m: Middleware): this;
     /**
      * Invoke this subdomain handler
      * @param ctx
      * @param next
      */
-    invoke(ctx: Context, next?: NextFunction): Promise<void>;
+    invoke(ctx: Context, nxt?: NextFunction): Promise<void>;
 }

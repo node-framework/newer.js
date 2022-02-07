@@ -8,12 +8,18 @@ console.time("web");
 const app = new Server();
 
 // Register the router
-app.middleware(new SubDomain("index", index));
+app.middleware(
+    new SubDomain("index")
+        .middleware(
+            new SubDomain("sub")
+                .middleware(index)
+        )
+);
 
 // Register a middleware
 app.middleware({
     async invoke(ctx, next) {
-        ctx.response += "Hello and ";
+        ctx.response += " and Hi";
         await next();
     }
 });
