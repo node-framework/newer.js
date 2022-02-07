@@ -1,24 +1,28 @@
 import index from "./index.mjs";
-import { Server, SubDomain } from "../../lib/main.js";
+import newer from "../../lib/main.js";
 
 // Start the timer
 console.time("web");
 
 // Create a server
-const app = new Server();
+const app = newer();
 
-// Register the router
+// Register a subdomain handler
 app.middleware(
-    new SubDomain("index")
+    // Subdomain "index.localhost"
+    new newer.SubDomain("index")
+        // Register another subdomain handler
         .middleware(
-            new SubDomain("sub")
+            // Subdomain "sub.index.localhost"
+            new newer.SubDomain("sub")
+                // Register a route handler
                 .middleware(index)
         )
 );
 
 // Register a middleware
 app.middleware({
-    async invoke(ctx, next) {
+    invoke: async (ctx, next) =>  {
         ctx.response += " and Hi";
         await next();
     }
