@@ -3,10 +3,21 @@
 Start develop a web app with Newer.js!
 
 ## Installation
+```sh
+# npm
+npm install --save newer.js
+# yarn
+yarn add newer.js
+```
+## Table of Content
+- [Creating a simple page](#creating-a-simple-page)
+- [Context object](#context-object)
+- [Router](#router)
+- [SubDomain](#subdomain)
+- [JsonDB](#jsondb)
+- [JsonDB Example](#example)
 
-|        NPM       |         Yarn        |
-|:----------------:|:-------------------:|
-| `npm i newer.js` | `yarn add newer.js` |
+
 
 ## Creating a simple page
 
