@@ -1,6 +1,8 @@
 # Get started with Newer.js
 
-Start easy development server with Newer.js!
+Create a simple web server with Newer.js!
+
+![](ico.png)
 
 ## Installation
 ```sh
@@ -16,8 +18,6 @@ yarn add newer.js
 - [SubDomain](#subdomain)
 - [JsonDB](#jsondb)
 - [JsonDB Example](#example)
-
-
 
 ## Creating a simple page
 
