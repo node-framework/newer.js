@@ -8,16 +8,13 @@ export default class Router implements Middleware {
 
     private middlewares: Middleware[];
 
-    private routeName: string;
-
     /**
      * Create a router
      * @param routeName the route name
      */
-    constructor(routeName: string = "/") {
+    constructor(private routeName: string = "/") {
         this.routes = {};
         this.middlewares = [];
-        this.routeName = routeName;
     }
 
     /**

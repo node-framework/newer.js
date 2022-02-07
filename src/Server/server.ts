@@ -58,15 +58,18 @@ export default class Server {
     // End the response
     private endResponse(ctx: Context, res: http.ServerResponse) {
         // Check whether content and status code is set
-        if (!ctx.response && !ctx.statusCode)
-            // Set status code to 404 or 204
-            ctx.statusCode = ctx.response === null ? 404 : 204;
+        if (!ctx.response && !ctx.statusCode) {
+            // Set status code to 404
+            ctx.statusCode = 404;
+            // Set the response
+            ctx.response = "Cannot " + ctx.method + " " + ctx.url;
+        }
 
         // Write status code 
         res.writeHead(ctx.statusCode ?? 200);
 
         // End the response
-        res.end(ctx.response);
+        res.end(ctx.response ?? "");
     }
 
     /**
@@ -150,10 +153,6 @@ export default class Server {
                     // Subhost
                     subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
                 };
-
-            // Create favicon if it does not exists
-            if (req.url === "/favicon.ico" && !fs.existsSync(this.iconPath))
-                fs.appendFileSync(this.iconPath, "");
 
             // Next function
             const next = async (index: number, max: number) => {

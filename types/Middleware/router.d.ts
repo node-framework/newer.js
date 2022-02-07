@@ -1,8 +1,8 @@
 import { Context, Handler, Middleware, NextFunction } from "../declarations";
 export default class Router implements Middleware {
+    private routeName;
     private routes;
     private middlewares;
-    private routeName;
     /**
      * Create a router
      * @param routeName the route name

@@ -1,15 +1,11 @@
-import { SubDomain } from "../../src/main";
+import { Router, StaticDir } from "../../src/main";
 import { Server } from "../../src/main";
-import subindex from "./subindex";
 
 // Server
 const app = new Server();
 
-// Register a subdomain
-app.middleware(
-    new SubDomain("www")
-        .middleware(subindex)
-);
+// Register a static directory
+app.middleware(new StaticDir("./tests/public"));
 
 // Listen to port 80
 app.listen(80);

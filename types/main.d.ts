@@ -5,5 +5,6 @@ import Server from "./Server/server";
 import simple from "./Server/simple";
 import Router from "./Middleware/router";
 import SubDomain from "./Middleware/subdomain";
-export { JsonDB, JsonReviver, Server, Router, SubDomain, simple };
+import StaticDir from "./Middleware/staticdir";
+export { JsonDB, JsonReviver, Server, Router, SubDomain, StaticDir, simple };
 export type { Schema, SchemaInstance, Context, Handler, Method, Middleware, SimpleOptions, NextFunction };
