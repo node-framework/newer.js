@@ -1,8 +1,8 @@
+![gGx6CwJ0_4x-removebg-preview](https://user-images.githubusercontent.com/75932477/152923873-bac8e8e4-afe7-4e8c-9d37-c7b38676a2b7.png)
 # Get started with Newer.js
 
 Create a simple web server with Newer.js!
 
-![](ico.png)
 
 ## Installation
 ```sh
