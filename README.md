@@ -1,11 +1,12 @@
 <p align="center"><img src="https://user-images.githubusercontent.com/75932477/152924193-7f526332-201a-437f-8c96-ad0b983b2650.png" width="230" height="210"/></p>
 
+    
 ![npm](https://img.shields.io/npm/v/newer.js)
 ![npm](https://img.shields.io/npm/dm/newer.js)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/newer.js)
 ![GitHub](https://img.shields.io/github/license/node-framework/newer.js)
 ![GitHub Repo stars](https://img.shields.io/github/stars/node-framework/newer.js?style=social)
-
+    
 # Get started with Newer.js
 
 Create a simple web server with Newer.js!
