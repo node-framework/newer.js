@@ -53,7 +53,7 @@ export default class Router implements Middleware {
      * @param ctx The context
      * @returns no result
      */
-    async invoke(ctx: Context, nxt?: NextFunction): Promise<void> {
+    async invoke(ctx: Context, next: NextFunction): Promise<void> {
         // When there is no middlewares
         if (this.middlewares.length === 0) {
             // Get the route
@@ -66,7 +66,7 @@ export default class Router implements Middleware {
         }
 
         // Else
-        const next = async (index: number, max: number) => {
+        const __next = async (index: number, max: number) => {
             // When the last middleware called `next()`
             if (index === max) {
                 // Get the route
@@ -86,15 +86,14 @@ export default class Router implements Middleware {
                     return;
 
                 // When not invoke the middleware
-                await this.middlewares[index + 1]?.invoke(ctx, async () => next(index + 1, max));
+                await this.middlewares[index + 1]?.invoke(ctx, async () => __next(index + 1, max));
             }
         }
 
         // Invoke the middleware
-        await this.middlewares[0]?.invoke(ctx, async () => next(0, this.middlewares.length));
+        await this.middlewares[0]?.invoke(ctx, async () => __next(0, this.middlewares.length));
 
-        if (nxt)
-            // End the function
-            await nxt();
+        // End the function
+        await next();
     }
 }

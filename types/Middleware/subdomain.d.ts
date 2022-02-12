@@ -17,5 +17,5 @@ export default class SubDomain implements Middleware {
      * @param ctx
      * @param next
      */
-    invoke(ctx: Context, nxt?: NextFunction): Promise<void>;
+    invoke(ctx: Context, next: NextFunction): Promise<void>;
 }

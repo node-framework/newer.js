@@ -1,20 +1,20 @@
 import index from "./index.mjs";
-import newer from "../../lib/main.js";
+import { Server, SubDomain } from "../../lib/main.js";
 
 // Start the timer
 console.time("web");
 
 // Create a server
-const app = newer();
+const app = new Server();
 
 // Register a subdomain handler
 app.middleware(
     // Subdomain "index.localhost"
-    new newer.SubDomain("index")
+    new SubDomain("index")
         // Register another subdomain handler
         .middleware(
             // Subdomain "sub.index.localhost"
-            new newer.SubDomain("sub")
+            new SubDomain("sub")
                 // Register a route handler
                 .middleware(index)
         )

@@ -26,5 +26,5 @@ export default class Router implements Middleware {
      * @param ctx The context
      * @returns no result
      */
-    invoke(ctx: Context, nxt?: NextFunction): Promise<void>;
+    invoke(ctx: Context, next: NextFunction): Promise<void>;
 }

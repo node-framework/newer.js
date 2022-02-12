@@ -29,8 +29,8 @@ export default class SubDomain implements Middleware {
      * @param ctx 
      * @param next 
      */
-    async invoke(ctx: Context, nxt?: NextFunction) {
-        const next = async (index: number, max: number) => {
+    async invoke(ctx: Context, next: NextFunction) {
+        const __next = async (index: number, max: number) => {
             if (index < max) {
                 // When response ended
                 if (ctx.responseEnded)
@@ -38,15 +38,14 @@ export default class SubDomain implements Middleware {
                     return;
 
                 // When not invoke the middleware
-                await this.mds[index + 1]?.invoke(ctx, async () => next(index + 1, max));
+                await this.mds[index + 1]?.invoke(ctx, async () => __next(index + 1, max));
             }
         }
 
         // Invoke the middleware
-        await this.mds[0]?.invoke(ctx, async () => next(0, this.mds.length));
+        await this.mds[0]?.invoke(ctx, async () => __next(0, this.mds.length));
 
-        if (nxt)
-            // End the function
-            await nxt();
+        // End the function
+        await next();
     }
 }

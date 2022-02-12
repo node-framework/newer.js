@@ -83,7 +83,7 @@ export declare type NextFunction = () => Promise<void>;
  * A middleware
  */
 export interface Middleware {
-    invoke(ctx: Context, next?: NextFunction): Promise<void>;
+    invoke(ctx: Context, next: NextFunction): Promise<void>;
 }
 /**
  * Server options
