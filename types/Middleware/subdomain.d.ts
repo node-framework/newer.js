@@ -1,4 +1,7 @@
 import { Context, Middleware, NextFunction } from "../declarations";
+/**
+ * Handle a subdomain
+ */
 export default class SubDomain implements Middleware {
     private domain;
     private mds;

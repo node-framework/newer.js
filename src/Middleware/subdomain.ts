@@ -1,5 +1,8 @@
 import { Context, Middleware, NextFunction } from "../declarations";
 
+/**
+ * Handle a subdomain
+ */
 export default class SubDomain implements Middleware {
     private domain: string;
     private mds: Middleware[];
@@ -42,8 +45,9 @@ export default class SubDomain implements Middleware {
             }
         }
 
-        // Invoke the middleware
-        await this.mds[0]?.invoke(ctx, async () => __next(0, this.mds.length));
+        if (ctx.subhost === this.domain) 
+            // Invoke the middleware
+            await this.mds[0]?.invoke(ctx, async () => __next(0, this.mds.length));
 
         // End the function
         await next();

@@ -1,4 +1,11 @@
 import { Context, Handler, Middleware, NextFunction } from "../declarations";
+/**
+ * Create a server router
+ *
+ * All the middlewares will be executed first, and then the handler will be executed.
+ *
+ * Router can be nested using `Router.middleware`
+ */
 export default class Router implements Middleware {
     private routeName;
     private routes;

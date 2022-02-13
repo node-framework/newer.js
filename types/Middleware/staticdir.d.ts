@@ -1,4 +1,7 @@
 import { Context, Middleware, NextFunction } from "../declarations";
+/**
+ * Serve static files in a specific directory
+ */
 export default class StaticDir implements Middleware {
     dir: string;
     /**

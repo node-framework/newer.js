@@ -2,6 +2,9 @@ import fs from "fs";
 import path from "path";
 import { Context, Middleware, NextFunction } from "../declarations";
 
+/**
+ * Serve static files in a specific directory
+ */
 export default class StaticDir implements Middleware {
     /**
      * @param dir The target directory

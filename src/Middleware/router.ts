@@ -1,6 +1,13 @@
 import path from "path";
 import { Context, Handler, Middleware, NextFunction } from "../declarations";
 
+/**
+ * Create a server router
+ * 
+ * All the middlewares will be executed first, and then the handler will be executed.
+ * 
+ * Router can be nested using `Router.middleware`
+ */
 export default class Router implements Middleware {
     private routes: {
         [name: string]: Handler
@@ -90,8 +97,9 @@ export default class Router implements Middleware {
             }
         }
 
-        // Invoke the middleware
-        await this.middlewares[0]?.invoke(ctx, async () => __next(0, this.middlewares.length));
+        if (ctx.url.startsWith(this.routeName))
+            // Invoke the middleware
+            await this.middlewares[0]?.invoke(ctx, async () => __next(0, this.middlewares.length));
 
         // End the function
         await next();
