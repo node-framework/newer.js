@@ -20,6 +20,10 @@ export default class StaticDir implements Middleware {
                 .readFile(path.join(this.dir, ctx.url))
                 .then(v => v?.toString() ?? "")
                 .catch(() => "");
+
+        // End the response if the response is not empty
+        if (ctx.response && ctx.response !== "")
+            ctx.responseEnded = true;
             
         // Next middleware
         await next();
