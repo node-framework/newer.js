@@ -8,5 +8,5 @@ export default class StaticDir implements Middleware {
      * @param dir The target directory
      */
     constructor(dir: string);
-    invoke(ctx: Context, next?: NextFunction): Promise<void>;
+    invoke(ctx: Context, next: NextFunction): Promise<void>;
 }

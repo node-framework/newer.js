@@ -109,33 +109,43 @@ export default class JsonDB {
      * @returns the created schema
      */
     schema = (name: string, schem?: object): Schema => {
+        // Find the schema
         if (!schem)
             return this.schemas.filter(val => val?.name === name)[0]?.schem ?? undefined;
+
         // This database file path
         const pth = this.filePath;
+
         // Check whether schema exists
         if (this.schemas.map((val) => val.name).includes(name))
             return this.schemas.filter(val => val.name === name)[0].schem;
+
         // Reference to this object
         const pointer = this;
+
         // Initialize the schema docs array with an empty one
         this.data[name] = [];
+
         // Create a type checker
         const SchemaObject = typeChecker(schem);
+
         // Write the created array to database file
         fs.writeFileSync(pth, JSON.stringify(this.data));
+
         // Create a class to use to manipulate the schema
         let sch = class Schema {
             /**
              * Current object
              */
             private obj: object;
+
             /**
              * @param obj to manipulate
              */
             constructor(obj: object) {
                 this.obj = new SchemaObject(obj);
             }
+
             /**
              * @returns the object after saving it to the database
              */
@@ -145,6 +155,7 @@ export default class JsonDB {
                 pointer.events.emit("save-item", this.obj);
                 return pointer.data;
             }
+
             /**
              * @returns the data after deleting
              */
@@ -156,6 +167,7 @@ export default class JsonDB {
                 this.obj = undefined;
                 return pointer.data;
             }
+
             /**
              * @param obj 
              * @returns the object after updating
@@ -180,16 +192,19 @@ export default class JsonDB {
                 pointer.events.emit("update-item", this.obj);
                 return obj;
             }
+
             /**
              * @returns all docs of the schema
              */
             static read = (): object[] =>
                 pointer.data[Schema.schem];
+                
             /**
              * @param obj to create
              * @returns created schema docs
              */
             static create = (...obj: object[]): Schema[] => obj.map(e => new Schema(e));
+
             /**
              * @param obj to update
              * @param updateObj after update
@@ -203,6 +218,7 @@ export default class JsonDB {
                 pointer.events.emit("update-item", updateObj);
                 return updateObj;
             }
+
             /**
              * @param obj 
              * @returns true if object matches current schema
@@ -214,12 +230,14 @@ export default class JsonDB {
                 }
                 return true;
             }
+
             /**
              * @returns {string} this schema name
              */
             static get schem(): string {
                 return name;
             }
+
             /**
              * @param obj to find
              * @param except if true will find objects that don't match `obj`
@@ -246,6 +264,7 @@ export default class JsonDB {
                 }
                 return listMatch.length === 1 ? listMatch[0] : listMatch;
             }
+
             /**
              * Clear the schema
              */
@@ -254,6 +273,7 @@ export default class JsonDB {
                 await pfs.writeFile(pth, JSON.stringify(pointer.data));
                 pointer.events.emit("clear-schema");
             }
+
             /**
              * @param obj to delete
              * @param except if true will delete objects that don't match `obj`
@@ -272,6 +292,7 @@ export default class JsonDB {
                 pointer.events.emit("delete-item");
                 await pfs.writeFile(pth, JSON.stringify(pointer.data));
             }
+
             /**
              * Drop the schema and all schema docs
              */
@@ -284,6 +305,7 @@ export default class JsonDB {
         });
         return sch;
     }
+
     /**
      * @returns a promise after clearing the database
      */
@@ -292,6 +314,7 @@ export default class JsonDB {
         await pfs.writeFile(this.filePath, "{}"),
         void this.events.emit("clear-database")
     )
+
     /**
      * @param schema setting it to a falsy value (such as undefined) will delete the whole database (which makes this object unusable)
      */
@@ -299,6 +322,7 @@ export default class JsonDB {
         if (!schema) {
             await pfs.unlink(this.filePath);
             this.data = undefined;
+            
             // Emit event
             this.events.emit("drop-database");
         } else {
@@ -312,8 +336,10 @@ export default class JsonDB {
             this.data = rest;
             // Filter the schema out of the data
             this.schemas = this.schemas.filter(val => val.name !== schemName);
+
             // Override the current data
             await pfs.writeFile(this.filePath, JSON.stringify(this.data));
+
             // Emit event
             this.events.emit('drop-schema');
         }

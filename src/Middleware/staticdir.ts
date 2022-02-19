@@ -12,7 +12,7 @@ export default class StaticDir implements Middleware {
     constructor(public dir: string) {
     }
 
-    async invoke(ctx: Context, next?: NextFunction): Promise<void> {
+    async invoke(ctx: Context, next: NextFunction): Promise<void> {
         // If response hasn't been written
         if (!ctx.response) 
             // Write the response with the file
