@@ -74,19 +74,8 @@ export default class Router implements Middleware {
 
         // Else
         const __next = async (index: number, max: number) => {
-            // When the last middleware called `next()`
-            if (index === max) {
-                // Get the route
-                const target = this.routes[ctx.url];
-
-                // Check whether this route has been registered
-                if (target && target[ctx.method])
-                    // Invoke route
-                    await target[ctx.method](ctx);
-            }
-
             // Else
-            else if (index < max) {
+            if (index < max) {
                 // When response ended
                 if (ctx.responseEnded)
                     // End the function
@@ -97,9 +86,18 @@ export default class Router implements Middleware {
             }
         }
 
-        if (ctx.url.startsWith(this.routeName))
+        if (ctx.url.startsWith(this.routeName)) {
             // Invoke the middleware
             await this.middlewares[0]?.invoke(ctx, async () => __next(0, this.middlewares.length));
+
+            // Get the route
+            const target = this.routes[ctx.url];
+
+            // Check whether this route has been registered
+            if (target && target[ctx.method])
+                // Invoke route
+                await target[ctx.method](ctx);
+        }
 
         // End the function
         await next();

@@ -1,32 +1,32 @@
 {
-  "name": "newer.js",
-  "version": "0.1.7",
-  "description": "A lightweight framework",
-  "main": "lib/main.js",
-  "directories": {
-    "lib": "lib"
-  },
-  "keywords": [
-    "backend",
-    "framework", 
-    "lightweight",
-    "express-like",
-    "database",
-    "fast"
-  ],
-  "author": "reve-node",
-  "license": "MIT",
-  "dependencies": {
-    "query-string": "^7.0.1"
-  },
-  "repository": {
-    "url": "https://github.com/node-framework/newer.js"
-  },
-  "types": "types/main.d.ts",
-  "devDependencies": {
-    "@types/node": "^17.0.8",
-    "autocannon": "^7.5.1",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
-  }
+	"name": "newer.js",
+	"version": "0.1.8",
+	"description": "A lightweight framework",
+	"main": "lib/main.js",
+	"directories": {
+		"lib": "lib"
+	},
+	"keywords": [
+		"backend",
+		"framework",
+		"lightweight",
+		"express-like",
+		"database",
+		"fast"
+	],
+	"author": "reve-node",
+	"license": "MIT",
+	"dependencies": {
+		"query-string": "^7.0.1"
+	},
+	"repository": {
+		"url": "https://github.com/node-framework/newer.js"
+	},
+	"types": "types/main.d.ts",
+	"devDependencies": {
+		"@types/node": "^17.0.8",
+		"autocannon": "^7.5.1",
+		"ts-node": "^10.4.0",
+		"typescript": "^4.5.4"
+	}
 }
