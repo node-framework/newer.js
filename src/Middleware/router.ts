@@ -61,18 +61,7 @@ export default class Router implements Middleware {
      * @returns no result
      */
     async invoke(ctx: Context, next: NextFunction): Promise<void> {
-        // When there is no middlewares
-        if (this.middlewares.length === 0) {
-            // Get the route
-            const target = this.routes[ctx.url];
-
-            // Check whether this route has been registered
-            if (target && target[ctx.method])
-                // Invoke route
-                await target[ctx.method](ctx);
-        }
-
-        // Else
+        // Execute the middlewares
         const __next = async (index: number, max: number) => {
             // Else
             if (index < max) {
