@@ -78,6 +78,21 @@ export interface Context extends Record<string, any> {
      * Server IPv4 address
      */
     readonly remoteAddress: string;
+
+    /**
+     * The raw request
+     */
+    readonly rawRequest: {
+        /**
+         * Request
+         */
+        readonly req: http.IncomingMessage;
+
+        /**
+         * Response
+         */
+        readonly res: http.ServerResponse;
+    };
     
     /**
      * The subhost

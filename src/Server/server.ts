@@ -61,6 +61,7 @@ export default class Server {
         if (!ctx.response && !ctx.statusCode) {
             // Set status code to 404
             ctx.statusCode = 404;
+            
             // Set the response
             ctx.response = "Cannot " + ctx.method + " " + ctx.url;
         }
@@ -99,6 +100,11 @@ export default class Server {
 
                 // The context
                 c: Context = {
+                    // Raw request
+                    rawRequest: {
+                        req, res
+                    },
+
                     // End the response manually
                     responseEnded: false,
 
@@ -153,6 +159,10 @@ export default class Server {
                     // Subhost
                     subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
                 };
+
+            // Check whether the request is a favicon
+            if (req.url === "/favicon.ico") 
+                c.response = this.readFile(this.iconPath) ?? "";
 
             // Next function
             const next = async (index: number, max: number) => {
