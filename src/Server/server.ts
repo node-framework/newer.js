@@ -41,8 +41,11 @@ export default class Server {
      * @param m middleware 
      * @returns this server for chaining
      */
-    middleware(m: Middleware) {
-        this.mds.push(m);
+    middleware(...m: Middleware[]) {
+        // Add middleware
+        this.mds.push(...m);
+
+        // Return this server for chaining
         return this;
     }
 
@@ -61,7 +64,7 @@ export default class Server {
         if (!ctx.response && !ctx.statusCode) {
             // Set status code to 404
             ctx.statusCode = 404;
-            
+
             // Set the response
             ctx.response = "Cannot " + ctx.method + " " + ctx.url;
         }
@@ -161,7 +164,7 @@ export default class Server {
                 };
 
             // Check whether the request is a favicon
-            if (req.url === "/favicon.ico") 
+            if (req.url === "/favicon.ico")
                 c.response = this.readFile(this.iconPath) ?? "";
 
             // Next function

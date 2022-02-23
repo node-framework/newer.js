@@ -23,7 +23,7 @@ export default class Server {
      * @param m middleware
      * @returns this server for chaining
      */
-    middleware(m: Middleware): this;
+    middleware(...m: Middleware[]): this;
     private readFile;
     private endResponse;
     /**
