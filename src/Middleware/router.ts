@@ -42,16 +42,23 @@ export default class Router implements Middleware {
 
     /**
      * Register a middleware
-     * @param md a middleware (or another router)
+     * @param m a middleware (or another router)
      * @returns this router for chaining
      */
-    middleware(md: Middleware) {
-        if (md instanceof Router)
-            md.routeName = path
-                .join(this.routeName, md.routeName)
-                // @ts-ignore
-                .replaceAll("\\", "/");
-        this.middlewares.push(md);
+    middleware(...m: Middleware[]) {
+        for (const md of m) {
+            // Check whether this middleware is a router
+            if (md instanceof Router)
+                md.routeName = path
+                    .join(this.routeName, md.routeName)
+                    // @ts-ignore
+                    .replaceAll("\\", "/");
+
+            // Push the middleware
+            this.middlewares.push(md);
+        }
+
+        // Return this router for chaining
         return this;
     }
 

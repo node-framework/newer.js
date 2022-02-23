@@ -24,10 +24,10 @@ export default class Router implements Middleware {
     route(routeName: string, routeHandler: Handler): this;
     /**
      * Register a middleware
-     * @param md a middleware (or another router)
+     * @param m a middleware (or another router)
      * @returns this router for chaining
      */
-    middleware(md: Middleware): this;
+    middleware(...m: Middleware[]): this;
     /**
      * Invoke the route
      * @param ctx The context
