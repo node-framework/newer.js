@@ -1,9 +1,6 @@
 // JsonDB
 import JsonDB from "./Database/JsonDB";
 
-// Import all the declarations
-import { Context, Handler, Middleware, Method, SimpleOptions, NextFunction, Schema, SchemaInstance } from "./declarations";  
-
 // All servers
 import Server from "./Server/server";
 import simple from "./Server/simple";
@@ -13,8 +10,14 @@ import Router from "./Middleware/router";
 import SubDomain from "./Middleware/subdomain";
 import StaticDir from "./Middleware/staticdir";
 
+// Application
+import app from "./application";
+
 // Default export
 export { JsonDB, Server, Router, SubDomain, StaticDir, simple };
 
 // Export all types
-export type { Schema, SchemaInstance, Context, Handler, Method, Middleware, SimpleOptions, NextFunction };
+export * from "./declarations";
+
+// Export the app
+export default app;

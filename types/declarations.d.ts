@@ -164,3 +164,55 @@ export declare type Schema = {
     deleteMatch: (obj?: object, except?: boolean) => Promise<void>;
     drop: () => Promise<void>;
 };
+/**
+ * Application
+ */
+export interface Application {
+    /**
+     * Start the main application
+     */
+    start(): Promise<void>;
+    /**
+     * Set app configs
+     * @param configs the configs
+     */
+    config(configs: AppConfigs): void;
+}
+/**
+ * App configs
+ */
+export interface AppConfigs {
+    /**
+     * App root path. Defaults to "."
+     */
+    projectPath?: string;
+    /**
+     * Static directory. Defaults to "public"
+     */
+    static?: string;
+    /**
+     * HTTP server options
+     */
+    httpOptions?: {
+        /**
+         * Server port. Defaults to 80
+         */
+        port?: number;
+        /**
+         * Server hostname. Defaults to "localhost"
+         */
+        hostname?: string;
+        /**
+         * HTTPS mode. Defaults to false
+         */
+        httpsMode?: boolean;
+        /**
+         * HTTP backlog. Defaults to 0
+         */
+        backlog?: number;
+        /**
+         * Advanced options
+         */
+        advanced?: http.ServerOptions | https.ServerOptions;
+    };
+}

@@ -93,7 +93,7 @@ export interface Context extends Record<string, any> {
          */
         readonly res: http.ServerResponse;
     };
-    
+
     /**
      * The subhost
      */
@@ -157,12 +157,12 @@ export interface SimpleServer {
     /**
      * The simple HTTP or HTTPS server
      */
-    readonly server: http.Server | https.Server; 
+    readonly server: http.Server | https.Server;
 
     /**
      * The generator
      */
-    [Symbol.asyncIterator](): AsyncGenerator<http.ServerResponse, any, unknown>; 
+    [Symbol.asyncIterator](): AsyncGenerator<http.ServerResponse, any, unknown>;
 }
 
 
@@ -197,4 +197,65 @@ export type Schema = {
     clear: () => Promise<void>,
     deleteMatch: (obj?: object, except?: boolean) => Promise<void>,
     drop: () => Promise<void>
+}
+
+/**
+ * Application 
+ */
+export interface Application {
+    /**
+     * Start the main application
+     */
+    start(): Promise<void>;
+
+    /**
+     * Set app configs
+     * @param configs the configs
+     */
+    config(configs: AppConfigs): void;
+}
+
+/**
+ * App configs
+ */
+export interface AppConfigs {
+    /**
+     * App root path. Defaults to "."
+     */
+    projectPath?: string,
+
+    /**
+     * Static directory. Defaults to "public"
+     */
+    static?: string,
+
+    /**
+     * HTTP server options
+     */
+    httpOptions?: {
+        /**
+         * Server port. Defaults to 80
+         */
+        port?: number,
+
+        /**
+         * Server hostname. Defaults to "localhost"
+         */
+        hostname?: string,
+
+        /**
+         * HTTPS mode. Defaults to false
+         */
+        httpsMode?: boolean,
+
+        /**
+         * HTTP backlog. Defaults to 0
+         */
+        backlog?: number,
+
+        /**
+         * Advanced options
+         */
+        advanced?: http.ServerOptions | https.ServerOptions
+    }
 }
