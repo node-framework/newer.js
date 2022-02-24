@@ -1,5 +1,5 @@
 # Table of Content
-- [Newer.js Core](#getting-started-with-newer.js)
+- [Newer.js Core](#getting-started-with-newerjs)
 - [Pre-setup server](#presetup-server)
 
 # Getting started with Newer.js
@@ -118,7 +118,7 @@ sub.middleware({
 
 You can nest subdomains using `sub.middleware`
 
-# Presetup server
+# Pre-setup server
 
 Set up a server with just 3 lines of code
 
