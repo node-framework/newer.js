@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import http from "http";
 import https from "https";
-import { Middleware } from "../declarations";
+import { Middleware } from "../declarations.js";
 export default class Server {
     private mds;
     private options;

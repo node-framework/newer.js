@@ -1,4 +1,4 @@
-import { Context, Middleware, NextFunction } from "../declarations";
+import { Context, Middleware, NextFunction } from "../declarations.js";
 /**
  * Serve static files in a specific directory
  */

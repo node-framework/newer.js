@@ -1,4 +1,4 @@
-import { SimpleOptions, SimpleServer } from "../declarations";
+import { SimpleOptions, SimpleServer } from "../declarations.js";
 /**
  * Create a simple server
  */

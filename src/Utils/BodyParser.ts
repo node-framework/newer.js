@@ -16,7 +16,14 @@ export const getBody = async (req: http.IncomingMessage): Promise<qs.ParsedQuery
     });
 
 // Get query of an URL
-export const getQuery = (url: string) =>
-    Object.fromEntries(
-        new URLSearchParams(url.split("?")[1]).entries()
-    );
+export const getQuery = (url: string) => {
+    // Result
+    const res = {};
+
+    // Get the query
+    new URLSearchParams(url.split("?")[1])
+        .forEach((value, key) => res[key] = value);
+
+    // Return the query
+    return res;
+};

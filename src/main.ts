@@ -1,23 +1,18 @@
 // JsonDB
-import JsonDB from "./Database/JsonDB";
+import JsonDB from "./Database/JsonDB.js";
 
 // All servers
-import Server from "./Server/server";
-import simple from "./Server/simple";
+import Server from "./Server/server.js";
+import simple from "./Server/simple.js";
 
 // Middlewares
-import Router from "./Middleware/router";
-import SubDomain from "./Middleware/subdomain";
-import StaticDir from "./Middleware/staticdir";
-
-// Application
-import app from "./application";
+import Router from "./Middleware/router.js";
+import SubDomain from "./Middleware/subdomain.js";
+import StaticDir from "./Middleware/staticdir.js";
+import app from "./application.js";
 
 // Default export
-export { JsonDB, Server, Router, SubDomain, StaticDir, simple };
+export { JsonDB, Server, Router, SubDomain, StaticDir, simple, app };
 
 // Export all types
-export * from "./declarations";
-
-// Export the app
-export default app;
+export * from "./declarations.js";

@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-alpha.6",
+	"version": "0.2.0-alpha.11",
 	"description": "A lightweight framework",
 	"main": "lib/main.js",
 	"directories": {
@@ -28,5 +28,6 @@
 		"autocannon": "^7.5.1",
 		"ts-node": "^10.4.0",
 		"typescript": "^4.5.4"
-	}
+	},
+	"type": "module"
 }

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Context, Middleware, NextFunction } from "../declarations";
+import { Context, Middleware, NextFunction } from "../declarations.js";
 
 /**
  * Serve static files in a specific directory

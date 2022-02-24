@@ -1,4 +1,4 @@
-import { Schema, DBEvents } from "../declarations";
+import { Schema, DBEvents } from "../declarations.js";
 export default class JsonDB {
     private events;
     /**

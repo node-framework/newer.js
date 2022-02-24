@@ -1,4 +1,4 @@
-import { Context, Handler, Middleware, NextFunction } from "../declarations";
+import { Context, Handler, Middleware, NextFunction } from "../declarations.js";
 /**
  * Create a server router
  *
