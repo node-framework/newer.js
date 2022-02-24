@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-alpha",
+	"version": "0.2.0-beta.1",
 	"description": "A lightweight framework",
 	"main": "lib/main.js",
 	"directories": {
@@ -9,10 +9,7 @@
 	"keywords": [
 		"backend",
 		"framework",
-		"lightweight",
-		"express-like",
-		"database",
-		"fast"
+		"pre-setup"
 	],
 	"author": "reve-node",
 	"license": "MIT",

@@ -1,7 +1,7 @@
 import Router from "./Middleware/router.js";
 import Server from "./Server/server.js";
 import StaticDir from "./Middleware/staticdir.js";
-import { readdirSync } from "fs";
+import { readdirSync, existsSync, fstat } from "fs";
 import { join, resolve } from "path";
 import { AppConfigs, Application } from "./declarations.js";
 
@@ -38,51 +38,56 @@ async function start() {
         )
     );
 
-    // Read the middleware directory
-    for (const filename of readdirSync(
-        join(appConfig.projectPath, "src", "middlewares")
-    ) ?? []) {
-        // Module path
-        let modulePath = resolve(join(appConfig.projectPath, "src", "middlewares", filename));
-        modulePath = modulePath
-            .slice(modulePath.indexOf(":") + 1)
-            .replaceAll("\\", "/");
+    // Check whether src exists
+    if (existsSync(join(appConfig.projectPath, "src"))) {
+        // Read the middleware directory
+        if (existsSync(join(appConfig.projectPath, "src", "middleware")))
+            for (const filename of readdirSync(
+                join(appConfig.projectPath, "src", "middlewares")
+            ) ?? []) {
+                // Module path
+                let modulePath = resolve(join(appConfig.projectPath, "src", "middlewares", filename));
+                modulePath = modulePath
+                    .slice(modulePath.indexOf(":") + 1)
+                    .replaceAll("\\", "/");
 
-        // Import the middleware
-        let module = await import(modulePath);
+                // Import the middleware
+                let module = await import(modulePath);
 
-        // Check whether module is an ES6 module
-        module = module?.default ?? module;
+                // Check whether module is an ES6 module
+                module = module?.default ?? module;
 
-        try {
-            // Add the middleware to the router
-            if (Array.isArray(module))
-                router.middleware(...module);
-            else
-                router.middleware(module);
-        } catch (e) { }
-    }
+                try {
+                    // Add the middleware to the router
+                    if (Array.isArray(module))
+                        router.middleware(...module);
+                    else
+                        router.middleware(module);
+                } catch (e) { }
+            }
 
-    // Read the controller directory
-    for (const filename of readdirSync(
-        join(appConfig.projectPath, "src", "controllers")
-    ) ?? []) {
-        // Module path
-        let modulePath = resolve(join(appConfig.projectPath, "src", "controllers", filename));
-        modulePath = modulePath
-            .slice(modulePath.indexOf(":") + 1)
-            .replaceAll("\\", "/");
+        // Read the controller directory
+        if (existsSync(join(appConfig.projectPath, "src", "controllers")))
+            for (const filename of readdirSync(
+                join(appConfig.projectPath, "src", "controllers")
+            ) ?? []) {
+                // Module path
+                let modulePath = resolve(join(appConfig.projectPath, "src", "controllers", filename));
+                modulePath = modulePath
+                    .slice(modulePath.indexOf(":") + 1)
+                    .replaceAll("\\", "/");
 
-        // Get the controller path
-        let module = await import(modulePath);
+                // Get the controller path
+                let module = await import(modulePath);
 
-        // Check whether module is an ES6 module
-        module = module?.default ?? module;
+                // Check whether module is an ES6 module
+                module = module?.default ?? module;
 
-        // Loop through the routes
-        for (const routeName in module)
-            // Add to router
-            router.route(routeName, module[routeName]);
+                // Loop through the routes
+                for (const routeName in module)
+                    // Add to router
+                    router.route(routeName, module[routeName]);
+            }
     }
 
     // Add to app
