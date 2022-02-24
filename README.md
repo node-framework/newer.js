@@ -16,8 +16,6 @@ yarn add newer.js
 - [Context object](#context-object)
 - [Router](#router)
 - [SubDomain](#subdomain)
-- [JsonDB](#jsondb)
-- [JsonDB Example](#example)
 
 ## Creating a simple page
 
@@ -66,11 +64,9 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 - `ctx.httpVersion`: The request HTTP version. This method is read-only
 - `ctx.remoteAddress`: The server IPv4
 
-- Examples: https://github.com/node-framework/newer.js-example
-
 ### Router
 
-- Router is a middleware that handles a specific route and sub-route
+Router is a middleware that handles a specific route and sub-route
 
 ```javascript
 // Import from NewerJS
@@ -97,11 +93,11 @@ index.route("/", {
 });
 ```
 
-- You can nest Routers using `router.middleware`
+You can nest Routers using `router.middleware`
 
 ## SubDomain
 
-- SubDomain is a middleware that handles a specific subdomain
+SubDomain is a middleware that handles a specific subdomain
 
 ```javascript
 // Import from NewerJS
@@ -121,69 +117,87 @@ sub.middleware({
 });
 ```
 
-- You can nest subdomains using `sub.middleware`
+You can nest subdomains using `sub.middleware`
 
-## Not into these type of frameworks?
+# Pre-setup server
 
-- `simple` is the type of server which use Deno-like syntax
-- This code below creates a simple "Hello world" server on [localhost](http://localhost):
+Set up a server with just 3 lines of code
+
+## Getting started
+
+Create a file named `index.mjs` and write:
 
 ```javascript
-// Import from NewerJS
-import { simple } from "newer.js";
+import { app } from "newer.js";
 
-// Create a new server and handle each requests
-for await (const response of simple()) 
-    // End the response
-    response.end("Hello world");
+app.start();
 ```
 
-- You can get the raw HTTP or HTTPS server via `simple().server`
+Set up a project structure:
+```sh
+public # Or the static directory that matches the configuration
+src # Source codes
+    controllers # App controllers
+    middlewares # App middlewares
+```
 
-## JsonDB
-
-- JsonDB is a type of local database which data is stored in a local `.json` file.
-
-### Example
- 
+### Route handling
+To add a route handler, for example `/`, create a file in `src/controllers` and write:
 ```javascript
-// Import from NewerJS
-import { JsonDB } from "newer.js";
-
-// Create a database
-const db = new JsonDB("Your json file path");
-
-// Create a schema called user with `name` property typed `string` and `id` property typed `number`
-const User = db.schema("User", {
-    name: String,
-    id: Number 
-});
-
-// Create objects that matched the schema and save it to the database
-let user = new User({
-    name: "Reve", // Matches type "String"
-    id: 863068 // Matches type "Number"
-});
-
-await user.save(); // Save to database
-
-let user1 = new User({
-    name: "Alex", // Matches type "String"
-    id: 509390 // Matches type "Number"
-});
-
-await user1.save(); // Save to database
-
-// Search for user with name equals `Alex` and object count set to 1 to returns only 1 object
-await User.find({
-    name: "Alex"
-}, 1).then(console.log);
-
-// Clear all the objects belong to the schema that was created before
-await User.clear();
-
-// Clear the database
-await db.clear();
+export default {
+    // Route '/'
+    "/": {
+        // GET method
+        GET: async ctx => {
+            // Handles the route ...
+        }
+    }
+}
 ```
 
+Or if you want to use CommonJS, replace `export default` with `module.exports`:
+```javascript
+module.exports = {
+    // Route '/'
+    "/": {
+        // GET method
+        GET: async ctx => {
+            // Handles the route ...
+        }
+    }
+}
+```
 
+## Middlewares
+To add a middleware, create a file in `src/middlewares` that export a middleware:
+```javascript
+export default {
+    invoke: async (ctx, next) => {
+        // Some more code here ...
+        await next();
+    }
+}
+```
+
+Or using CommonJS module:
+```javascript
+module.exports = {
+    invoke: async (ctx, next) => {
+        // Some more code here ...
+        await next();
+    }
+}
+```
+
+## Configurations
+Use `app.config` with an object that has these properties:
+
+- `projectPath: string`: The project root. Defaults to `.`
+- `static: string`: The default static directory. Defaults to `public`
+
+### Server options (`httpOptions`)
+- `port: number`: The server port. Defaults to 80
+- `hostname: string`: The server hostname. Defaults to `localhost`
+- `httpsMode: boolean`: Toggle HTTPS mode. Defaults to `false`
+- `backlog: number`: The server backlog. Defaults to `0`
+- `advanced: http.ServerOptions | https.ServerOptions`: Other server options 
