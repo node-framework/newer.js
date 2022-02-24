@@ -1,4 +1,8 @@
-# Get started with Newer.js
+# Table of Content
+- [Newer.js Core](#getting-started-with-newer.js)
+- [Pre-setup server](#presetup-server)
+
+# Getting started with Newer.js
 
 Create a simple web server with Newer.js!
 
@@ -11,11 +15,6 @@ npm install --save newer.js
 # yarn
 yarn add newer.js
 ```
-## Table of Content
-- [Creating a simple page](#creating-a-simple-page)
-- [Context object](#context-object)
-- [Router](#router)
-- [SubDomain](#subdomain)
 
 ## Creating a simple page
 
@@ -119,7 +118,7 @@ sub.middleware({
 
 You can nest subdomains using `sub.middleware`
 
-# Pre-setup server
+# Presetup server
 
 Set up a server with just 3 lines of code
 

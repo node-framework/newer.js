@@ -1,7 +1,7 @@
 import Router from "./Middleware/router.js";
 import Server from "./Server/server.js";
 import StaticDir from "./Middleware/staticdir.js";
-import { readdirSync, existsSync, fstat } from "fs";
+import { readdirSync, existsSync } from "fs";
 import { join, resolve } from "path";
 import { AppConfigs, Application } from "./declarations.js";
 
@@ -32,11 +32,12 @@ async function start() {
     const router = new Router;
 
     // Default middleware
-    app.middleware(
-        new StaticDir(
-            join(appConfig.projectPath, "public")
-        )
-    );
+    if (existsSync(join(appConfig.projectPath, appConfig.static)))
+        app.middleware(
+            new StaticDir(
+                join(appConfig.projectPath, appConfig.static)
+            )
+        );
 
     // Check whether src exists
     if (existsSync(join(appConfig.projectPath, "src"))) {
