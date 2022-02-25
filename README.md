@@ -74,6 +74,9 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 - `ctx.method`: The request method. This method is read-only
 - `ctx.httpVersion`: The request HTTP version. This method is read-only
 - `ctx.remoteAddress`: The server IPv4
+- `ctx.rawRequest`: The raw request and response. This field is read-only:
+    + `ctx.rawRequest.req`: The raw request
+    + `ctx.rawRequest.res`: The raw response
 
 ## Router
 
