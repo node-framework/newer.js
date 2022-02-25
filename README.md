@@ -118,6 +118,37 @@ sub.middleware({
 
 You can nest subdomains using `sub.middleware`
 
+## Cookies
+
+Get and set cookie properties
+
+```javascript
+// Import from NewerJS
+import { Cookies } from "newer.js";
+
+// Add the cookie middleware to 'app'
+app.middleware(new Cookies({
+    // Cookies last for 120 seconds
+    maxAge: 120000
+}));
+
+// Example use
+app.middleware({
+    invoke: async (ctx, next) => {
+        // Get cookies
+        ctx.cookies;
+
+        // Set cookies
+        ctx.cookies = {
+            // Properties here...
+        };
+
+        // Invoke next middleware
+        await next();
+    }
+});
+```
+
 # Pre-setup server
 
 Set up a server with just 3 lines of code

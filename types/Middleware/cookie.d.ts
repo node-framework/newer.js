@@ -4,6 +4,7 @@ declare module '../declarations' {
         cookies?: {
             [key: string]: any;
         };
+        cookieOptions?: CookieOptions;
     }
 }
 /**
@@ -14,7 +15,7 @@ export default class Cookies implements Middleware {
     /**
      * @param options Cookie options
      */
-    constructor(options: CookieOptions);
+    constructor(options?: CookieOptions);
     /**
      * @param ctx
      * @param next

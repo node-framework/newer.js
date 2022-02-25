@@ -6,6 +6,7 @@ declare module '../declarations' {
         cookies?: {
             [key: string]: any;
         };
+        cookieOptions?: CookieOptions;
     }
 }
 
@@ -18,8 +19,8 @@ export default class Cookies implements Middleware {
     /**
      * @param options Cookie options
      */
-    constructor(options: CookieOptions) {
-        this.options = options;
+    constructor(options?: CookieOptions) {
+        this.options = options ?? {};
     }
 
     /**
@@ -52,6 +53,14 @@ export default class Cookies implements Middleware {
 
             enumerable: true,
             configurable: true,
+        });
+
+        // Cookie options
+        Object.defineProperty(ctx, "cookieOptions", {
+            get: () => 
+                this.options,
+
+            enumerable: true,
         });
 
         // Next middleware
