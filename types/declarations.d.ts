@@ -39,15 +39,23 @@ export interface Context extends Record<string, any> {
      */
     writeFile(path: string): void;
     /**
-     * Get or set response headers
+     * Get response headers
      */
-    header(name?: string, value?: string | number | readonly string[]): void | string | number | string[];
+    header(name: string): string | number | string[];
     /**
-     * Set multiple headers or get request headers
+     * Set response headers
      */
-    headers(headers?: {
+    header(name: string, value?: string | number | readonly string[]): void;
+    /**
+     * Set multiple headers
+     */
+    headers(headers: {
         [name: string]: string | number | readonly string[];
-    }): void | http.IncomingHttpHeaders;
+    }): void;
+    /**
+     * Get request headers
+     */
+    headers(): http.IncomingHttpHeaders;
     /**
      * Request socket
      */
@@ -215,4 +223,18 @@ export interface AppConfigs {
          */
         advanced?: http.ServerOptions | https.ServerOptions;
     };
+}
+/**
+ * Cookie options
+ */
+export interface CookieOptions {
+    maxAge?: number;
+    decode?: Function;
+    encode?: Function;
+    domain?: string;
+    path?: string;
+    expires?: Date;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: true | 'lax' | 'strict' | 'none';
 }

@@ -127,24 +127,25 @@ export default class Server {
                     url: req.url,
 
                     // Append file content
-                    writeFile: path => {
+                    writeFile(path) {
                         // Append file content to response
                         c.response += this.readFile(path) ?? "";
                     },
 
                     // Header get and set
-                    header: (name, value) =>
+                    header(name: string, value?: string | number | readonly string[]) {
                         // Get or set a header
-                        value
+                        return value
                             ? void res.setHeader(name, value)
-                            : res.getHeader(name),
+                            : res.getHeader(name);
+                    },
 
                     // Set multiple headers or get request headers
-                    headers: headers => {
+                    headers(headers?: { [name: string]: string | number | readonly string[] }) {
                         if (!headers)
                             return req.headers;
                         for (let name in headers)
-                            res.setHeader(name, headers[name])
+                            res.setHeader(name, headers[name]);
                     },
 
                     // Socket

@@ -5,5 +5,6 @@ import Router from "./Middleware/router.js";
 import SubDomain from "./Middleware/subdomain.js";
 import StaticDir from "./Middleware/staticdir.js";
 import app from "./application.js";
-export { JsonDB, Server, Router, SubDomain, StaticDir, simple, app };
+import Cookies from "./Middleware/cookie.js";
+export { JsonDB, Server, Router, SubDomain, StaticDir, simple, app, Cookies };
 export * from "./declarations.js";

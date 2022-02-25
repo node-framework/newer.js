@@ -101,6 +101,7 @@ async function start() {
 // Set configs
 function config(configs: AppConfigs) {
     Object.assign(appConfig, configs);
+    console.log(appConfig)
 }
 
 // App
