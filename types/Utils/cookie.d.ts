@@ -33,4 +33,4 @@ declare function serialize(name: string, val: string, options?: CookieOptions): 
  * Module exports.
  * @public
  */
-export { parse, serialize, CookieOptions };
+export { parse, serialize };

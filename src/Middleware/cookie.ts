@@ -1,4 +1,4 @@
-import { serialize, parse } from "../Utils/cookie.js";
+import { serialize, parse } from "../Utils/Cookie.js";
 import { Context, Middleware, NextFunction, CookieOptions } from "../declarations.js";
 
 declare module '../declarations' {

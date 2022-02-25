@@ -91,10 +91,8 @@ function serialize(name: string, val: string, options?: CookieOptions): string {
     if (typeof enc !== 'function') 
         throw new TypeError('option encode is invalid');
     
-
     if (!fieldContentRegExp.test(name)) 
         throw new TypeError('argument name is invalid');
-
 
     let value = enc(val);
 
@@ -186,5 +184,5 @@ function tryDecode(str: string, decode: Function) {
  */
 
 export {
-    parse, serialize, CookieOptions
+    parse, serialize
 }

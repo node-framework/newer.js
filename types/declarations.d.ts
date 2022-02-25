@@ -229,8 +229,8 @@ export interface AppConfigs {
  */
 export interface CookieOptions {
     maxAge?: number;
-    decode?: Function;
-    encode?: Function;
+    decode?(encodedURIComponent: string): string;
+    encode?(encodedURIComponent: string): string;
     domain?: string;
     path?: string;
     expires?: Date;
