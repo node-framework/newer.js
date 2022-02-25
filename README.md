@@ -1,12 +1,22 @@
 # Table of Content
-- [Newer.js Core](#getting-started-with-newerjs)
+- [Getting started](#getting-started-with-newerjs)
+    + [Installation](#installation)
+    + [Creating a simple page](#creating-a-simple-page)
+- [Newer.js Core](#newerjs-core)
+    + [Context object](#context-object)
+    + [Router](#router)
+    + [SubDomain](#subdomain)
+    + [Cookies](#cookies)
 - [Pre-setup server](#presetup-server)
+    + [Getting started](#getting-started)
+    + [Route handling](#route-handling)
+    + [Add a middleware](#middlewares)
+    + [Configurations](#configurations)
+        * [Server options](#server-options-httpoptions)
 
 # Getting started with Newer.js
 
-Create a simple web server with Newer.js!
-
-![](ico.png)
+Create a simple web server with Newer.js
 
 ## Installation
 ```sh
@@ -48,7 +58,9 @@ app.http;
 
 Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080) and every subdomains or routes
 
-### Context object
+# Newer.js Core
+
+## Context object
 
 - `ctx.response`: The response to the client
 - `ctx.query`: Get query of current request. This field is read-only
@@ -63,7 +75,7 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 - `ctx.httpVersion`: The request HTTP version. This method is read-only
 - `ctx.remoteAddress`: The server IPv4
 
-### Router
+## Router
 
 Router is a middleware that handles a specific route and sub-route
 
@@ -171,7 +183,7 @@ src # Source codes
     middlewares # App middlewares
 ```
 
-### Route handling
+## Route handling
 To add a route handler, for example `/`, create a file in `src/controllers` and write:
 ```javascript
 export default {
