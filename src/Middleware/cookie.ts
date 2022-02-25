@@ -35,12 +35,14 @@ export default class Cookies implements Middleware {
                 return JSON.parse(
                     // Parse the response set cookie header
                     parse(
-                        ctx.rawRequest.res.getHeader("Set-Cookie") as string ?? ''
+                        ctx.rawRequest.res.getHeader("Set-Cookie") as string ?? '', 
+                        this.options
                     ).props
 
                     // If cookie response is not set get the request cookie header
                     ?? parse(ctx.rawRequest.req.headers.cookie
-                        ?? serialize("props", JSON.stringify({}), this.options)
+                        ?? serialize("props", JSON.stringify({}), this.options),
+                        this.options
                     ).props
                 );
             },
