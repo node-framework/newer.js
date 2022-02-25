@@ -42,7 +42,7 @@ async function start() {
     // Check whether src exists
     if (existsSync(join(appConfig.projectPath, "src"))) {
         // Read the middleware directory
-        if (existsSync(join(appConfig.projectPath, "src", "middleware")))
+        if (existsSync(join(appConfig.projectPath, "src", "middlewares")))
             for (const filename of readdirSync(
                 join(appConfig.projectPath, "src", "middlewares")
             ) ?? []) {
@@ -101,7 +101,6 @@ async function start() {
 // Set configs
 function config(configs: AppConfigs) {
     Object.assign(appConfig, configs);
-    console.log(appConfig)
 }
 
 // App
