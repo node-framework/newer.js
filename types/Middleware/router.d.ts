@@ -8,7 +8,6 @@ import { Context, Handler, Middleware, NextFunction } from "../declarations.js";
  */
 export default class Router implements Middleware {
     private routeName;
-    private routes;
     private middlewares;
     /**
      * Create a router

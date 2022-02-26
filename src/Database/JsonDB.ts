@@ -244,7 +244,7 @@ export default class JsonDB {
              * @param count objects to be returned
              * @returns the result
              */
-            static find = async (obj?: object, count?: number, except?: boolean): Promise<object[] | object> => {
+            static find = async (obj?: object, count?: number, except?: boolean): Promise<object[]> => {
                 let listMatch = [];
                 for (let doc of JSON.parse(
                     (await pfs.readFile(pth)).toString(),
@@ -262,7 +262,7 @@ export default class JsonDB {
                         listMatch.push(doc);
                     }
                 }
-                return listMatch.length === 1 ? listMatch[0] : listMatch;
+                return listMatch.length <= 1 ? listMatch[0] : listMatch;
             }
 
             /**

@@ -95,7 +95,10 @@ async function start() {
     app.middleware(router);
 
     // Listen on port 80
-    await app.listen(appConfig.httpOptions.port, appConfig.httpOptions.hostname, appConfig.httpOptions.backlog);
+    app.listen(appConfig.httpOptions.port, appConfig.httpOptions.hostname, appConfig.httpOptions.backlog);
+
+    // Return the http server
+    return app.http;
 }
 
 // Set configs

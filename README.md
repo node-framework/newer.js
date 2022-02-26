@@ -1,5 +1,11 @@
-# Table of Content
-- [Getting started](#getting-started-with-newerjs)
+# Newer.js
+
+[![NPM Version](http://img.shields.io/npm/v/newer.js.svg?style=flat)](https://www.npmjs.org/package/newer.js)
+[![NPM Downloads](https://img.shields.io/npm/dm/newer.js.svg?style=flat)](https://npmcharts.com/compare/newer.js?minimal=true)
+[![Install Size](https://packagephobia.now.sh/badge?p=newer.js)](https://packagephobia.now.sh/result?p=newer.js)
+
+## Table of Content
+- [Quick start](#quick-start)
     + [Installation](#installation)
     + [Creating a simple page](#creating-a-simple-page)
 - [Newer.js Core](#newerjs-core)
@@ -14,11 +20,11 @@
     + [Configurations](#configurations)
         * [Server options](#server-options-httpoptions)
 
-# Getting started with Newer.js
+## Quick start
 
 Create a simple web server with Newer.js
 
-## Installation
+### Installation
 ```sh
 # npm
 npm install --save newer.js
@@ -26,7 +32,7 @@ npm install --save newer.js
 yarn add newer.js
 ```
 
-## Creating a simple page
+### Creating a simple page
 
 Create a file named `index.mjs` and insert the following code:
 
@@ -58,9 +64,9 @@ app.http;
 
 Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080) and every subdomains or routes
 
-# Newer.js Core
+## Newer.js Core
 
-## Context object
+### Context object
 
 - `ctx.response`: The response to the client
 - `ctx.query`: Get query of current request. This field is read-only
@@ -78,7 +84,7 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
     + `ctx.rawRequest.req`: The raw request
     + `ctx.rawRequest.res`: The raw response
 
-## Router
+### Router
 
 Router is a middleware that handles a specific route and sub-route
 
@@ -109,7 +115,7 @@ index.route("/", {
 
 You can nest Routers using `router.middleware`
 
-## SubDomain
+### SubDomain
 
 SubDomain is a middleware that handles a specific subdomain
 
@@ -133,7 +139,7 @@ sub.middleware({
 
 You can nest subdomains using `sub.middleware`
 
-## Cookies
+### Cookies
 
 Get and set cookie properties
 
@@ -164,11 +170,11 @@ app.middleware({
 });
 ```
 
-# Pre-setup server
+## Pre-setup server
 
 Set up a server with just 3 lines of code
 
-## Getting started
+### Getting started
 
 Create a file named `index.mjs` and write:
 
@@ -180,13 +186,13 @@ app.start();
 
 Set up a project structure:
 ```sh
-public # Or the static directory that matches the configuration
-src # Source codes
-    controllers # App controllers
-    middlewares # App middlewares
+public ## Or the static directory that matches the configuration
+src ## Source codes
+    controllers ## App controllers
+    middlewares ## App middlewares
 ```
 
-## Route handling
+### Route handling
 To add a route handler, for example `/`, create a file in `src/controllers` and write:
 ```javascript
 export default {
@@ -213,7 +219,7 @@ module.exports = {
 }
 ```
 
-## Middlewares
+### Middlewares
 To add a middleware, create a file in `src/middlewares` that export a middleware:
 ```javascript
 export default {
@@ -234,13 +240,13 @@ module.exports = {
 }
 ```
 
-## Configurations
+### Configurations
 Use `app.config` with an object that has these properties:
 
 - `projectPath: string`: The project root. Defaults to `.`
 - `static: string`: The default static directory. Defaults to `public`
 
-### Server options (`httpOptions`)
+#### Server options (`httpOptions`)
 - `port: number`: The server port. Defaults to 80
 - `hostname: string`: The server hostname. Defaults to `localhost`
 - `httpsMode: boolean`: Toggle HTTPS mode. Defaults to `false`

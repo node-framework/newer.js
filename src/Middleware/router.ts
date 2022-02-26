@@ -9,10 +9,6 @@ import { Context, Handler, Middleware, NextFunction } from "../declarations.js";
  * Router can be nested using `Router.middleware`
  */
 export default class Router implements Middleware {
-    private routes: {
-        [name: string]: Handler
-    }
-
     private middlewares: Middleware[];
 
     /**
@@ -20,7 +16,6 @@ export default class Router implements Middleware {
      * @param routeName the route name
      */
     constructor(private routeName: string = "/") {
-        this.routes = {};
         this.middlewares = [];
     }
 
@@ -31,12 +26,28 @@ export default class Router implements Middleware {
      * @returns This router for chaining
      */
     route(routeName: string, routeHandler: Handler) {
-        this.routes[
-            path
-                .join(this.routeName, routeName)
-                // @ts-ignore
-                .replaceAll("\\", "/")
-        ] = routeHandler;
+        this.middleware({
+            // When the middleware is invoked
+            invoke: async (ctx, next) => {
+                if (
+                    ctx.url === (
+                        path
+                            .join(this.routeName, routeName)
+                            .replaceAll("\\", "/")
+
+                        // Check whether the route is not null
+                    ) && routeHandler
+
+                    // Check whether the route contains a handler for current method
+                    && routeHandler[ctx.method]
+                )
+                    // Invoke the route handler
+                    await routeHandler[ctx.method](ctx);
+
+                // Next middleware
+                await next();
+            }
+        });
         return this;
     }
 
@@ -82,18 +93,9 @@ export default class Router implements Middleware {
             }
         }
 
-        if (ctx.url.startsWith(this.routeName)) {
+        if (ctx.url.startsWith(this.routeName))
             // Invoke the middleware
             await this.middlewares[0]?.invoke(ctx, async () => __next(0, this.middlewares.length));
-
-            // Get the route
-            const target = this.routes[ctx.url];
-
-            // Check whether this route has been registered
-            if (target && target[ctx.method])
-                // Invoke route
-                await target[ctx.method](ctx);
-        }
 
         // End the function
         await next();
