@@ -3,7 +3,7 @@ import { Context, Middleware, NextFunction, CookieOptions } from "../declaration
 
 declare module '../declarations' {
     interface Context {
-        cookies?: {
+        cookie?: {
             [key: string]: any;
         };
         cookieOptions?: CookieOptions;
@@ -13,7 +13,7 @@ declare module '../declarations' {
 /**
  * Cookie middleware
  */
-export default class Cookies implements Middleware {
+export default class Cookie implements Middleware {
     readonly options: CookieOptions;
 
     /**
@@ -29,10 +29,10 @@ export default class Cookies implements Middleware {
      */
     async invoke(ctx: Context, next: NextFunction): Promise<void> {
         // Set cookies 
-        Object.defineProperty(ctx, "cookies", {
+        Object.defineProperty(ctx, "cookie", {
             // Get cookies
-            get: () => {
-                return JSON.parse(
+            get: () => 
+                JSON.parse(
                     // Parse the response set cookie header
                     parse(
                         ctx.rawRequest.res.getHeader("Set-Cookie") as string ?? '', 
@@ -44,8 +44,7 @@ export default class Cookies implements Middleware {
                         ?? serialize("props", JSON.stringify({}), this.options),
                         this.options
                     ).props
-                );
-            },
+                ),
 
             // Set cookies
             set: (value: { [key: string]: any }) => {

@@ -68,25 +68,37 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
 
 ### Context object
 
-- `ctx.response`: The response to the client
+- `ctx.response`: The response to the client.
 - `ctx.query`: Get query of current request. This field is read-only
 - `ctx.body`: Get body of current request. This field is read-only
 - `ctx.url`: Get URL of current request. This field is read-only
 - `ctx.statusCode`: To get or set the status code (if `ctx.statusCode` is not set it will return `undefined`)
 - `ctx.writeFile(path: string)`: Append content of a file to the response
-- `ctx.header(name: string, value?: string | number | readonly string[])`: Getor set a single header
+- `ctx.header(name: string, value?: string | number | readonly string[])`: Get or set a single header
 - `ctx.headers(headers?: { [name: string]: string | number | readonly string[] })`: Set headers or get all headers if the argument is a falsy value
 - `ctx.socket`: The request socket. This field is read-only
-- `ctx.method`: The request method. This method is read-only
-- `ctx.httpVersion`: The request HTTP version. This method is read-only
-- `ctx.remoteAddress`: The server IPv4
+- `ctx.method`: The request method. This field is read-only
+- `ctx.httpVersion`: The request HTTP version. This field is read-only
+- `ctx.remoteAddress`: The server IPv4. This field is read-only
 - `ctx.rawRequest`: The raw request and response. This field is read-only:
     + `ctx.rawRequest.req`: The raw request
     + `ctx.rawRequest.res`: The raw response
 
-### Router
+### Route handling
 
 Router is a middleware that handles a specific route and sub-route
+
+To create a router middleware, use `new Router()` with:
+- `path: string`: The router base path
+
+To handle a route, use `router.route` with the following arguments:
+- `routeName: string`: The route name
+- `routeHandler: Handler`: The route handler
+
+To register a middleware, use `router.middleware` with:
+- `...m: Middleware[]`: Middlewares to register
+
+#### Example
 
 ```javascript
 // Import from NewerJS
@@ -104,7 +116,7 @@ index.middleware({
     }
 });
 
-// Create a handler of route index
+// Create a handler of sub-route / -> This will be called if the request pathname is `/index`
 index.route("/", {
     GET: async ctx => {
         // Write the response
@@ -115,9 +127,17 @@ index.route("/", {
 
 You can nest Routers using `router.middleware`
 
-### SubDomain
+### Sub-domain handling
 
-SubDomain is a middleware that handles a specific subdomain
+Handles a specific sub-domain
+
+To create a sub-domain middleware, use `new SubDomain()` with:
+- `domain: string`: The sub-domain name
+
+To register a middleware, use `subDomain.middleware` with:
+- `...m: Middleware[]`: Middlewares to register
+
+#### Example
 
 ```javascript
 // Import from NewerJS
@@ -130,7 +150,8 @@ const sub = new SubDomain("sub");
 sub.middleware({
     invoke: async (ctx, next) => {
         // Add to response
-        ctx.response += "Hello, you are on subdomain 'sub'";
+        ctx.response += "Hello, you are on sub-domain 'sub'";
+
         // Move to next middleware
         await next();
     }
@@ -139,16 +160,21 @@ sub.middleware({
 
 You can nest subdomains using `sub.middleware`
 
-### Cookies
+### Cookie
 
-Get and set cookie properties
+Get and set cookie using `ctx.cookie` which can be used for session management
+
+To create a cookie middleware, use `new Cookie()` with:
+- `options: CookieOptions`: The cookie options
+
+#### Example
 
 ```javascript
 // Import from NewerJS
-import { Cookies } from "newer.js";
+import { Cookie } from "newer.js";
 
 // Add the cookie middleware to 'app'
-app.middleware(new Cookies({
+app.middleware(new Cookie({
     // Cookies last for 120 seconds
     maxAge: 120000
 }));
@@ -157,10 +183,10 @@ app.middleware(new Cookies({
 app.middleware({
     invoke: async (ctx, next) => {
         // Get cookies
-        ctx.cookies;
+        ctx.cookie;
 
         // Set cookies
-        ctx.cookies = {
+        ctx.cookie = {
             // Properties here...
         };
 

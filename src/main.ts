@@ -9,11 +9,11 @@ import simple from "./Server/simple.js";
 import Router from "./Middleware/router.js";
 import SubDomain from "./Middleware/subdomain.js";
 import StaticDir from "./Middleware/staticdir.js";
-import app from "./application.js";
-import Cookies from "./Middleware/cookie.js";
+import app from "./Application/application.js";
+import Cookie from "./Middleware/cookie.js";
 
 // Default export
-export { JsonDB, Server, Router, SubDomain, StaticDir, simple, app, Cookies };
+export { JsonDB, Server, Router, SubDomain, StaticDir, simple, app, Cookie };
 
 // Export all types
 export * from "./declarations.js";

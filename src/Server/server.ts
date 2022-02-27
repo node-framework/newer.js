@@ -112,7 +112,7 @@ export default class Server {
                     responseEnded: false,
 
                     // Default status code
-                    statusCode: req.statusCode,
+                    statusCode: undefined,
 
                     // The response, default to empty
                     response: "",

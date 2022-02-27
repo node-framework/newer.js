@@ -1,7 +1,7 @@
 import { Context, Middleware, NextFunction, CookieOptions } from "../declarations.js";
 declare module '../declarations' {
     interface Context {
-        cookies?: {
+        cookie?: {
             [key: string]: any;
         };
         cookieOptions?: CookieOptions;
@@ -10,7 +10,7 @@ declare module '../declarations' {
 /**
  * Cookie middleware
  */
-export default class Cookies implements Middleware {
+export default class Cookie implements Middleware {
     readonly options: CookieOptions;
     /**
      * @param options Cookie options

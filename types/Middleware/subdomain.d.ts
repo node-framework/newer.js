@@ -14,7 +14,7 @@ export default class SubDomain implements Middleware {
      * @param m the middleware
      * @returns this middleware for chaining
      */
-    middleware(m: Middleware): this;
+    middleware(...m: Middleware[]): this;
     /**
      * Invoke this subdomain handler
      * @param ctx

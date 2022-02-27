@@ -20,10 +20,14 @@ export default class SubDomain implements Middleware {
      * @param m the middleware
      * @returns this middleware for chaining
      */
-    middleware(m: Middleware) {
-        if (m instanceof SubDomain)
-            m.domain = m.domain + (m.domain.endsWith(".") ? "" : ".") + this.domain;
-        this.mds.push(m);
+    middleware(...m: Middleware[]) {
+        for (const md of m) {
+            if (md instanceof SubDomain)
+                md.domain += (md.domain.endsWith(".") ? "" : ".") + this.domain;
+
+            // Add the middleware
+            this.mds.push(md);
+        }
         return this;
     }
 
@@ -45,7 +49,7 @@ export default class SubDomain implements Middleware {
             }
         }
 
-        if (ctx.subhost === this.domain) 
+        if (ctx.subhost === this.domain)
             // Invoke the middleware
             await this.mds[0]?.invoke(ctx, async () => __next(0, this.mds.length));
 
