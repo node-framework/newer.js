@@ -8,7 +8,7 @@
 - [Quick start](#quick-start)
     + [Installation](#installation)
     + [Creating a simple page](#creating-a-simple-page)
-- [Newer.js Core](#newerjs-core)
+- [Core Concepts](#core-concepts)
     + [Context object](#context-object)
     + [Router](#router)
     + [SubDomain](#subdomain)
@@ -43,11 +43,12 @@ import { Server } from "newer.js";
 // Creating a new server
 const app = new Server();
 
-// Handle request to "/" route
+// Handle every requests
 app.middleware({
     invoke: async (ctx, next) => {
-        // Add data to response 
+        // Set response to `Hello World` 
         ctx.response += 'Hello world';
+
         // Move to next middleware
         await next();
     }
@@ -64,7 +65,7 @@ app.http;
 
 Run the file and you should see the text `Hello world` in [localhost:8080](http://localhost:8080) and every subdomains or routes
 
-## Newer.js Core
+## Core Concepts
 
 ### Context object
 
@@ -84,6 +85,27 @@ Run the file and you should see the text `Hello world` in [localhost:8080](http:
     + `ctx.rawRequest.req`: The raw request
     + `ctx.rawRequest.res`: The raw response
 
+### Middlewares
+
+To add middlewares to the server, use `Server.middleware` with an object that contains the following method:
+- `invoke(ctx: Context, next: () => Promise<void>): Promise<void>`: Asynchronous. This method will be called when the middleware is invoked.
+    + `ctx`: The context object
+    + `next()`: Call the next middleware
+
+#### Example
+
+```javascript
+app.middleware({
+    invoke: async (ctx, next) => {
+        // Add to response
+        ctx.response += 'Hello world';
+
+        // Call the next middleware
+        await next();
+    }
+});
+```
+
 ### Route handling
 
 Router is a middleware that handles a specific route and sub-route
@@ -91,11 +113,11 @@ Router is a middleware that handles a specific route and sub-route
 To create a router middleware, use `new Router()` with:
 - `path: string`: The router base path
 
-To handle a route, use `router.route` with the following arguments:
+To handle a route, use `Router.route` with the following arguments:
 - `routeName: string`: The route name
 - `routeHandler: Handler`: The route handler
 
-To register a middleware, use `router.middleware` with:
+To register a middleware, use `Router.middleware` with:
 - `...m: Middleware[]`: Middlewares to register
 
 #### Example
@@ -125,7 +147,7 @@ index.route("/", {
 });
 ```
 
-You can nest Routers using `router.middleware`
+You can nest Routers using `Router.middleware`
 
 ### Sub-domain handling
 
@@ -134,7 +156,7 @@ Handles a specific sub-domain
 To create a sub-domain middleware, use `new SubDomain()` with:
 - `domain: string`: The sub-domain name
 
-To register a middleware, use `subDomain.middleware` with:
+To register a middleware, use `SubDomain.middleware` with:
 - `...m: Middleware[]`: Middlewares to register
 
 #### Example
@@ -158,7 +180,7 @@ sub.middleware({
 });
 ```
 
-You can nest subdomains using `sub.middleware`
+You can nest subdomains using `SubDomain.middleware`
 
 ### Cookie
 
