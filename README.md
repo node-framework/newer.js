@@ -5,6 +5,8 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/newer.js.svg?style=flat)](https://npmcharts.com/compare/newer.js?minimal=true)
 [![Install Size](https://packagephobia.now.sh/badge?p=newer.js)](https://packagephobia.now.sh/result?p=newer.js)
 [![Known Vulnerabilities](https://snyk.io/test/npm/newer.js/badge.svg)](https://snyk.io/test/npm/newer.js)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_shield)
 
 ## Table of Content
 - [Quick start](#quick-start)
