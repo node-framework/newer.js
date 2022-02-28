@@ -4,6 +4,7 @@
 [![NPM Version](http://img.shields.io/npm/v/newer.js.svg?style=flat)](https://www.npmjs.org/package/newer.js)
 [![NPM Downloads](https://img.shields.io/npm/dm/newer.js.svg?style=flat)](https://npmcharts.com/compare/newer.js?minimal=true)
 [![Install Size](https://packagephobia.now.sh/badge?p=newer.js)](https://packagephobia.now.sh/result?p=newer.js)
+[![Known Vulnerabilities](https://snyk.io/test/npm/newer.js/badge.svg)](https://snyk.io/test/npm/newer.js)
 
 ## Table of Content
 - [Quick start](#quick-start)
