@@ -2,7 +2,7 @@
 
 [![NPM Version](http://img.shields.io/npm/v/newer.js.svg?style=flat)](https://www.npmjs.org/package/newer.js)
 [![NPM Downloads](https://img.shields.io/npm/dm/newer.js.svg?style=flat)](https://npmcharts.com/compare/newer.js?minimal=true)
-[![Install Size](https://packagephobia.now.sh/badge?p=newer.js)](https://packagephobia.now.sh/result?p=newer.js)
+[![Install Size](https://packagephobia.now.sh/badge?p=newer.js)](https://packagephobia.now.sh/result?p=newer.js) [![Join the chat at https://gitter.im/Newer-js/general](https://badges.gitter.im/Newer-js/general.svg)](https://gitter.im/Newer-js/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Table of Content
 - [Quick start](#quick-start)
