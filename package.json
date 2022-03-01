@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-beta.12",
+	"version": "0.2.0-beta.13",
 	"description": "A lightweight framework",
 	"main": "index.cjs",
 	"directories": {
