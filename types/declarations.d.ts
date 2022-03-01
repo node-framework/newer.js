@@ -284,13 +284,42 @@ export interface AppConfigs {
  * Cookie options
  */
 export interface CookieOptions {
+    /**
+     * Cookie maxAge in milliseconds.
+     */
     maxAge?: number;
-    decode?(encodedURIComponent: string): string;
-    encode?(encodedURIComponent: string): string;
+    /**
+     * Decode the cookie
+     * @param str The string to decode
+     */
+    decode?(str: string): string;
+    /**
+     * Encode the cookie
+     * @param str The string to encode
+     */
+    encode?(str: string): string;
+    /**
+     * Cookie domain
+     */
     domain?: string;
+    /**
+     * Cookie path
+     */
     path?: string;
+    /**
+     * Cookie expires date
+     */
     expires?: Date;
+    /**
+     * If set to true, the cookie cannot be accessed through document.cookie
+     */
     httpOnly?: boolean;
+    /**
+     * If set to true, the cookie is available only in HTTPS
+     */
     secure?: boolean;
+    /**
+     * Cookie same site. Defaults to "lax"
+     */
     sameSite?: true | 'lax' | 'strict' | 'none';
 }
