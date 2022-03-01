@@ -8,10 +8,8 @@ export default class Server {
     private httpsMode;
     private rawServer;
     private iconPath;
-    /**
-     * The constructor
-     */
-    constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean);
+    constructor(options?: http.ServerOptions);
+    constructor(options: https.ServerOptions, httpsMode: boolean);
     /**
      * Set the icon path
      * @param path the icon path

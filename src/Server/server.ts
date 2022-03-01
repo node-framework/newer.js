@@ -16,6 +16,9 @@ export default class Server {
 
     private iconPath: string;
 
+    constructor(options?: http.ServerOptions);
+    constructor(options: https.ServerOptions, httpsMode: boolean);
+
     /**
      * The constructor
      */
