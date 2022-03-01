@@ -20,6 +20,11 @@ const appConfig: AppConfigs = {
 
 // Start the app
 async function start() {
+    // Fix missing configs
+    appConfig.projectPath = appConfig.projectPath ?? ".";
+    appConfig.static = appConfig.static ?? "public";
+    appConfig.httpOptions = appConfig.httpOptions ?? {};
+
     // Create the directories if not exists
     if (!existsSync(join(appConfig.projectPath, "src")))
         mkdirSync(join(appConfig.projectPath, "src"));
@@ -30,10 +35,8 @@ async function start() {
     if (!existsSync(join(appConfig.projectPath, "src", "controllers")))
         mkdirSync(join(appConfig.projectPath, "src", "controllers"));
 
-    // Fix missing configs
-    appConfig.projectPath = appConfig.projectPath ?? ".";
-    appConfig.static = appConfig.static ?? "public";
-    appConfig.httpOptions = appConfig.httpOptions ?? {};
+    if (!existsSync(join(appConfig.projectPath, appConfig.static)))
+        mkdirSync(join(appConfig.projectPath, appConfig.static));
 
     // Create a new server
     const app = new Server(appConfig.httpOptions.advanced, appConfig.httpOptions.httpsMode);
@@ -42,12 +45,11 @@ async function start() {
     const router = new Router;
 
     // Default middleware
-    if (existsSync(join(appConfig.projectPath, appConfig.static)))
-        app.middleware(
-            new StaticDir(
-                join(appConfig.projectPath, appConfig.static)
-            )
-        );
+    app.middleware(
+        new StaticDir(
+            join(appConfig.projectPath, appConfig.static)
+        )
+    );
 
     // Read the middleware directory
     for (const filename of readdirSync(
