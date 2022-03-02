@@ -12,19 +12,19 @@ export const getWrapper =
             return Boolean;
         if (typeof obj === 'object')
             return Object;
-        throw new Error("Invalid type");
+        return obj;
     }
 /**
 * @param {any | object} type 
 * @param {any | object} obj 
 */
 export const checkType = (type: any | object, obj: any | object) => {
-    let Wrapper = getWrapper(obj);
+    const Wrapper = getWrapper(obj);
     if (typeof type === 'function')
-        return (Wrapper === type);
-    for (let e in type) {
-        if (!checkType(type[e], obj[e])) return false;
-    }
+        return Wrapper === type;
+    for (let e in type)
+        if (!checkType(type[e], obj[e])) 
+            return false;
     return true;
 }
 
@@ -34,14 +34,12 @@ export const checkType = (type: any | object, obj: any | object) => {
 */
 export const typeChecker = (schema: object) => class {
     constructor(obj: object) {
-        for (const e in schema) {
+        for (const e in schema) 
             if (!checkType(schema[e], obj[e]))
                 throw new Error("Invalid object");
-        }
-        for (const e in obj) {
+        for (const e in obj) 
             if (!checkType(schema[e], obj[e]))
                 throw new Error("Invalid object");
-        }
         return obj;
     }
 }
