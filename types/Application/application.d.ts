@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { AppConfigs } from "../declarations.js";
 declare class Application {
+    constructor();
     readonly appConfig: AppConfigs;
     /**
      * Start the app

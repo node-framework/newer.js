@@ -7,6 +7,8 @@ import { AppConfigs } from "../declarations.js";
 
 // Create an app
 class Application {
+    constructor() {}
+
     // App configs
     readonly appConfig: AppConfigs = {
         projectPath: ".",
@@ -107,7 +109,11 @@ class Application {
         app.middleware(router);
 
         // Listen on port 80
-        app.listen(this.appConfig.httpOptions.port, this.appConfig.httpOptions.hostname, this.appConfig.httpOptions.backlog);
+        await app.listen(
+            this.appConfig.httpOptions.port, 
+            this.appConfig.httpOptions.hostname, 
+            this.appConfig.httpOptions.backlog
+        );
 
         // Return the http server
         return app.http;
