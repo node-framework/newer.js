@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-beta.19",
+	"version": "0.2.0-beta.20",
 	"description": "A lightweight framework",
 	"main": "./lib/main.js",
 	"directories": {
@@ -27,6 +27,5 @@
 		"mocha": "^9.2.1",
 		"ts-node": "^10.4.0",
 		"typescript": "^4.5.4"
-	},
-	"type": "module"
+	}
 }
