@@ -18,4 +18,4 @@ npm install --save newer.js
 yarn add newer.js
 ```
 
-For full documentation, see [Newer.js docs on GitBook](https://aquaplmc.gitbook.io/newer.js/)
+For full documentation, see [Newer.js docs on GitBook](https://newer-js.gitbook.io/newer.js/)

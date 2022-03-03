@@ -95,101 +95,109 @@ export default class Server {
             httpsMode: this.httpsMode
         });
 
+        // Wait until the server is ready
+        await new Promise<void>(res => 
+            requests.server.once("listening", res)
+        );
+
         // Http
         this.rawServer = requests.server;
 
-        // Loop through the requests
-        for await (const res of requests) {
-            const
-                // The request
-                { req } = res,
+        // Make this process asynchronously run
+        (async () => {
+            // Loop through the requests
+            for await (const res of requests) {
+                const
+                    // The request
+                    { req } = res,
 
-                // The context
-                c: Context = {
-                    // Raw request
-                    rawRequest: {
-                        req, res
-                    },
+                    // The context
+                    c: Context = {
+                        // Raw request
+                        rawRequest: {
+                            req, res
+                        },
 
-                    // End the response manually
-                    responseEnded: false,
+                        // End the response manually
+                        responseEnded: false,
 
-                    // Default status code
-                    statusCode: undefined,
+                        // Default status code
+                        statusCode: undefined,
 
-                    // The response, default to empty
-                    response: "",
+                        // The response, default to empty
+                        response: "",
 
-                    // The query of the URL
-                    query: getQuery(req.url),
+                        // The query of the URL
+                        query: getQuery(req.url),
 
-                    // The body of the request
-                    body: await getBody(req),
+                        // The body of the request
+                        body: await getBody(req),
 
-                    // The request url
-                    url: req.url,
+                        // The request url
+                        url: req.url,
 
-                    // Append file content
-                    writeFile(path) {
-                        // Append file content to response
-                        c.response += this.readFile(path) ?? "";
-                    },
+                        // Append file content
+                        writeFile(path) {
+                            // Append file content to response
+                            c.response += this.readFile(path) ?? "";
+                        },
 
-                    // Header get and set
-                    header(name: string, value?: string | number | readonly string[]) {
-                        // Get or set a header
-                        return value
-                            ? void res.setHeader(name, value)
-                            : res.getHeader(name);
-                    },
+                        // Header get and set
+                        header(name: string, value?: string | number | readonly string[]) {
+                            // Get or set a header
+                            return value
+                                ? void res.setHeader(name, value)
+                                : res.getHeader(name);
+                        },
 
-                    // Set multiple headers or get request headers
-                    headers(headers?: { [name: string]: string | number | readonly string[] }) {
-                        if (!headers)
-                            return req.headers;
-                        for (let name in headers)
-                            res.setHeader(name, headers[name]);
-                    },
+                        // Set multiple headers or get request headers
+                        headers(headers?: { [name: string]: string | number | readonly string[] }) {
+                            if (!headers)
+                                return req.headers;
+                            for (let name in headers)
+                                res.setHeader(name, headers[name]);
+                        },
 
-                    // Socket
-                    socket: res.socket,
+                        // Socket
+                        socket: res.socket,
 
-                    // Method
-                    method: req.method as Method,
+                        // Method
+                        method: req.method as Method,
 
-                    // HTTP version
-                    httpVersion: req.httpVersion,
+                        // HTTP version
+                        httpVersion: req.httpVersion,
 
-                    // Server IPv4 address
-                    remoteAddress: req.socket.remoteAddress,
+                        // Server IPv4 address
+                        remoteAddress: req.socket.remoteAddress,
 
-                    // Subhost
-                    subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
-                };
+                        // Subhost
+                        subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
+                    };
 
-            // Check whether the request is a favicon
-            if (req.url === "/favicon.ico")
-                c.response = this.readFile(this.iconPath) ?? "";
+                // Check whether the request is a favicon
+                if (req.url === "/favicon.ico")
+                    c.response = this.readFile(this.iconPath) ?? "";
 
-            // Next function
-            const next = async (index: number, max: number) => {
-                if (index < max) {
-                    // When response ended
-                    if (c.responseEnded)
-                        // End the function
-                        return;
+                // Next function
+                const next = async (index: number, max: number) => {
+                    if (index < max) {
+                        // When response ended
+                        if (c.responseEnded)
+                            // End the function
+                            return;
 
-                    // Invoke the middleware
-                    await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
+                        // Invoke the middleware
+                        await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
+                    }
                 }
+
+                // Invoke the middleware
+                await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
+
+                // End the response
+                this.endResponse(c, res);
             }
-
-            // Invoke the middleware
-            await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
-
-            // End the response
-            this.endResponse(c, res);
-        }
+        })();
     }
 
     /**
