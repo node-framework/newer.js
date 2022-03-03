@@ -229,20 +229,6 @@ export declare type Schema = {
     drop(): Promise<void>;
 };
 /**
- * Application
- */
-export interface Application {
-    /**
-     * Start the main application
-     */
-    start(): Promise<http.Server | https.Server>;
-    /**
-     * Set app configs
-     * @param configs the configs
-     */
-    config(configs: AppConfigs): void;
-}
-/**
  * App configs
  */
 export interface AppConfigs {

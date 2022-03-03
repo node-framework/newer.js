@@ -95,14 +95,6 @@ export default class Server {
             httpsMode: this.httpsMode
         });
 
-        // Wait until the server is ready
-        await new Promise<void>(res => 
-            requests.server.once("listening", res)
-        );
-
-        // Http
-        this.rawServer = requests.server;
-
         // Make this process asynchronously run
         (async () => {
             // Loop through the requests
@@ -197,7 +189,18 @@ export default class Server {
                 // End the response
                 this.endResponse(c, res);
             }
-        })();
+        })().catch(e => {
+            if (e)
+                throw e;
+        });
+
+        // Wait until the server is ready
+        await new Promise<void>(res =>
+            requests.server.once("listening", res)
+        );
+
+        // Http server
+        this.rawServer = requests.server;
     }
 
     /**
