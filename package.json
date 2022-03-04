@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-beta.20",
+	"version": "0.2.0-beta.27",
 	"description": "A lightweight framework",
 	"main": "./lib/main.js",
 	"directories": {
@@ -14,7 +14,6 @@
 	"author": "reve-node",
 	"license": "MIT",
 	"dependencies": {
-		"esm": "^3.2.25",
 		"query-string": "^7.0.1"
 	},
 	"repository": {
@@ -27,5 +26,9 @@
 		"mocha": "^9.2.1",
 		"ts-node": "^10.4.0",
 		"typescript": "^4.5.4"
-	}
+	},
+	"scripts": {
+		"build": "tsc"
+	},
+	"type": "module"
 }

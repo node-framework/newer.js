@@ -108,6 +108,18 @@ export interface Context extends Record<string, any> {
      * The subhost
      */
     readonly subhost: string;
+
+    /**
+     * Current cookie
+     */
+    cookie?: {
+        [key: string]: any;
+    };
+
+    /**
+     * Cookie options
+     */
+    cookieOptions?: CookieOptions;
 }
 
 
