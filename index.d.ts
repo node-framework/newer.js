@@ -1,24 +1,23 @@
-import Application from "./lib/Application/application.js";
-import Server from "./lib/Server/server.js";
-import Router from "./lib/Middleware/router.js";
-import StaticDir from "./lib/Middleware/staticdir.js";
-import simple from "./lib/Server/simple.js";
-import SubDomain from "./lib/Middleware/subdomain.js";
-import Cookie from "./lib/Middleware/cookie.js";
-import JsonDB from "./lib/Database/JsonDB.js";
+import Application from "./src/Application/application";
+import Server from "./src/Server/server";
+import Router from "./src/Middleware/router";
+import StaticDir from "./src/Middleware/staticdir";
+import simple from "./src/Server/simple";
+import SubDomain from "./src/Middleware/subdomain";
+import Cookie from "./src/Middleware/cookie";
+import JsonDB from "./src/Database/JsonDB";
 
-namespace NewerJS {
-    export {
-        Application,
-        Server,
-        Router,
-        StaticDir,
-        simple,
-        SubDomain,
-        Cookie,
-        JsonDB
-    }
-    export const app: Application;
+export {
+    Application,
+    Server,
+    Router,
+    StaticDir,
+    simple,
+    SubDomain,
+    Cookie,
+    JsonDB,
 }
 
-export default NewerJS;
+export * from "./src/declarations";
+
+export const app: Application;
