@@ -54,19 +54,20 @@ class Application {
      */
     async start() {
         // Fix missing configs
-        this.appConfig.projectPath = this.appConfig.projectPath ?? ".";
-        this.appConfig.static = this.appConfig.static ?? "public";
-        this.appConfig.httpOptions = this.appConfig.httpOptions ?? {};
+        this.#_appConfig = this.#_appConfig ?? {};
+        this.#_appConfig.projectPath = this.#_appConfig.projectPath ?? ".";
+        this.#_appConfig.static = this.#_appConfig.static ?? "public";
+        this.#_appConfig.httpOptions = this.#_appConfig.httpOptions ?? {};
 
         // Create the directories if not exists
-        if (!existsSync(join(this.appConfig.projectPath, "lib")))
-            mkdirSync(join(this.appConfig.projectPath, "lib"));
+        if (!existsSync(join(this.appConfig.projectPath, "src")))
+            mkdirSync(join(this.appConfig.projectPath, "src"));
 
-        if (!existsSync(join(this.appConfig.projectPath, "lib", "middlewares")))
-            mkdirSync(join(this.appConfig.projectPath, "lib", "middlewares"));
+        if (!existsSync(join(this.appConfig.projectPath, "src", "middlewares")))
+            mkdirSync(join(this.appConfig.projectPath, "src", "middlewares"));
 
-        if (!existsSync(join(this.appConfig.projectPath, "lib", "controllers")))
-            mkdirSync(join(this.appConfig.projectPath, "lib", "controllers"));
+        if (!existsSync(join(this.appConfig.projectPath, "src", "controllers")))
+            mkdirSync(join(this.appConfig.projectPath, "src", "controllers"));
 
         if (!existsSync(join(this.appConfig.projectPath, this.appConfig.static)))
             mkdirSync(join(this.appConfig.projectPath, this.appConfig.static));
@@ -86,10 +87,10 @@ class Application {
 
         // Read the middleware directory
         for (const filename of readdirSync(
-            join(this.appConfig.projectPath, "lib", "middlewares")
+            join(this.appConfig.projectPath, "src", "middlewares")
         ) ?? []) {
             // Module path
-            let modulePath = resolve(join(this.appConfig.projectPath, "lib", "middlewares", filename));
+            let modulePath = resolve(join(this.appConfig.projectPath, "src", "middlewares", filename));
             modulePath = modulePath
                 .slice(modulePath.indexOf(":") + 1)
                 .replaceAll("\\", "/");
@@ -111,10 +112,10 @@ class Application {
 
         // Read the controller directory
         for (const filename of readdirSync(
-            join(this.appConfig.projectPath, "lib", "controllers")
+            join(this.appConfig.projectPath, "src", "controllers")
         ) ?? []) {
             // Module path
-            let modulePath = resolve(join(this.appConfig.projectPath, "lib", "controllers", filename));
+            let modulePath = resolve(join(this.appConfig.projectPath, "src", "controllers", filename));
             modulePath = modulePath
                 .slice(modulePath.indexOf(":") + 1)
                 .replaceAll("\\", "/");

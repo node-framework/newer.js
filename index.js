@@ -1,13 +1,13 @@
-import JsonDB from "./lib/Database/JsonDB.js";
-import Server from "./lib/Server/Server.js";
-import Router from "./lib/Middleware/Router.js";
-import SubDomain from "./lib/Middleware/SubDomain.js";
-import StaticDir from "./lib/Middleware/StaticDir.js";
-import simple from "./lib/Server/simple.js";
-import Cookie from "./lib/Middleware/Cookie.js";
+const JsonDB = require("./lib/Database/JsonDB.js").default;
+const Server = require("./lib/Server/server.js").default;
+const Router = require("./lib/Middleware/router.js").default;
+const SubDomain = require("./lib/Middleware/subdomain.js").default;
+const StaticDir = require("./lib/Middleware/staticdir.js").default;
+const simple = require("./lib/Server/simple.js").default;
+const Cookie = require("./lib/Middleware/cookie.js").default;
 
 // Default export
-export {
+module.exports = {
     JsonDB,
     Server,
     Router,
