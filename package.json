@@ -1,8 +1,8 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-prerelease",
+	"version": "0.2.0-prerelease.3",
 	"description": "A lightweight framework",
-	"main": "./lib/main.js",
+	"main": "index.cjs",
 	"directories": {
 		"lib": "lib"
 	},
@@ -14,12 +14,13 @@
 	"author": "reve-node",
 	"license": "MIT",
 	"dependencies": {
-		"query-string": "^7.0.1"
+		"query-string": "^7.0.1",
+		"require-util": "^0.0.5-alpha"
 	},
 	"repository": {
 		"url": "https://github.com/node-framework/newer.js"
 	},
-	"types": "types/main.d.ts",
+	"types": "index.d.ts",
 	"devDependencies": {
 		"@types/node": "^17.0.8",
 		"autocannon": "^7.5.1",

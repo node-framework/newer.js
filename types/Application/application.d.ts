@@ -14,5 +14,4 @@ declare class Application {
       */
     config(configs: AppConfigs): void;
 }
-declare const app: Application;
-export default app;
+export default Application;

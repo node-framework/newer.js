@@ -128,9 +128,4 @@ class Application {
     }
 }
 
-// App
-const app = new Application();
-
-// Export app
-export default app;
-
+export default Application;
