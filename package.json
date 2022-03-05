@@ -1,8 +1,8 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-prerelease.4",
+	"version": "0.2.0-prerelease.7",
 	"description": "A lightweight framework",
-	"main": "index.cjs",
+	"main": "index.js",
 	"directories": {
 		"lib": "lib"
 	},

@@ -1,10 +1,24 @@
-export = {
-    JsonDB: await import("./lib/Database/JsonDB").then(v => v.default),
-    Server: await import("./lib/Server/server.js").then(v => v.default),
-    Router: await import("./lib/Middleware/router.js").then(v => v.default),
-    SubDomain: await import("./lib/Middleware/subdomain.js").then(v => v.default),
-    StaticDir: await import("./lib/Middleware/staticdir.js").then(v => v.default),
-    simple: await import("./lib/Server/simple.js").then(v => v.default),
-    app: new Application(),
-    Cookie: await import("./lib/Middleware/cookie.js").then(v => v.default)
+import Application from "./lib/Application/application.js";
+import Server from "./lib/Server/server.js";
+import Router from "./lib/Middleware/router.js";
+import StaticDir from "./lib/Middleware/staticdir.js";
+import simple from "./lib/Server/simple.js";
+import SubDomain from "./lib/Middleware/subdomain.js";
+import Cookie from "./lib/Middleware/cookie.js";
+import JsonDB from "./lib/Database/JsonDB.js";
+
+namespace NewerJS {
+    export {
+        Application,
+        Server,
+        Router,
+        StaticDir,
+        simple,
+        SubDomain,
+        Cookie,
+        JsonDB
+    }
+    export const app: Application;
 }
+
+export default NewerJS;
