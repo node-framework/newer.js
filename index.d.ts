@@ -7,6 +7,8 @@ import SubDomain from "./src/Middleware/subdomain";
 import Cookie from "./src/Middleware/cookie";
 import JsonDB from "./src/Database/JsonDB";
 
+declare const app: Application;
+
 export {
     Application,
     Server,
@@ -16,8 +18,8 @@ export {
     SubDomain,
     Cookie,
     JsonDB,
+    app,
 }
 
 export * from "./src/declarations";
 
-export const app: Application;
