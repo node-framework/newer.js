@@ -1,19 +1,16 @@
-require = require("require-util").dynamic(module);
+(async () => {
+    // Application
+    const Application = await import("./lib/Application/application.js").then(v => v.default);
 
-// Application
-const Application = require("./lib/Application/application.js").default;
-
-// App
-const app = new Application;
-
-// Default export
-module.exports = { 
-    JsonDB: require("./lib/Database/JsonDB").default, 
-    Server: require("./lib/Server/server.js").default, 
-    Router: require("./lib/Middleware/router.js").default, 
-    SubDomain: require("./lib/Middleware/subdomain.js").default, 
-    StaticDir: require("./lib/Middleware/staticdir.js").default, 
-    simple: require("./lib/Server/simple.js").default,
-    app,
-    Cookie: require("./lib/Middleware/cookie.js").default
-};
+    // Default export
+    module.exports = {
+        JsonDB: await import("./lib/Database/JsonDB").then(v => v.default),
+        Server: await import("./lib/Server/server.js").then(v => v.default),
+        Router: await import("./lib/Middleware/router.js").then(v => v.default),
+        SubDomain: await import("./lib/Middleware/subdomain.js").then(v => v.default),
+        StaticDir: await import("./lib/Middleware/staticdir.js").then(v => v.default),
+        simple: await import("./lib/Server/simple.js").then(v => v.default),
+        app: new Application(),
+        Cookie: await import("./lib/Middleware/cookie.js").then(v => v.default)
+    };
+})();
