@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.0-prerelease.9",
+	"version": "0.2.0-prerelease.10",
 	"description": "A lightweight framework",
 	"main": "index.js",
 	"directories": {
@@ -29,6 +29,5 @@
 	},
 	"scripts": {
 		"build": "tsc"
-	},
-	"type": "module"
+	}
 }

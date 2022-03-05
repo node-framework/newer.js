@@ -1,16 +1,24 @@
-import Router from "../Middleware/router.js";
-import Server from "../Server/server.js";
-import StaticDir from "../Middleware/staticdir.js";
-import { readdirSync, existsSync, mkdirSync } from "fs";
-import { join, resolve } from "path";
-import { AppConfigs } from "../declarations.js";
+const Router = require("./lib/Middleware/router.js").default;
+const Server = require("./lib/Server/server.js").default;
+const StaticDir = require("./lib/Middleware/staticdir.js").default;
+const { readdirSync, existsSync, mkdirSync } = require("fs");
+const { join, resolve } = require("path");
 
 // Create an app
 class Application {
-    constructor() {}
+    /**
+     * Create a new application
+     * @param {import(".").AppConfigs} appConfig the app configuration
+     */
+    constructor(appConfig) {
+        this.#_appConfig = appConfig;
+    }
 
-    // App configs
-    readonly appConfig: AppConfigs = {
+    /**
+     * @type {import(".").AppConfigs}
+     * App configs
+     */
+    #_appConfig = {
         projectPath: ".",
         static: "public",
         httpOptions: {
@@ -23,8 +31,16 @@ class Application {
     };
 
     /**
+     * Get the app config
+     * @returns {import(".").AppConfigs} the app config
+     */
+    get appConfig() {
+        return this.#_appConfig;
+    }
+
+    /**
      * Start the app
-     * @returns the http or https server
+     * @returns {Promise<import("http").Server | import("https").Server>} the http or https server
      */
     async start() {
         // Fix missing configs
@@ -33,14 +49,14 @@ class Application {
         this.appConfig.httpOptions = this.appConfig.httpOptions ?? {};
 
         // Create the directories if not exists
-        if (!existsSync(join(this.appConfig.projectPath, "src")))
-            mkdirSync(join(this.appConfig.projectPath, "src"));
+        if (!existsSync(join(this.appConfig.projectPath, "lib")))
+            mkdirSync(join(this.appConfig.projectPath, "lib"));
 
-        if (!existsSync(join(this.appConfig.projectPath, "src", "middlewares")))
-            mkdirSync(join(this.appConfig.projectPath, "src", "middlewares"));
+        if (!existsSync(join(this.appConfig.projectPath, "lib", "middlewares")))
+            mkdirSync(join(this.appConfig.projectPath, "lib", "middlewares"));
 
-        if (!existsSync(join(this.appConfig.projectPath, "src", "controllers")))
-            mkdirSync(join(this.appConfig.projectPath, "src", "controllers"));
+        if (!existsSync(join(this.appConfig.projectPath, "lib", "controllers")))
+            mkdirSync(join(this.appConfig.projectPath, "lib", "controllers"));
 
         if (!existsSync(join(this.appConfig.projectPath, this.appConfig.static)))
             mkdirSync(join(this.appConfig.projectPath, this.appConfig.static));
@@ -60,15 +76,15 @@ class Application {
 
         // Read the middleware directory
         for (const filename of readdirSync(
-            join(this.appConfig.projectPath, "src", "middlewares")
+            join(this.appConfig.projectPath, "lib", "middlewares")
         ) ?? []) {
             // Module path
-            let modulePath = resolve(join(this.appConfig.projectPath, "src", "middlewares", filename));
+            let modulePath = resolve(join(this.appConfig.projectPath, "lib", "middlewares", filename));
             modulePath = modulePath
                 .slice(modulePath.indexOf(":") + 1)
                 .replaceAll("\\", "/");
 
-            // Import the middleware
+            // const the middleware
             let module = await import(modulePath);
 
             // Check whether module is an ES6 module
@@ -85,10 +101,10 @@ class Application {
 
         // Read the controller directory
         for (const filename of readdirSync(
-            join(this.appConfig.projectPath, "src", "controllers")
+            join(this.appConfig.projectPath, "lib", "controllers")
         ) ?? []) {
             // Module path
-            let modulePath = resolve(join(this.appConfig.projectPath, "src", "controllers", filename));
+            let modulePath = resolve(join(this.appConfig.projectPath, "lib", "controllers", filename));
             modulePath = modulePath
                 .slice(modulePath.indexOf(":") + 1)
                 .replaceAll("\\", "/");
@@ -121,11 +137,11 @@ class Application {
 
     /**
       * Set app configs
-      * @param configs the configs
+      * @param {import(".").AppConfigs} configs the configs
       */
-    config(configs: AppConfigs) {
+    config(configs) {
         Object.assign(this.appConfig, configs);
     }
 }
 
-export default Application;
+module.exports = Application;
