@@ -25,4 +25,6 @@ declare module "newer.js/application" {
          */
         config(configs: AppConfigs): void;
     }
+
+    export = Application;
 }

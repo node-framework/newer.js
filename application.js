@@ -10,7 +10,17 @@ class Application {
      * Create a new application
      * @param {import(".").AppConfigs} appConfig the app configuration
      */
-    constructor(appConfig) {
+    constructor(appConfig = {
+        projectPath: ".",
+        static: "public",
+        httpOptions: {
+            port: 80,
+            hostname: "localhost",
+            httpsMode: false,
+            backlog: 0,
+            advanced: {}
+        },
+    }) {
         this.#_appConfig = appConfig;
     }
 
