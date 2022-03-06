@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.1-alpha.5",
+	"version": "0.2.1-alpha.6",
 	"description": "A lightweight framework",
 	"main": "index.js",
 	"directories": {
