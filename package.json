@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.1-alpha.2",
+	"version": "0.2.1-alpha.5",
 	"description": "A lightweight framework",
 	"main": "index.js",
 	"directories": {
@@ -32,7 +32,7 @@
 	},
 	"exports": {
 		".": "./index.js",
-		"./application": "./application.js",
+		"./app": "./app.js",
 		"./package.json": "./package.json"
 	}
 }

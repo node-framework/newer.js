@@ -1,6 +1,6 @@
 import { AppConfigs } from "./src/declarations";
 
-declare module "newer.js/application" {
+declare module "newer.js/app" {
     class Application {
         /**
          * Create a new application
