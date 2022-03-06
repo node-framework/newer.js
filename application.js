@@ -1,3 +1,5 @@
+// @ts-check
+
 const Router = require("./lib/Middleware/router.js").default;
 const Server = require("./lib/Server/server.js").default;
 const StaticDir = require("./lib/Middleware/staticdir.js").default;
@@ -21,14 +23,15 @@ class Application {
             advanced: {}
         },
     }) {
-        this.#_appConfig = appConfig;
+        this._appConfig = appConfig;
     }
 
     /**
      * @type {import(".").AppConfigs}
      * App configs
+     * @private
      */
-    #_appConfig = {
+    _appConfig = {
         projectPath: ".",
         static: "public",
         httpOptions: {
@@ -43,9 +46,10 @@ class Application {
     /**
      * Get the app config
      * @returns {import(".").AppConfigs} the app config
+     * @readonly
      */
     get appConfig() {
-        return this.#_appConfig;
+        return this._appConfig;
     }
 
     /**
@@ -54,10 +58,10 @@ class Application {
      */
     async start() {
         // Fix missing configs
-        this.#_appConfig = this.#_appConfig ?? {};
-        this.#_appConfig.projectPath = this.#_appConfig.projectPath ?? ".";
-        this.#_appConfig.static = this.#_appConfig.static ?? "public";
-        this.#_appConfig.httpOptions = this.#_appConfig.httpOptions ?? {};
+        this._appConfig = this._appConfig ?? {};
+        this._appConfig.projectPath = this._appConfig.projectPath ?? ".";
+        this._appConfig.static = this._appConfig.static ?? "public";
+        this._appConfig.httpOptions = this._appConfig.httpOptions ?? {};
 
         // Create the directories if not exists
         if (!existsSync(join(this.appConfig.projectPath, "src")))
@@ -93,6 +97,7 @@ class Application {
             let modulePath = resolve(join(this.appConfig.projectPath, "src", "middlewares", filename));
             modulePath = modulePath
                 .slice(modulePath.indexOf(":") + 1)
+                // @ts-ignore
                 .replaceAll("\\", "/");
 
             // const the middleware
@@ -118,6 +123,7 @@ class Application {
             let modulePath = resolve(join(this.appConfig.projectPath, "src", "controllers", filename));
             modulePath = modulePath
                 .slice(modulePath.indexOf(":") + 1)
+                // @ts-ignore
                 .replaceAll("\\", "/");
 
             // Get the controller path
@@ -151,7 +157,7 @@ class Application {
       * @param {import(".").AppConfigs} configs the configs
       */
     config(configs) {
-        Object.assign(this.appConfig, configs);
+        Object.assign(this._appConfig, configs);
     }
 }
 
