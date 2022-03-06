@@ -1,5 +1,5 @@
 import path from "path";
-import { Context, Handler, Middleware, NextFunction } from "../declarations.js";
+import { Context, Handler, Middleware, NextFunction } from "../declarations";
 
 /**
  * Create a server router

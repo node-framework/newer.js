@@ -1,5 +1,5 @@
-import { serialize, parse } from "../Utils/Cookie.js";
-import { Context, Middleware, NextFunction, CookieOptions } from "../declarations.js";
+import { serialize, parse } from "../Utils/Cookie";
+import { Context, Middleware, NextFunction, CookieOptions } from "../declarations";
 
 declare module '../declarations' {
     interface Context {

@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import EventEmitter from "events";
-import { Schema, DBEvents } from "../declarations.js";
-import { typeChecker, getWrapper, checkType } from "../Utils/TypeChecker.js";
-import match from "../Utils/ObjectMatch.js";
+import { Schema, DBEvents } from "../declarations";
+import { typeChecker, getWrapper, checkType } from "../Utils/TypeChecker";
+import match from "../Utils/ObjectMatch";
 
 /**
  * Promise version of FS

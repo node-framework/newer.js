@@ -3,9 +3,6 @@
 	"version": "0.2.1-alpha.6",
 	"description": "A lightweight framework",
 	"main": "index.js",
-	"directories": {
-		"lib": "lib"
-	},
 	"keywords": [
 		"backend",
 		"framework",

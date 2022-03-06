@@ -1,9 +1,9 @@
 import http from "http";
 import https from "https";
 import fs from "fs";
-import simple from "./simple.js";
-import { Middleware, Context, Method } from "../declarations.js";
-import { getBody, getQuery } from "../Utils/BodyParser.js";
+import simple from "./simple";
+import { Middleware, Context, Method } from "../declarations";
+import { getBody, getQuery } from "../Utils/BodyParser";
 
 export default class Server {
     private mds: Middleware[];

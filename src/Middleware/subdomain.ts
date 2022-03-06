@@ -1,4 +1,4 @@
-import { Context, Middleware, NextFunction } from "../declarations.js";
+import { Context, Middleware, NextFunction } from "../declarations";
 
 /**
  * Handle a subdomain
