@@ -150,6 +150,13 @@ export default class Server {
                                 res.setHeader(name, headers[name]);
                         },
 
+                        // Redirect
+                        redirect(url) {
+                            res.writeHead(301, {
+                                "Location": url
+                            });
+                        },
+
                         // Socket
                         socket: res.socket,
 

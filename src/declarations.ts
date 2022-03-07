@@ -70,6 +70,11 @@ export interface Context extends Record<string, any> {
     headers(): http.IncomingHttpHeaders;
 
     /**
+     * Redirect to another url
+     */
+    redirect(url: string): void;
+
+    /**
      * Request socket
      */
     readonly socket: Socket;

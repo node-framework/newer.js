@@ -3,7 +3,7 @@
 const Router = require("./lib/Middleware/router.js").default;
 const Server = require("./lib/Server/server.js").default;
 const StaticDir = require("./lib/Middleware/staticdir.js").default;
-const { readdirSync, existsSync, mkdirSync } = require("fs");
+const { readdirSync, existsSync } = require("fs");
 const { join, resolve } = require("path");
 
 // Create an app
