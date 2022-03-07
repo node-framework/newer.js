@@ -152,9 +152,8 @@ export default class Server {
 
                         // Redirect
                         redirect(url) {
-                            res.writeHead(301, {
-                                "Location": url
-                            });
+                            c.statusCode = 302;
+                            c.header("Location", url);
                         },
 
                         // Socket
