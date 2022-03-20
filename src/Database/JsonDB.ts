@@ -168,4 +168,23 @@ export default class JsonDB {
     static Boolean(obj: any): boolean {
         return typeof obj === "boolean" || obj instanceof Boolean;
     }
+
+    // Delete the database
+    async drop(path: string) {
+        // Delete all the properties
+        for (const prop in this)
+            delete this[prop];
+
+        // Delete the file
+        await pfs.unlink(path);
+    }
+
+    // Clear the database
+    async clear(path: string) {
+        // Cache
+        this.cache = {};
+
+        // Clear the file
+        await pfs.writeFile(path, "{}");
+    }
 }
