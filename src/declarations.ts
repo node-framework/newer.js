@@ -262,7 +262,7 @@ export type Schema = {
      * @param obj The object to check
      * @param except If set to true, delete all objects that do not match the parameter object
      */
-    deleteMatch(obj?: any, except?: boolean): void;
+    deleteMatch(obj?: any, except?: boolean): Promise<void>;
 
     /**
      * Drop all the objects that belongs to the schema. The schema after this action will be unusable
