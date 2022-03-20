@@ -88,7 +88,7 @@ export default class JsonDB {
                         break;
 
                     // Add the object to the result if matches
-                    if (match(obj, schemObj) !== except)
+                    if (match(obj, schemObj) !== !!except)
                         result.push(schemObj);
                 }
 
@@ -116,7 +116,7 @@ export default class JsonDB {
             // Find the object in the database and delete it
             static async deleteMatch(obj?: any, except?: boolean) {
                 // Remove the object from cache
-                ptr.cache[name] = ptr.cache[name].filter(o => match(o, obj) === !!except);
+                ptr.cache[name] = ptr.cache[name].filter(o => match(obj, o) === !!except);
 
                 // Write the cache to the file
                 return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
