@@ -225,11 +225,6 @@ export type Schema = {
     read(): any[],
 
     /**
-     * Schema name
-     */
-    readonly name: string;
-
-    /**
      * Find objects that match the parameter object
      * @param obj The object to check
      * @param count The number of objects to return

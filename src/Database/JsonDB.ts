@@ -43,12 +43,8 @@ export default class JsonDB {
 
         // Create a new schema
         const ptr = this, CurrentSchema = class {
-            readonly name: string;
-
             // Constructor
             constructor(public obj: any) {
-                this.name = name;
-
                 // Validate the type of the object
                 for (const prop in obj) {
                     if (!validator[prop] || !validator[prop](obj[prop]))
