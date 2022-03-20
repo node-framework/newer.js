@@ -4,7 +4,6 @@ import StaticDir from "./src/Middleware/staticdir";
 import simple from "./src/Server/simple";
 import SubDomain from "./src/Middleware/subdomain";
 import Cookie from "./src/Middleware/cookie";
-import JsonDB from "./src/Database/JsonDB";
 
 export {
     Server,
@@ -13,7 +12,6 @@ export {
     simple,
     SubDomain,
     Cookie,
-    JsonDB,
 }
 
 export * from "./src/declarations";

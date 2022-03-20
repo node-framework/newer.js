@@ -8,6 +8,11 @@ export type Method =
     "GET" | "POST" | "PUT" | "DELETE" | "HEAD"
     | "OPTIONS" | "PATCH" | "CONNECT" | "TRACE";
 
+// Declare a schema type
+export type SchemaType = {
+    (obj: any): boolean;
+}
+
 /**
  * Context of a request
  */
@@ -202,25 +207,7 @@ export type SchemaInstance = {
      * Save the created object to the database
      */
     save(): Promise<object>;
-
-    /**
-     * Delete the created object from the database
-     */
-    del(): Promise<object>;
-
-    /**
-     * Update the created object in the database
-     * @param obj The replacement object
-     */
-    update(obj: object): Promise<object>;
 }
-
-/**
- * Database events
- */
-export type DBEvents = "save-item" | "update-item" | "delete-item" |
-    "clear-schema" | "clear-database" |
-    "drop-database" | "drop-schema"
 
 /**
  * Schema type
@@ -230,23 +217,17 @@ export type Schema = {
      * Create a new schema instance
      * @param obj The initial object
      */
-    new(obj: object): SchemaInstance,
+    new(obj: any): SchemaInstance,
 
     /**
      * Read the schema from the database
      */
-    read(): object[],
-
-    /**
-     * Check whether current object matches the parameter object
-     * @param obj The object to check
-     */
-    match(obj: object): boolean,
+    read(): any[],
 
     /**
      * Schema name
      */
-    schem: string,
+    readonly name: string;
 
     /**
      * Find objects that match the parameter object
@@ -254,27 +235,27 @@ export type Schema = {
      * @param count The number of objects to return
      * @param except If set to true, find objects that do not match the parameter object
      */
-    find(obj?: object, count?: number, except?: boolean): Promise<object[]>,
+    find(obj?: any, count?: number, except?: boolean): any[],
 
     /**
      * Find an object that match the parameter object
      * @param obj The object to check
      * @param except If set to true, find the object that do not match the parameter object
      */
-    find(obj?: object, count?: 1, except?: boolean): Promise<object>,
+    findOne(obj?: any, except?: boolean): any,
 
     /**
      * Create new objects and check whether they match the schema
      * @param obj Objects to check
      */
-    create(...obj: object[]): SchemaInstance[],
+    create(...obj: any[]): SchemaInstance[],
 
     /**
      * Find the parameter object in the database and update it with the updated object
      * @param obj the object to be updated
      * @param updateObj the updated object
      */
-    update(obj: object, updateObj: object): Promise<object>,
+    update(obj: any, updateObj: any): Promise<void>,
 
     /**
      * Clear the objects that belongs to the schema
@@ -286,7 +267,7 @@ export type Schema = {
      * @param obj The object to check
      * @param except If set to true, delete all objects that do not match the parameter object
      */
-    deleteMatch(obj?: object, except?: boolean): Promise<void>;
+    deleteMatch(obj?: any, except?: boolean): void;
 
     /**
      * Drop all the objects that belongs to the schema. The schema after this action will be unusable

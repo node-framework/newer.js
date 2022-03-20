@@ -89,10 +89,12 @@ class Application {
                         // @ts-ignore
                         .replaceAll("\\", "/");
 
-                    // const the middleware
+                    /**
+                     * The target module
+                     */
                     let module = await import(modulePath);
 
-                    // Check whether module is an ES6 module
+                    // Check whether module has a default export
                     module = module?.default ?? module;
 
                     try {

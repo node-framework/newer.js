@@ -1,7 +1,6 @@
 import * as fs from "fs";
-import EventEmitter from "events";
-import { Schema, DBEvents } from "../declarations";
-import { typeChecker, getWrapper, checkType } from "../Utils/TypeChecker";
+import { Schema, SchemaType } from "../declarations";
+import compare from "../Utils/ObjectCompare";
 import match from "../Utils/ObjectMatch";
 
 /**
@@ -9,339 +8,164 @@ import match from "../Utils/ObjectMatch";
  */
 const pfs = fs.promises;
 
-/**
- * @param obj input object to load schema from
- * @returns the loaded schema
- */
-const getSchemFrom = (obj: object): object => {
-    let schem = {};
-    for (let i in obj)
-        schem[i] = (  
-            getWrapper(obj[i]) !== Object
-                ? getWrapper
-                : getSchemFrom
-        )(obj[i]);
-    return schem;
-}
-
 export default class JsonDB {
-    private events: EventEmitter;
-    /**
-     * Database data
-     */
-    private data: {
-        [name: string]: object[]
+    // Save the previous object
+    private cache: {
+        [schemaName: string]: any[];
     };
-    /**
-     * Database schemas
-     */
+
+    // Schemas
     private schemas: {
-        name: string; schem: Schema;
-    }[];
-    /**
-     * Database path
-     */
-    readonly filePath: string;
-    /**
-     * Reviver
-     */
-    readonly reviver: (key: string, value: any) => any;
-    /**
-     * @param filePath file path
-     * @param reviver to restore objects from a string that is parsed using JSON.parse
-     * @constructor
-     */
-    constructor(filePath: string, reviver?: (key: string, value: any) => any) {
-        // create new event emitter
-        this.events = new EventEmitter();
-        // set file path
-        this.filePath = filePath;
-        // List of schemas
-        this.schemas = [];
-        // Reviver
-        this.reviver = reviver;
-        const readerData = fs.readFileSync(filePath).toString();
-        // Check whether file path exists
-        if (!fs.existsSync(filePath))
-            fs.appendFileSync(filePath, "{}");
-        // Check whether file path exists then if not return this object
-        if (!fs.existsSync(filePath) || (readerData === "{}")) {
-            this.data = {};
-            return this;
-        }
-        // Set data
-        this.data = JSON.parse(readerData, reviver);
-        // Set data after load the schema
-        this.data = this.loadSchemas(
-            JSON.parse(readerData, reviver)
-        );
-        // Weird thing happens here so I need to fix by using the next line
-        fs.writeFileSync(filePath, JSON.stringify(this.data));
+        [name: string]: Schema
     }
 
-    /**
-     * @param event to handle
-     * @param listener to handle event
-     */
-    on = (event: DBEvents, listener: (...args: any[]) => void) =>
-        void this.events.on(event, listener);
+    constructor(public path: string) {
+        // Check if file exists
+        if (!fs.existsSync(path) || fs.readFileSync(path).toString() === "")
+            fs.appendFileSync(path, "{}");
 
-    /**
-     * @param data loaded data
-     * @returns current data after loading all the schemas
-     */
-    private loadSchemas = (data: {
-        [name: string]: object[];
-    }): {
-        [name: string]: object[]
-    } => {
-        for (let schemName in data)
-            if (data[schemName][0]) {
-                let schem = getSchemFrom(data[schemName][0]);
-                if (schem !== {})
-                    this.schema(schemName, schem);
-            }
-        return data;
-    }
-    /**
-     * @param name Schema name
-     * @param schem Schema model
-     * @returns the created schema
-     */
-    schema = (name: string, schem?: object): Schema => {
-        // Find the schema
-        if (!schem)
-            return this.schemas.filter(val => val?.name === name)[0]?.schem ?? undefined;
+        // Save the object
+        this.cache = JSON.parse(fs.readFileSync(path).toString());
 
-        // This database file path
-        const pth = this.filePath;
-
-        // Check whether schema exists
-        if (this.schemas.map((val) => val.name).includes(name))
-            return this.schemas.filter(val => val.name === name)[0].schem;
-
-        // Reference to this object
-        const pointer = this;
-
-        // Initialize the schema docs array with an empty one
-        this.data[name] = [];
-
-        // Create a type checker
-        const SchemaObject = typeChecker(schem);
-
-        // Write the created array to database file
-        fs.writeFileSync(pth, JSON.stringify(this.data));
-
-        // Create a class to use to manipulate the schema
-        let sch = class Schema {
-            /**
-             * Current object
-             */
-            private obj: object;
-
-            /**
-             * @param obj to manipulate
-             */
-            constructor(obj: object) {
-                this.obj = new SchemaObject(obj);
-            }
-
-            /**
-             * @returns the object after saving it to the database
-             */
-            save = async (): Promise<object> => {
-                pointer.data[Schema.schem].push(this.obj);
-                await pfs.writeFile(pth, JSON.stringify(pointer.data));
-                pointer.events.emit("save-item", this.obj);
-                return pointer.data;
-            }
-
-            /**
-             * @returns the data after deleting
-             */
-            del = async (): Promise<object> => {
-                let ref = pointer.data[Schema.schem];
-                ref.splice(ref.indexOf(this.obj), 1);
-                await pfs.writeFile(pth, JSON.stringify(pointer.data));
-                pointer.events.emit("delete-item");
-                this.obj = undefined;
-                return pointer.data;
-            }
-
-            /**
-             * @param obj 
-             * @returns the object after updating
-             */
-            update = async (obj: object): Promise<object> => {
-                // Check whether obj matches given schema
-                for (const e in schem) {
-                    if (!checkType(schem[e], obj[e]))
-                        throw new Error("Invalid object");
-                }
-                for (const e in obj) {
-                    if (!checkType(schem[e], obj[e]))
-                        throw new Error("Invalid object");
-                }
-                // Assign it to current object position
-                pointer.data[Schema.schem][
-                    pointer.data[Schema.schem]
-                        .indexOf(this.obj)
-                ] = obj;
-                await pfs.writeFile(pth, JSON.stringify(pointer.data));
-                this.obj = obj;
-                pointer.events.emit("update-item", this.obj);
-                return obj;
-            }
-
-            /**
-             * @returns all docs of the schema
-             */
-            static read = (): object[] =>
-                pointer.data[Schema.schem];
-                
-            /**
-             * @param obj to create
-             * @returns created schema docs
-             */
-            static create = (...obj: object[]): Schema[] => obj.map(e => new Schema(e));
-
-            /**
-             * @param obj to update
-             * @param updateObj after update
-             */
-            static update = async (obj: object, updateObj: object): Promise<object> => {
-                const index = pointer.data[Schema.schem].indexOf(obj);
-                if (!index)
-                    throw new Error("Invalid object");
-                pointer.data[Schema.schem][index] = updateObj;
-                await pfs.writeFile(pth, JSON.stringify(pointer.data));
-                pointer.events.emit("update-item", updateObj);
-                return updateObj;
-            }
-
-            /**
-             * @param obj 
-             * @returns true if object matches current schema
-             */
-            static match = (obj: object): boolean => {
-                for (const e in schem) {
-                    if (!checkType(schem[e], obj[e]))
-                        return false;
-                }
-                return true;
-            }
-
-            /**
-             * @returns {string} this schema name
-             */
-            static get schem(): string {
-                return name;
-            }
-
-            /**
-             * @param obj to find
-             * @param except if true will find objects that don't match `obj`
-             * @param count objects to be returned
-             * @returns the result
-             */
-            static find = async (obj?: object, count?: number, except?: boolean): Promise<object[]> => {
-                let listMatch = [];
-                for (let doc of JSON.parse(
-                    (await pfs.readFile(pth)).toString(),
-                    pointer.reviver
-                )[Schema.schem]) {
-                    // Check if object matches
-                    if (match(obj ?? {}, doc) === (!except)) {
-                        // Check whether count != 0
-                        if (count === 0)
-                            break;
-                        // Check whether count > 0 then minus count by 1
-                        if (count && count > 0)
-                            count--;
-                        // Add element to list
-                        listMatch.push(doc);
-                    }
-                }
-                return listMatch.length <= 1 ? listMatch[0] : listMatch;
-            }
-
-            /**
-             * Clear the schema
-             */
-            static clear = async (): Promise<void> => {
-                pointer.data[Schema.schem] = [];
-                await pfs.writeFile(pth, JSON.stringify(pointer.data));
-                pointer.events.emit("clear-schema");
-            }
-
-            /**
-             * @param obj to delete
-             * @param except if true will delete objects that don't match `obj`
-             */
-            static deleteMatch = async (obj?: object, except: boolean = false): Promise<void> => {
-                let schem = pointer.data[Schema.schem];
-                if (obj)
-                    for (let i in obj)
-                        schem = schem.filter(
-                            (val: { [x: string]: any; }) =>
-                                (val[i] !== obj[i]) !== except
-                        );
-                else
-                    schem = [];
-                pointer.data[Schema.schem] = schem;
-                pointer.events.emit("delete-item");
-                await pfs.writeFile(pth, JSON.stringify(pointer.data));
-            }
-
-            /**
-             * Drop the schema and all schema docs
-             */
-            static drop = async () =>
-                await pointer.drop(Schema);
-        }
-        pointer.schemas.push({
-            name: name,
-            schem: sch
-        });
-        return sch;
+        // Schemas
+        this.schemas = {};
     }
 
-    /**
-     * @returns a promise after clearing the database
-     */
-    clear = async (): Promise<void> => (
-        this.data = {},
-        await pfs.writeFile(this.filePath, "{}"),
-        void this.events.emit("clear-database")
-    )
+    // Create a schema
+    schema(name: string, validator?: { [prop: string]: SchemaType }): Schema {
+        // Check if schema validator exists
+        if (!validator) 
+            return this.schemas[name];
 
-    /**
-     * @param schema setting it to a falsy value (such as undefined) will delete the whole database (which makes this object unusable)
-     */
-    drop = async (schema?: Schema | string): Promise<void> => {
-        if (!schema) {
-            await pfs.unlink(this.filePath);
-            this.data = undefined;
-            
-            // Emit event
-            this.events.emit("drop-database");
-        } else {
-            let schemName = typeof schema === 'function'
-                ? schema.schem
-                : schema;
-            const {
-                [schemName]: _,
-                ...rest
-            } = this.data;
-            this.data = rest;
-            // Filter the schema out of the data
-            this.schemas = this.schemas.filter(val => val.name !== schemName);
+        // Create a new schema if it does not exist
+        if (!this.cache[name])
+            this.cache[name] = [];
 
-            // Override the current data
-            await pfs.writeFile(this.filePath, JSON.stringify(this.data));
+        // Create a new schema
+        const ptr = this, CurrentSchema = class {
+            readonly name: string;
 
-            // Emit event
-            this.events.emit('drop-schema');
+            // Constructor
+            constructor(public obj: any) {
+                this.name = name;
+
+                // Validate the type of the object
+                for (const prop in obj) {
+                    if (!validator[prop] || !validator[prop](obj[prop]))
+                        throw new Error(`Invalid value for ${prop}`);
+                }
+            }
+
+            // New object
+            static new(obj: any) {
+                return new CurrentSchema(obj);
+            }
+
+            // Read the schema from the database
+            static read() {
+                return ptr.cache[name];
+            }
+
+            // Create new schema instances
+            static create(...obj: any[]) {
+                return obj.map(CurrentSchema.new);
+            }
+
+            // Clear the schema
+            static async clear() {
+                // Remove the schema objects from the cache
+                ptr.cache[name] = [];
+
+                // Write the cache to the file
+                return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
+            }
+
+            // Match
+            static find(obj?: any, count?: number, except?: boolean) {
+                // Result
+                const result = [];
+
+                // Search the cache
+                for (const schemObj of ptr.cache[name]) {
+                    // Check whether the result is enough
+                    if (count && result.length >= count)
+                        break;
+
+                    // Add the object to the result if matches
+                    if (match(obj, schemObj) !== except)
+                        result.push(schemObj);
+                }
+
+                // Return the result
+                return result;
+            }
+
+            // Find one
+            static findOne(obj?: any, except?: boolean) {
+                return CurrentSchema.find(obj, 1, except)[0];
+            }
+
+            // Update the object
+            static async update(obj: any, updateObj: any) {
+                // Remove the object from cache
+                ptr.cache[name] = ptr.cache[name].filter(o => !compare(o, obj));
+
+                // Add the updated object to cache
+                ptr.cache[name].push(updateObj);
+
+                // Write the cache to the file
+                return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
+            }
+
+            // Find the object in the database and delete it
+            static async deleteMatch(obj?: any, except?: boolean) {
+                // Remove the object from cache
+                ptr.cache[name] = ptr.cache[name].filter(o => match(o, obj) === !!except);
+
+                // Write the cache to the file
+                return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
+            }
+
+            // Drop the schema
+            static async drop() {
+                // Remove the schema from cache
+                delete ptr.schemas[name];
+                delete ptr.cache[name];
+
+                // Write the cache to the file
+                return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
+            }
+
+            // Save the created object to the database
+            async save() {
+                // Save the object to cache
+                ptr.cache[name].push(this.obj);
+
+                // Write the cache to the file
+                await pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
+
+                // Return the object
+                return this.obj;
+            }
         }
+
+        // Save the schema
+        this.schemas[name] = CurrentSchema;
+
+        // Return the schema
+        return CurrentSchema;
+    }
+
+    // Basic types
+    static Number(obj: any): boolean {
+        return typeof obj === "number" || obj instanceof Number;
+    }
+
+    static String(obj: any): boolean {
+        return typeof obj === "string" || obj instanceof String;
+    }
+
+    static Boolean(obj: any): boolean {
+        return typeof obj === "boolean" || obj instanceof Boolean;
     }
 }

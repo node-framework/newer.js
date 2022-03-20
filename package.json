@@ -30,6 +30,7 @@
 	"exports": {
 		".": "./index.js",
 		"./app": "./app.js",
+		"./db": "./db.js",
 		"./package.json": "./package.json"
 	}
 }
