@@ -166,21 +166,21 @@ export default class JsonDB {
     }
 
     // Delete the database
-    async drop(path: string) {
+    async drop() {
+        // Delete the file
+        await pfs.unlink(this.path);
+
         // Delete all the properties
         for (const prop in this)
             delete this[prop];
-
-        // Delete the file
-        await pfs.unlink(path);
     }
 
     // Clear the database
-    async clear(path: string) {
+    async clear() {
+        // Clear the file
+        await pfs.writeFile(this.path, "{}");
+
         // Cache
         this.cache = {};
-
-        // Clear the file
-        await pfs.writeFile(path, "{}");
     }
 }
