@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { Schema, SchemaType } from "../declarations";
 import compare from "../Utils/ObjectCompare";
 import match from "../Utils/ObjectMatch";
+import drop from "../Utils/Compiler/drop";
 
 // Execute the .action file
 async function exec(file: string, db: JsonDB) {
@@ -42,6 +43,10 @@ async function exec(file: string, db: JsonDB) {
         // Clear
         else if (line.startsWith("clear"))
             await clear(line, db);
+
+        // Drop
+        else if (line.startsWith("drop"))
+            await drop(line, db);
     }
 }
 
@@ -93,7 +98,7 @@ export default class JsonDB {
             // Constructor
             constructor(public obj: any) {
                 // Validate the type of the object
-                for (const prop in obj) {
+                for (const prop in validator) {
                     if (!validator[prop] || !validator[prop](obj[prop]))
                         throw new Error(`Invalid value for ${prop}`);
                 }
