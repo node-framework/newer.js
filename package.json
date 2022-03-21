@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.2-alpha.7",
+	"version": "0.2.2-alpha.8",
 	"description": "A lightweight framework",
 	"main": "index.js",
 	"keywords": [
@@ -28,7 +28,7 @@
 		"build": "tsc"
 	},
 	"exports": {
-		".": "./index.js",
+		".": "./modules/index.js",
 		"./app": "./modules/app.js",
 		"./db": "./modules/db.js",
 		"./package.json": "./package.json"
