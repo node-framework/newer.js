@@ -1,7 +1,49 @@
+import add from "../Utils/Compiler/add";
+import clear from "../Utils/Compiler/clear";
+import remove from "../Utils/Compiler/remove";
 import * as fs from "fs";
 import { Schema, SchemaType } from "../declarations";
 import compare from "../Utils/ObjectCompare";
 import match from "../Utils/ObjectMatch";
+
+// Execute the .action file
+async function exec(file: string, db: JsonDB) {
+    const lines: string[] = fs.readFileSync(file)
+        // Read the action file
+        .toString()
+
+        // Remove comments
+        .split("\n")
+        .map(line => line.startsWith("#") ? "" : line)
+        .reduce(
+            (prevLine, currentLine) => 
+                prevLine + "\n" + currentLine
+        )
+
+        // Replace all the new lines and tabs
+        .replaceAll("\n", "")
+        .replaceAll("\t", "")
+        .replaceAll("\r", "")
+        .replaceAll("    ", "")
+
+        // End statement
+        .split(";");
+
+    // Actions
+    for (const line of lines) {
+        // Insert
+        if (line.startsWith("add"))
+            await add(line, db);
+
+        // Delete
+        else if (line.startsWith("remove"))
+            await remove(line, db);
+
+        // Clear
+        else if (line.startsWith("clear"))
+            await clear(line, db);
+    }
+}
 
 /**
  * Promise version of FS
@@ -31,7 +73,12 @@ export default class JsonDB {
         this.schemas = {};
     }
 
-    // Create a schema
+    /**
+     * Create a schema
+     * @param name 
+     * @param validator 
+     * @returns a schema
+     */
     schema(name: string, validator?: { [prop: string]: SchemaType }): Schema {
         // Check if schema validator exists
         if (!validator) 
@@ -165,7 +212,9 @@ export default class JsonDB {
         return typeof obj === "boolean" || obj instanceof Boolean;
     }
 
-    // Delete the database
+    /**
+     * Delete the database
+     */
     async drop() {
         // Delete the file
         await pfs.unlink(this.path);
@@ -175,12 +224,21 @@ export default class JsonDB {
             delete this[prop];
     }
 
-    // Clear the database
+    /**
+     * Clear the database
+     */
     async clear() {
         // Clear the file
         await pfs.writeFile(this.path, "{}");
 
         // Cache
         this.cache = {};
+    }
+
+    /**
+     * Run a JSON Query language file
+     */
+    async run(filename: string) {
+        return exec(filename, this);
     }
 }
