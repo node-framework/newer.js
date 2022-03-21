@@ -1,4 +1,4 @@
-import { AppConfigs } from "./src/declarations";
+import { AppConfigs } from "../src/declarations";
 
 declare module "newer.js/app" {
     class Application {

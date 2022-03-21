@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.2-alpha.6",
+	"version": "0.2.2-alpha.7",
 	"description": "A lightweight framework",
 	"main": "index.js",
 	"keywords": [
@@ -29,8 +29,8 @@
 	},
 	"exports": {
 		".": "./index.js",
-		"./app": "./app.js",
-		"./db": "./db.js",
+		"./app": "./modules/app.js",
+		"./db": "./modules/db.js",
 		"./package.json": "./package.json"
 	}
 }

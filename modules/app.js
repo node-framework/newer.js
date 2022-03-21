@@ -1,8 +1,8 @@
 // @ts-check
 
-const Router = require("./lib/Middleware/router.js").default;
-const Server = require("./lib/Server/server.js").default;
-const StaticDir = require("./lib/Middleware/staticdir.js").default;
+const Router = require("../lib/Middleware/router.js").default;
+const Server = require("../lib/Server/server.js").default;
+const StaticDir = require("../lib/Middleware/staticdir.js").default;
 const { readdirSync, existsSync } = require("fs");
 const { join, resolve } = require("path");
 
@@ -10,7 +10,7 @@ const { join, resolve } = require("path");
 class Application {
     /**
      * Create a new application
-     * @param {import(".").AppConfigs} appConfig the app configuration
+     * @param {import("..").AppConfigs} appConfig the app configuration
      */
     constructor(appConfig = {
         projectPath: ".",
@@ -27,7 +27,7 @@ class Application {
     }
 
     /**
-     * @type {import(".").AppConfigs}
+     * @type {import("..").AppConfigs}
      * App configs
      * @private
      */
@@ -45,7 +45,7 @@ class Application {
 
     /**
      * Get the app config
-     * @returns {import(".").AppConfigs} the app config
+     * @returns {import("..").AppConfigs} the app config
      * @readonly
      */
     get appConfig() {
@@ -147,7 +147,7 @@ class Application {
 
     /**
       * Set app configs
-      * @param {import(".").AppConfigs} configs the configs
+      * @param {import("..").AppConfigs} configs the configs
       */
     config(configs) {
         Object.assign(this._appConfig, configs);
