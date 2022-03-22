@@ -197,6 +197,9 @@ export default class JsonDB {
             }
         }
 
+        // Check whether any document exists in the collection
+        this.cache[name].forEach(obj => new CurrentSchema(obj));
+
         // Save the schema
         this.schemas[name] = CurrentSchema;
 
