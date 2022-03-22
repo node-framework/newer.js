@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.2-alpha.10",
+	"version": "0.2.2-beta",
 	"description": "A lightweight framework",
 	"main": "index.js",
 	"keywords": [
@@ -11,7 +11,7 @@
 	"author": "reve-node",
 	"license": "MIT",
 	"dependencies": {
-		"query-string": "^7.0.1"
+		"query-string": "^7.1.1"
 	},
 	"repository": {
 		"url": "https://github.com/node-framework/newer.js"
