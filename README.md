@@ -11,11 +11,16 @@ Newer.js is a lightweight framework for creating web servers.
 ## Installation
 
 ```sh
-# NPM
-npm install --save newer.js
+# Install the latest stable version
+npm install --save newer.js@latest
 
-# Yarn
-yarn add newer.js
+# Install the latest beta version
+npm install --save newer.js@beta
+
+# Install the latest alpha version
+npm install --save newer.js@alpha
 ```
 
+
+## Documentation
 For full documentation, see [Newer.js docs on GitBook](https://aquaplmc.gitbook.io/newer.js)
