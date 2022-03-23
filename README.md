@@ -21,6 +21,5 @@ npm install --save newer.js@beta
 npm install --save newer.js@alpha
 ```
 
-
 ## Documentation
 For full documentation, see [Newer.js docs on GitBook](https://aquaplmc.gitbook.io/newer.js)
