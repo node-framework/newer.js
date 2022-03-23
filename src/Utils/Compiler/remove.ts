@@ -1,4 +1,4 @@
-export default async (line: string, db: any) => {
+export default async (line: string, db: any, reviver: (key: string, value: any) => any) => {
     // Get the schema
     const SchemaObject = db.schema(
         // Get the schema name
@@ -15,7 +15,8 @@ export default async (line: string, db: any) => {
             line.slice(
                 line.indexOf("where ") + 6,
                 line.length
-            ).trim()
+            ).trim(),
+            reviver
         )
     );
 }

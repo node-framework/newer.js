@@ -1,4 +1,4 @@
-export default (line: string, db: any) => 
+export default (line: string, db: any, reviver: (key: string, value: any) => any) => 
     db.schema(
         // Get schema name
         line.slice(
@@ -12,6 +12,7 @@ export default (line: string, db: any) =>
             line.slice(
                 line.indexOf("where") + 5,
                 line.length
-            )
+            ),
+            reviver
         )
     )

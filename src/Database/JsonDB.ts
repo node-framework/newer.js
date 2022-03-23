@@ -9,7 +9,7 @@ import drop from "../Utils/Compiler/drop";
 import get from "../Utils/Compiler/get";
 
 // Execute the .action file
-async function* exec(query: string, db: JsonDB) {
+async function* exec(query: string, db: JsonDB, reviver: (key: string, value: any) => any) {
     const lines: string[] = query
         // Remove comments
         .split("\n")
@@ -31,15 +31,15 @@ async function* exec(query: string, db: JsonDB) {
     // Actions
     for (const line of lines) {
         if (line.startsWith("get")) 
-            yield get(line, db);
+            yield get(line, db, reviver);
 
         // Insert
         if (line.startsWith("add"))
-            yield add(line, db);
+            yield add(line, db, reviver);
 
         // Delete
         else if (line.startsWith("remove"))
-            yield remove(line, db);
+            yield remove(line, db, reviver);
 
         // Clear
         else if (line.startsWith("clear"))
@@ -67,13 +67,35 @@ export default class JsonDB {
         [name: string]: Schema
     }
 
-    constructor(public path: string) {
+    // Reviver
+    private reviver: (key: string, value: any) => any;
+
+    constructor(
+        public path: string, 
+        revivers: { 
+            [prop: string]: 
+                (value: any) => any 
+        } = {}
+    ) {
         // Check if file exists
         if (!fs.existsSync(path) || fs.readFileSync(path).toString() === "")
             fs.appendFileSync(path, "{}");
 
+        // Reviver function
+        const reviver = (key: string, value: any) => {
+            // Check if the value is a reviver
+            if (revivers[key])
+                return revivers[key](value);
+
+            // Return the value
+            return value;
+        }
+
         // Save the object
-        this.cache = JSON.parse(fs.readFileSync(path).toString());
+        this.cache = JSON.parse(fs.readFileSync(path).toString(), reviver);
+
+        // Set the reviver property
+        this.reviver = reviver;
 
         // Schemas
         this.schemas = {};
@@ -248,11 +270,12 @@ export default class JsonDB {
      * Run a JSON Query language file
      */
     run(filename: string) {
-        // Read the file
-        const filedata = fs.readFileSync(filename).toString();
-
         // Run the query
-        return exec(filedata, this);
+        return exec(
+            fs.readFileSync(filename).toString(), 
+            this,
+            this.reviver
+        );
     }
 
     /**
@@ -261,6 +284,6 @@ export default class JsonDB {
      * @returns undefined after execution
      */
     query(query: string) {
-        return exec(query, this);
+        return exec(query, this, this.reviver);
     }
 }
