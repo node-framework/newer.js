@@ -6,13 +6,11 @@ import { Schema, SchemaType } from "../declarations";
 import compare from "../Utils/ObjectCompare";
 import match from "../Utils/ObjectMatch";
 import drop from "../Utils/Compiler/drop";
+import get from "../Utils/Compiler/get";
 
 // Execute the .action file
-async function exec(file: string, db: JsonDB) {
-    const lines: string[] = fs.readFileSync(file)
-        // Read the action file
-        .toString()
-
+async function* exec(query: string, db: JsonDB) {
+    const lines: string[] = query
         // Remove comments
         .split("\n")
         .map(line => line.startsWith("#") ? "" : line)
@@ -32,21 +30,24 @@ async function exec(file: string, db: JsonDB) {
 
     // Actions
     for (const line of lines) {
+        if (line.startsWith("get")) 
+            yield get(line, db);
+
         // Insert
         if (line.startsWith("add"))
-            await add(line, db);
+            yield add(line, db);
 
         // Delete
         else if (line.startsWith("remove"))
-            await remove(line, db);
+            yield remove(line, db);
 
         // Clear
         else if (line.startsWith("clear"))
-            await clear(line, db);
+            yield clear(line, db);
 
         // Drop
         else if (line.startsWith("drop"))
-            await drop(line, db);
+            yield drop(line, db);
     }
 }
 
@@ -197,7 +198,7 @@ export default class JsonDB {
             }
         }
 
-        // Check whether any document exists in the collection
+        // Check whether the object in the collection matches the schema
         this.cache[name].forEach(obj => new CurrentSchema(obj));
 
         // Save the schema
@@ -246,7 +247,20 @@ export default class JsonDB {
     /**
      * Run a JSON Query language file
      */
-    async run(filename: string) {
-        return exec(filename, this);
+    run(filename: string) {
+        // Read the file
+        const filedata = fs.readFileSync(filename).toString();
+
+        // Run the query
+        return exec(filedata, this);
+    }
+
+    /**
+     * Execute a query
+     * @param query The query
+     * @returns undefined after execution
+     */
+    query(query: string) {
+        return exec(query, this);
     }
 }
