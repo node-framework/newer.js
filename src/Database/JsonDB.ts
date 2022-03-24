@@ -8,6 +8,9 @@ import match from "../Utils/ObjectMatch";
 import drop from "../Utils/Compiler/drop";
 import get from "../Utils/Compiler/get";
 
+// Email regex
+const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
 // Execute the .action file
 async function* exec(query: string, db: JsonDB, reviver: (key: string, value: any) => any) {
     const lines: string[] = query
@@ -230,17 +233,53 @@ export default class JsonDB {
         return CurrentSchema;
     }
 
-    // Basic types
+    /**
+     * Check whether the object is a number
+     * @param obj 
+     */
     static Number(obj: any): boolean {
         return typeof obj === "number" || obj instanceof Number;
     }
 
+    /**
+     * Check whether the object is a string
+     * @param obj 
+     */
     static String(obj: any): boolean {
         return typeof obj === "string" || obj instanceof String;
     }
 
+    /**
+     * Check whether the object is a boolean
+     * @param obj 
+     */
     static Boolean(obj: any): boolean {
         return typeof obj === "boolean" || obj instanceof Boolean;
+    }
+
+    /**
+     * Check whether the object is an instance of Date
+     * @param obj 
+     * @returns 
+     */
+    static Date(obj: any): boolean {
+        return obj instanceof Date;
+    }
+
+    /**
+     * Check whether the object matches the email regex
+     * @param obj 
+     */
+    static Email(obj: any): boolean {
+        return typeof obj === 'string' && emailRegex.test(obj);
+    }
+
+    /**
+     * Check whether the object is an instance of URL
+     * @param obj 
+     */
+    static URL(obj: any): boolean {
+        return obj instanceof URL;
     }
 
     /**
