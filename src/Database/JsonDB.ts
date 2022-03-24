@@ -111,10 +111,16 @@ export default class JsonDB {
      * @param obj 
      */
     private checkType(validator: object | SchemaType, obj: any, propName: string) {
-        if (typeof validator === 'object')
-            // Check type of properties
+        // Check whether the validator is an array
+        if (Array.isArray(validator)) 
+            for (const index in obj) 
+                this.checkType(validator[0], obj[index], propName + "[" + index + "]");
+
+        // Check whether the validator is an object
+        else if (typeof validator === 'object')
+            // Check type of properties    
             for (const prop in validator)
-                this.checkType(validator[prop], obj[prop], propName + "['" + prop + "']")
+                this.checkType(validator[prop], obj[prop], propName + "['" + prop + "']");
 
         // If validator is a function
         else if (!validator || !validator(obj))
@@ -140,10 +146,15 @@ export default class JsonDB {
         const ptr = this, CurrentSchema = class {
             // Constructor
             constructor(public obj: any) {
+                if (Array.isArray(validator)) 
+                    // Check type of each element in the array
+                    for (const index in obj)
+                        ptr.checkType(validator[0], obj[index], "[" + index + "]");
+
                 // Validate the type of the object
-                if (typeof validator === "object")
+                else if (typeof validator === "object")
                     for (const prop in validator)
-                        ptr.checkType(validator[prop], obj[prop], prop);
+                        ptr.checkType(validator[prop], obj[prop], "['" + prop + "']");
 
                 // Validate the type of any other type
                 else if (!validator(obj))
@@ -334,6 +345,44 @@ export default class JsonDB {
     static optional(type: SchemaType): SchemaType {
         return (obj: any) =>
             type(obj) || obj === undefined || obj === null;
+    }
+
+    /**
+     * Create a type that matches any of the types
+     * @param types The types to check
+     */
+    static or(...types: SchemaType[]): SchemaType {
+        return (obj: any) => {
+            // No type provided
+            if (types.length === 0)
+                throw new Error("No types specified");
+
+            // If one type specified
+            if (types.length === 1)
+                return types[0](obj);
+            
+            // Or 
+            return types[0](obj) || this.or(...types.slice(1))(obj);
+        }
+    }
+
+    /**
+     * Create a type that matches all of the types
+     * @param types The types to check
+     */
+    static and(...types: SchemaType[]): SchemaType {
+        return (obj: any) => {
+            // No type provided
+            if (types.length === 0)
+                throw new Error("No types specified");
+
+            // If one type specified
+            if (types.length === 1)
+                return types[0](obj);
+            
+            // And
+            return types[0](obj) && this.and(...types.slice(1))(obj);
+        }
     }
 
     /**
