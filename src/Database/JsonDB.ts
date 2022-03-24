@@ -10,6 +10,8 @@ import get from "../Utils/Compiler/get";
 
 // Email regex
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
 
 // Execute the .action file
 async function* exec(query: string, db: JsonDB, reviver: (key: string, value: any) => any) {
@@ -125,7 +127,7 @@ export default class JsonDB {
      * @param validator 
      * @returns a schema
      */
-    schema(name: string, validator?: { [prop: string]: SchemaType }): Schema {
+    schema(name: string, validator?: { [prop: string]: SchemaType } | SchemaType): Schema {
         // Check if schema validator exists
         if (!validator)
             return this.schemas[name];
@@ -139,8 +141,13 @@ export default class JsonDB {
             // Constructor
             constructor(public obj: any) {
                 // Validate the type of the object
-                for (const prop in validator)
-                    ptr.checkType(validator[prop], obj[prop], prop);
+                if (typeof validator === "object")
+                    for (const prop in validator)
+                        ptr.checkType(validator[prop], obj[prop], prop);
+
+                // Validate the type of any other type
+                else if (!validator(obj))
+                    throw new Error(`Invalid value`);
             }
 
             // New object
@@ -263,6 +270,13 @@ export default class JsonDB {
     }
 
     /**
+     * Type any
+     */
+    static Any(_: any): boolean {
+        return true;
+    }
+
+    /**
      * Check whether the object is a boolean
      * @param obj 
      */
@@ -298,11 +312,28 @@ export default class JsonDB {
     }
 
     /**
+     * Check whether the object is a string and matches the IP regex
+     * @param obj 
+     */
+    static IP(obj: any): boolean {
+        return typeof obj === "string" && ipRegex.test(obj);
+    }
+
+    /**
      * Create a type based on the constructor
      * @param C The constructor
      */
-    static typeof(C: new(...args: any[]) => any): SchemaType {
+    static typeof(C: new (...args: any[]) => any): SchemaType {
         return (obj: any) => obj instanceof C;
+    }
+
+    /**
+     * Change validator to optional
+     * @param type The type validator
+     */
+    static optional(type: SchemaType): SchemaType {
+        return (obj: any) =>
+            type(obj) || obj === undefined || obj === null;
     }
 
     /**
