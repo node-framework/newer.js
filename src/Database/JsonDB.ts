@@ -18,7 +18,7 @@ async function* exec(query: string, db: JsonDB, reviver: (key: string, value: an
         .split("\n")
         .map(line => line.startsWith("#") ? "" : line)
         .reduce(
-            (prevLine, currentLine) => 
+            (prevLine, currentLine) =>
                 prevLine + "\n" + currentLine
         )
 
@@ -33,7 +33,7 @@ async function* exec(query: string, db: JsonDB, reviver: (key: string, value: an
 
     // Actions
     for (const line of lines) {
-        if (line.startsWith("get")) 
+        if (line.startsWith("get"))
             yield get(line, db, reviver);
 
         // Insert
@@ -74,10 +74,10 @@ export default class JsonDB {
     private reviver: (key: string, value: any) => any;
 
     constructor(
-        public path: string, 
-        revivers: { 
-            [prop: string]: 
-                (value: any) => any 
+        public path: string,
+        revivers: {
+            [prop: string]:
+            (value: any) => any
         } = {}
     ) {
         // Check if file exists
@@ -105,6 +105,21 @@ export default class JsonDB {
     }
 
     /**
+     * @param validator 
+     * @param obj 
+     */
+    private checkType(validator: object | SchemaType, obj: any, propName: string) {
+        if (typeof validator === 'object')
+            // Check type of properties
+            for (const prop in validator)
+                this.checkType(validator[prop], obj[prop], propName + "['" + prop + "']")
+
+        // If validator is a function
+        else if (!validator || !validator(obj))
+            throw new Error(`Invalid value of ${propName}`);
+    }
+
+    /**
      * Create a schema
      * @param name 
      * @param validator 
@@ -112,7 +127,7 @@ export default class JsonDB {
      */
     schema(name: string, validator?: { [prop: string]: SchemaType }): Schema {
         // Check if schema validator exists
-        if (!validator) 
+        if (!validator)
             return this.schemas[name];
 
         // Create a new schema if it does not exist
@@ -124,10 +139,8 @@ export default class JsonDB {
             // Constructor
             constructor(public obj: any) {
                 // Validate the type of the object
-                for (const prop in validator) {
-                    if (!validator[prop] || !validator[prop](obj[prop]))
-                        throw new Error(`Invalid value for ${prop}`);
-                }
+                for (const prop in validator)
+                    ptr.checkType(validator[prop], obj[prop], prop);
             }
 
             // New object
@@ -271,7 +284,9 @@ export default class JsonDB {
      * @param obj 
      */
     static Email(obj: any): boolean {
-        return typeof obj === 'string' && emailRegex.test(obj);
+        // When the constructor is called as a type checker
+        return (typeof obj === 'string' || obj instanceof String)
+            && emailRegex.test(obj.toString());
     }
 
     /**
@@ -311,7 +326,7 @@ export default class JsonDB {
     run(filename: string) {
         // Run the query
         return exec(
-            fs.readFileSync(filename).toString(), 
+            fs.readFileSync(filename).toString(),
             this,
             this.reviver
         );
