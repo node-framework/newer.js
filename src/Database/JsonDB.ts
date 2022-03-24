@@ -298,6 +298,14 @@ export default class JsonDB {
     }
 
     /**
+     * Create a type based on the constructor
+     * @param C The constructor
+     */
+    static typeof(C: new(...args: any[]) => any): SchemaType {
+        return (obj: any) => obj instanceof C;
+    }
+
+    /**
      * Delete the database
      */
     async drop() {
