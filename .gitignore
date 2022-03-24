@@ -1,5 +1,4 @@
 node_modules
-package-lock.json
 .npmignore
 *.d.ts.map
 tsconfig.json
@@ -8,3 +7,4 @@ test
 jsconfig.json
 lib
 types
+yarn.lock
