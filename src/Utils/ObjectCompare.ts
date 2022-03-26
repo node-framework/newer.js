@@ -1,10 +1,10 @@
 export default function compare(a: any, b: any): boolean {
-    if (!a || !b)
-        return false;
-
     // Manual check
     if (a === b)
         return true;
+
+    if (!a || !b || (a !== b && typeof a !== 'object'))
+        return false;
 
     // Properties check
     for (const prop in a) 

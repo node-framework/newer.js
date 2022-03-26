@@ -7,6 +7,7 @@ import compare from "../Utils/ObjectCompare";
 import match from "../Utils/ObjectMatch";
 import drop from "../Utils/Compiler/drop";
 import get from "../Utils/Compiler/get";
+import rmDuplicates from "../Utils/RmDuplicates";
 
 // Email regex
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -110,11 +111,22 @@ export default class JsonDB {
      * @param validator 
      * @param obj 
      */
-    private checkType(validator: object | SchemaType, obj: any, propName: string) {
+    private checkType(validator: object | SchemaType, obj: any, propName: string = "") {
+
         // Check whether the validator is an array
-        if (Array.isArray(validator)) 
-            for (const index in obj) 
-                this.checkType(validator[0], obj[index], propName + "[" + index + "]");
+        if (Array.isArray(validator)) {
+            // Check whether the array size is enough
+            if (obj.length % validator.length !== 0)
+                throw new TypeError("The " + propName + " array size is not enough for validation");
+
+            // Validate array elements
+            for (const index in obj)
+                this.checkType(
+                    validator[Number(index) % validator.length], 
+                    obj[index], 
+                    propName + "[" + index + "]"
+                );
+        }
 
         // Check whether the validator is an object
         else if (typeof validator === 'object')
@@ -124,7 +136,7 @@ export default class JsonDB {
 
         // If validator is a function
         else if (!validator || !validator(obj))
-            throw new Error(`Invalid value of ${propName}`);
+            throw new TypeError(`Invalid type of ${propName ?? obj}`);
     }
 
     /**
@@ -146,19 +158,7 @@ export default class JsonDB {
         const ptr = this, CurrentSchema = class {
             // Constructor
             constructor(public obj: any) {
-                if (Array.isArray(validator)) 
-                    // Check type of each element in the array
-                    for (const index in obj)
-                        ptr.checkType(validator[0], obj[index], "[" + index + "]");
-
-                // Validate the type of the object
-                else if (typeof validator === "object")
-                    for (const prop in validator)
-                        ptr.checkType(validator[prop], obj[prop], "['" + prop + "']");
-
-                // Validate the type of any other type
-                else if (!validator(obj))
-                    throw new Error(`Invalid value`);
+                ptr.checkType(validator, obj);
             }
 
             // New object
@@ -238,6 +238,15 @@ export default class JsonDB {
                 delete ptr.cache[name];
 
                 // Write the cache to the file
+                return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
+            }
+
+            // Remove duplicates
+            static async rmDups() {
+                // Remove duplicates
+                rmDuplicates(ptr.cache[name]);
+
+                // Save
                 return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
             }
 
@@ -332,10 +341,13 @@ export default class JsonDB {
 
     /**
      * Create a type based on the constructor
-     * @param C The constructor
+     * @param C The constructor or a type name
      */
-    static typeof(C: new (...args: any[]) => any): SchemaType {
-        return (obj: any) => obj instanceof C;
+    static typeof(C: new (...args: any[]) => any | "number" | "string" | "object" | "function" | "symbol" | "bigint" | "boolean" | "undefined"): SchemaType {
+        return (obj: any) => 
+            typeof C === "string" 
+                ? typeof obj === C 
+                : obj instanceof C;
     }
 
     /**
@@ -360,7 +372,7 @@ export default class JsonDB {
             // If one type specified
             if (types.length === 1)
                 return types[0](obj);
-            
+
             // Or 
             return types[0](obj) || this.or(...types.slice(1))(obj);
         }
@@ -379,7 +391,7 @@ export default class JsonDB {
             // If one type specified
             if (types.length === 1)
                 return types[0](obj);
-            
+
             // And
             return types[0](obj) && this.and(...types.slice(1))(obj);
         }

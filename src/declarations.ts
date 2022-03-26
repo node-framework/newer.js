@@ -268,6 +268,11 @@ export type Schema = {
      * Drop all the objects that belongs to the schema. The schema after this action will be unusable
      */
     drop(): Promise<void>;
+
+    /**
+     * Remove all duplicates
+     */
+    rmDups(): Promise<void>;
 }
 
 /**
