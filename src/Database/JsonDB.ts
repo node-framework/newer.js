@@ -139,7 +139,7 @@ export default class JsonDB {
 
         // If validator is a function
         else if (!validator || !validator(obj))
-            throw new TypeError(`Invalid type of ${propName ?? obj}`);
+            throw new TypeError(`Invalid type of ${propName !== "" ? propName : obj}`);
     }
 
     /**
@@ -398,6 +398,25 @@ export default class JsonDB {
             // And
             return types[0](obj) && this.and(...types.slice(1))(obj);
         }
+    }
+
+    /**
+     * Create an enum type
+     * @param values The values to check
+     */
+    static enum(...values: any[]): SchemaType {
+        return (obj: any) => {
+            // If no values provided
+            if (values.length === 0)
+                throw new Error("No values specified");
+
+            // If one value specified
+            if (values.length === 1)
+                return compare(obj, values[0]);
+
+            // Compare the object to the values
+            return compare(values[0], obj) || this.enum(...values.slice(1))(obj)
+        };
     }
 
     /**
