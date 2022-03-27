@@ -111,8 +111,11 @@ export default class JsonDB {
      * @param validator 
      * @param obj 
      */
-    private checkType(validator: object | SchemaType, obj: any, propName: string = "") {
-
+    private checkType(
+        validator: { [key: string | number | symbol]: SchemaType } | SchemaType | SchemaType[],
+        obj: any,
+        propName: string = ""
+    ) {
         // Check whether the validator is an array
         if (Array.isArray(validator)) {
             // Check whether the array size is enough
@@ -122,8 +125,8 @@ export default class JsonDB {
             // Validate array elements
             for (const index in obj)
                 this.checkType(
-                    validator[Number(index) % validator.length], 
-                    obj[index], 
+                    validator[Number(index) % validator.length],
+                    obj[index],
                     propName + "[" + index + "]"
                 );
         }
@@ -344,9 +347,9 @@ export default class JsonDB {
      * @param C The constructor or a type name
      */
     static typeof(C: new (...args: any[]) => any | "number" | "string" | "object" | "function" | "symbol" | "bigint" | "boolean" | "undefined"): SchemaType {
-        return (obj: any) => 
-            typeof C === "string" 
-                ? typeof obj === C 
+        return (obj: any) =>
+            typeof C === "string"
+                ? typeof obj === C
                 : obj instanceof C;
     }
 
