@@ -9,29 +9,11 @@ const { join, resolve } = require("path");
 // Create an app
 class Application {
     /**
-     * Create a new application
-     * @param {import("..").AppConfigs} appConfig the app configuration
-     */
-    constructor(appConfig = {
-        projectPath: ".",
-        static: "public",
-        httpOptions: {
-            port: 80,
-            hostname: "localhost",
-            httpsMode: false,
-            backlog: 0,
-            advanced: {}
-        },
-    }) {
-        this._appConfig = appConfig;
-    }
-
-    /**
      * @type {import("..").AppConfigs}
      * App configs
      * @private
      */
-    _appConfig = {
+    static _appConfig = {
         projectPath: ".",
         static: "public",
         httpOptions: {
@@ -48,7 +30,7 @@ class Application {
      * @returns {import("..").AppConfigs} the app config
      * @readonly
      */
-    get appConfig() {
+    static get appConfig() {
         return this._appConfig;
     }
 
@@ -56,7 +38,7 @@ class Application {
      * Start the app
      * @returns {Promise<import("http").Server | import("https").Server>} the http or https server
      */
-    async start() {
+    static async start() {
         // Fix missing configs
         this._appConfig = this._appConfig ?? {};
         this._appConfig.projectPath = this._appConfig.projectPath ?? ".";
@@ -66,9 +48,6 @@ class Application {
         // Create a new server
         const app = new Server(this.appConfig.httpOptions.advanced, this.appConfig.httpOptions.httpsMode);
 
-        // Router
-        const router = new Router;
-
         // Default middleware
         if (existsSync(join(this.appConfig.projectPath, this.appConfig.static)))
             app.middleware(new StaticDir(
@@ -77,13 +56,12 @@ class Application {
 
         // Check whether the src directory exists
         if (existsSync(join(this.appConfig.projectPath, "src"))) {
-            // Read the middleware directory
-            if (existsSync(join(this.appConfig.projectPath, "src", "middlewares")))
+            // Read the directory
                 for (const filename of readdirSync(
-                    join(this.appConfig.projectPath, "src", "middlewares")
+                    join(this.appConfig.projectPath, "src")
                 ) ?? []) {
                     // Module path
-                    let modulePath = resolve(join(this.appConfig.projectPath, "src", "middlewares", filename));
+                    let modulePath = resolve(join(this.appConfig.projectPath, "src", filename));
                     modulePath = modulePath
                         .slice(modulePath.indexOf(":") + 1)
                         // @ts-ignore
@@ -100,39 +78,12 @@ class Application {
                     try {
                         // Add the middleware to the router
                         if (Array.isArray(module))
-                            router.middleware(...module);
+                            app.middleware(...module);
                         else
-                            router.middleware(module);
+                            app.middleware(module);
                     } catch (e) { }
                 }
-
-            // Read the controller directory
-            if (existsSync(join(this.appConfig.projectPath, "src", "controllers")))
-                for (const filename of readdirSync(
-                    join(this.appConfig.projectPath, "src", "controllers")
-                ) ?? []) {
-                    // Module path
-                    let modulePath = resolve(join(this.appConfig.projectPath, "src", "controllers", filename));
-                    modulePath = modulePath
-                        .slice(modulePath.indexOf(":") + 1)
-                        // @ts-ignore
-                        .replaceAll("\\", "/");
-
-                    // Get the controller path
-                    let module = await import(modulePath);
-
-                    // Check whether module is an ES6 module
-                    module = module?.default ?? module;
-
-                    // Loop through the routes
-                    for (const routeName in module)
-                        // Add to router
-                        router.route(routeName, module[routeName]);
-                }
         }
-
-        // Add to app
-        app.middleware(router);
 
         // Listen on port 80
         await app.listen(
@@ -149,7 +100,7 @@ class Application {
       * Set app configs
       * @param {import("..").AppConfigs} configs the configs
       */
-    config(configs) {
+    static config(configs) {
         Object.assign(this._appConfig, configs);
     }
 }
