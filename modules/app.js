@@ -54,13 +54,14 @@ class Application {
             ));
 
         // Check whether the src directory exists
-        if (existsSync(join(this.appConfig.projectPath, "src"))) {
+        if (existsSync(join(this.appConfig.projectPath, "src", "middlewares"))) {
             // Read the directory
                 for (const filename of readdirSync(
-                    join(this.appConfig.projectPath, "src")
+                    join(this.appConfig.projectPath, "src", "middlewares")
                 ) ?? []) {
                     // Module path
-                    let modulePath = resolve(join(this.appConfig.projectPath, "src", filename));
+                    let modulePath = resolve(join(this.appConfig.projectPath, "src", "middlewares", filename));
+
                     modulePath = modulePath
                         .slice(modulePath.indexOf(":") + 1)
                         // @ts-ignore

@@ -21,13 +21,6 @@ declare module "newer.js/app" {
     }
 
     /**
-     * Controller type
-     */
-    export type NewerController = {
-        [route: string]: Handler
-    }
-
-    /**
      * Middleware type
      */
     export type NewerMiddleware = Middleware | Middleware[];
