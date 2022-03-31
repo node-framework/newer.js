@@ -200,7 +200,7 @@ export default class JsonDB {
                         break;
 
                     // Add the object to the result if matches
-                    if (match(obj, schemObj) !== !!except)
+                    if (match(obj, schemObj) === !except)
                         result.push(schemObj);
                 }
 
