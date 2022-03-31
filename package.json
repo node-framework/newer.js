@@ -12,7 +12,6 @@
 	"author": "reve-node",
 	"license": "MIT",
 	"dependencies": {
-		"@types/async": "^3.2.12",
 		"query-string": "^7.1.1"
 	},
 	"repository": {
