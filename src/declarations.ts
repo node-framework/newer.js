@@ -230,14 +230,14 @@ export type Schema = {
      * @param count The number of objects to return
      * @param except If set to true, find objects that do not match the parameter object
      */
-    find(obj?: any, count?: number, except?: boolean): any[],
+    find(obj?: any, count?: number, except?: boolean): Promise<any[]>,
 
     /**
      * Find an object that match the parameter object
      * @param obj The object to check
      * @param except If set to true, find the object that do not match the parameter object
      */
-    findOne(obj?: any, except?: boolean): any,
+    findOne(obj?: any, except?: boolean): Promise<any>,
 
     /**
      * Create new objects and check whether they match the schema

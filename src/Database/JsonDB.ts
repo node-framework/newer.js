@@ -8,6 +8,7 @@ import match from "../Utils/ObjectMatch";
 import drop from "../Utils/Compiler/drop";
 import get from "../Utils/Compiler/get";
 import rmDuplicates from "../Utils/RmDuplicates";
+import forEachParallel from "../Utils/ForEachParallel";
 
 // Email regex
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -188,29 +189,26 @@ export default class JsonDB {
                 return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
             }
 
-            // Match
-            static find(obj?: any, count?: number, except?: boolean) {
-                // Result
+            // TODO: async find
+            static async find(obj?: any, count?: number, except?: boolean) {
                 const result = [];
-
-                // Search the cache
-                for (const schemObj of ptr.cache[name]) {
+                
+                // Loop parallel
+                await forEachParallel(ptr.cache[name], item => {
                     // Check whether the result is enough
                     if (count && result.length >= count)
-                        break;
+                        return;
 
                     // Add the object to the result if matches
-                    if (match(obj, schemObj) === !except)
-                        result.push(schemObj);
-                }
-
-                // Return the result
+                    if (match(obj, item) === !except)
+                        result.push(item);
+                });
                 return result;
             }
 
             // Find one
-            static findOne(obj?: any, except?: boolean) {
-                return CurrentSchema.find(obj, 1, except)[0];
+            static async findOne(obj?: any, except?: boolean) {
+                return this.find(obj, 1, except)[0];
             }
 
             // Update the object
