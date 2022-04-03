@@ -1,32 +1,30 @@
-import { AppConfigs, Handler, Middleware } from "./src/declarations";
+import { AppConfigs, Middleware } from "./src/declarations";
 
-declare module "newer.js/app" {
-    class Application {
-        /**
-         * Start the app
-         * @returns the http or https server
-         */
-        static start(): Promise<import("http").Server | import("https").Server>
+declare namespace Application {
+    /**
+     * Start the app
+     * @returns the http or https server
+     */
+    export function start(): Promise<import("http").Server | import("https").Server>
 
-        /**
-         * The app configuration
-         */
-        static readonly appConfig: AppConfigs;
+    /**
+     * The app configuration
+     */
+    export const appConfig: AppConfigs;
 
-        /**
-         * Set app configs
-         * @param {import(".").AppConfigs} configs the configs
-         */
-        static config(configs: AppConfigs): void;
-    }
+    /**
+     * Set app configs
+     * @param {import(".").AppConfigs} configs the configs
+     */
+    export function config(configs: AppConfigs): void;
 
     /**
      * Middleware type
      */
     export type NewerMiddleware = Middleware | Middleware[];
-
-    /**
-     * Main export
-     */
-    export = Application;
 }
+
+/**
+ * Main export
+ */
+export = Application;
