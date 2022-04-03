@@ -143,12 +143,12 @@ export default class JsonDB {
     }
 
     /**
-     * Create a schema
+     * Create a collection
      * @param name 
      * @param validator 
-     * @returns a schema
+     * @returns a collection
      */
-    schema(name: string, validator?: { [prop: string]: SchemaType } | SchemaType): Schema {
+    collection(name: string, validator?: { [prop: string]: SchemaType } | SchemaType): Schema {
         // Check if schema validator exists
         if (!validator)
             return this.schemas[name];
@@ -158,7 +158,7 @@ export default class JsonDB {
             this.cache[name] = [];
 
         // Create a new schema
-        const ptr = this, CurrentSchema = class {
+        const ptr = this, X = class {
             // Constructor
             constructor(public obj: any) {
                 ptr.checkType(validator, obj);
@@ -166,22 +166,22 @@ export default class JsonDB {
 
             // New object
             static new(obj: any) {
-                return new CurrentSchema(obj);
+                return new X(obj);
             }
 
-            // Read the schema from the database
+            // Read the collection from the database
             static read() {
                 return ptr.cache[name];
             }
 
-            // Create new schema instances
+            // Create new collection instances
             static create(...obj: any[]) {
-                return obj.map(CurrentSchema.new);
+                return obj.map(this.new);
             }
 
             // Clear the schema
             static async clear() {
-                // Remove the schema objects from the cache
+                // Remove the collection objects from the cache
                 ptr.cache[name] = [];
 
                 // Write the cache to the file
@@ -238,9 +238,9 @@ export default class JsonDB {
                 return pfs.writeFile(ptr.path, JSON.stringify(ptr.cache));
             }
 
-            // Drop the schema
+            // Drop the collection
             static async drop() {
-                // Remove the schema from cache
+                // Remove the collection from cache
                 delete ptr.schemas[name];
                 delete ptr.cache[name];
 
@@ -271,13 +271,13 @@ export default class JsonDB {
         }
 
         // Check whether the object in the collection matches the schema
-        this.cache[name].forEach(obj => new CurrentSchema(obj));
+        this.cache[name].forEach(X.new);
 
         // Save the schema
-        this.schemas[name] = CurrentSchema;
+        this.schemas[name] = X;
 
-        // Return the schema
-        return CurrentSchema;
+        // Return the collection
+        return X;
     }
 
     /**
