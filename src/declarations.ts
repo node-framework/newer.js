@@ -1,5 +1,4 @@
 import http from "http";
-import qs from "query-string";
 import { Socket } from "net";
 import https from "https";
 
@@ -42,7 +41,7 @@ export interface Context extends Record<string, any> {
     /**
      * Parsed body
      */
-    readonly body: qs.ParsedQuery;
+    readonly body: object;
 
     /**
      * The page url

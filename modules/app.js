@@ -2,8 +2,21 @@
 
 const Server = require("../lib/Server/server.js").default;
 const StaticDir = require("../lib/Middleware/staticdir.js").default;
-const { readdirSync, existsSync } = require("fs");
+const { readdirSync: __readDir__, existsSync, statSync } = require("fs");
 const { join, resolve } = require("path");
+
+const readDir = dir => {
+    const files = __readDir__(dir);
+    const res = [];
+    for (const file of files) {
+        const currentFile = join(dir, file);
+        if (statSync(currentFile).isDirectory())
+            res.push(...readDir(currentFile));
+        else 
+            res.push(currentFile);
+    };
+    return res;
+};
 
 // Create an app
 class Application {
@@ -56,33 +69,33 @@ class Application {
         // Check whether the src directory exists
         if (existsSync(join(this.appConfig.projectPath, "src", "middlewares"))) {
             // Read the directory
-                for (const filename of readdirSync(
-                    join(this.appConfig.projectPath, "src", "middlewares")
-                ) ?? []) {
-                    // Module path
-                    let modulePath = resolve(join(this.appConfig.projectPath, "src", "middlewares", filename));
+            for (const filename of readDir(
+                join(this.appConfig.projectPath, "src", "middlewares")
+            ) ?? []) {
+                // Module path
+                let modulePath = resolve(join(filename));
 
-                    modulePath = modulePath
-                        .slice(modulePath.indexOf(":") + 1)
-                        // @ts-ignore
-                        .replaceAll("\\", "/");
+                modulePath = modulePath
+                    .slice(modulePath.indexOf(":") + 1)
+                    // @ts-ignore
+                    .replaceAll("\\", "/");
 
-                    /**
-                     * The target module
-                     */
-                    let module = await import(modulePath);
+                /**
+                 * The target module
+                 */
+                let module = await import(modulePath);
 
-                    // Check whether module has a default export
-                    module = module?.default ?? module;
+                // Check whether module has a default export
+                module = module?.default ?? module;
 
-                    try {
-                        // Add the middleware to the router
-                        if (Array.isArray(module))
-                            app.middleware(...module);
-                        else
-                            app.middleware(module);
-                    } catch (e) { }
-                }
+                try {
+                    // Add the middleware to the router
+                    if (Array.isArray(module))
+                        app.middleware(...module);
+                    else
+                        app.middleware(module);
+                } catch (e) { }
+            }
         }
 
         // Listen on port 80
