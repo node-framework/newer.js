@@ -79,6 +79,97 @@ export default class Server {
         res.end(ctx.response ?? "");
     }
 
+    async cb(req: http.IncomingMessage, res: http.ServerResponse) {
+        // The context
+        const c: Context = {
+            // Raw request
+            rawRequest: {
+                req, res
+            },
+
+            // End the response manually
+            responseEnded: false,
+
+            // Default status code
+            statusCode: undefined,
+
+            // The response, default to empty
+            response: "",
+
+            // The query of the URL
+            query: getQuery(req.url),
+
+            // The body of the request
+            body: await getBody(req),
+
+            // The request url
+            url: req.url,
+
+            // Append file content
+            writeFile(path) {
+                // Append file content to response
+                c.response += this.readFile(path) ?? "";
+            },
+
+            // Header get and set
+            header(name: string, value?: string | number | readonly string[]) {
+                // Get or set a header
+                return value
+                    ? void res.setHeader(name, value)
+                    : res.getHeader(name);
+            },
+
+            // Set multiple headers or get request headers
+            headers(headers?: { [name: string]: string | number | readonly string[] }) {
+                if (!headers)
+                    return req.headers;
+                for (let name in headers)
+                    res.setHeader(name, headers[name]);
+            },
+
+            // Redirect
+            redirect(url) {
+                c.statusCode = 302;
+                c.header("Location", url);
+            },
+
+            // Socket
+            socket: res.socket,
+
+            // Method
+            method: req.method as Method,
+
+            // HTTP version
+            httpVersion: req.httpVersion,
+
+            // Server IPv4 address
+            remoteAddress: req.socket.remoteAddress,
+        };
+
+        // Check whether the request is a favicon
+        if (req.url === "/favicon.ico")
+            c.response = this.readFile(this.iconPath) ?? "";
+
+        // Next function
+        const next = async (index: number, max: number) => {
+            if (index < max) {
+                // When response ended
+                if (c.responseEnded)
+                    // End the function
+                    return;
+
+                // Invoke the middleware
+                await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
+            }
+        }
+
+        // Invoke the middleware
+        await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
+
+        // End the response
+        this.endResponse(c, res);
+    }
+
     /**
      * Start the server
      * @param port the port to listen to
@@ -98,103 +189,8 @@ export default class Server {
         // Make this process asynchronously run
         (async () => {
             // Loop through the requests
-            for await (const res of requests) {
-                const
-                    // The request
-                    { req } = res,
-
-                    // The context
-                    c: Context = {
-                        // Raw request
-                        rawRequest: {
-                            req, res
-                        },
-
-                        // End the response manually
-                        responseEnded: false,
-
-                        // Default status code
-                        statusCode: undefined,
-
-                        // The response, default to empty
-                        response: "",
-
-                        // The query of the URL
-                        query: getQuery(req.url),
-
-                        // The body of the request
-                        body: await getBody(req),
-
-                        // The request url
-                        url: req.url,
-
-                        // Append file content
-                        writeFile(path) {
-                            // Append file content to response
-                            c.response += this.readFile(path) ?? "";
-                        },
-
-                        // Header get and set
-                        header(name: string, value?: string | number | readonly string[]) {
-                            // Get or set a header
-                            return value
-                                ? void res.setHeader(name, value)
-                                : res.getHeader(name);
-                        },
-
-                        // Set multiple headers or get request headers
-                        headers(headers?: { [name: string]: string | number | readonly string[] }) {
-                            if (!headers)
-                                return req.headers;
-                            for (let name in headers)
-                                res.setHeader(name, headers[name]);
-                        },
-
-                        // Redirect
-                        redirect(url) {
-                            c.statusCode = 302;
-                            c.header("Location", url);
-                        },
-
-                        // Socket
-                        socket: res.socket,
-
-                        // Method
-                        method: req.method as Method,
-
-                        // HTTP version
-                        httpVersion: req.httpVersion,
-
-                        // Server IPv4 address
-                        remoteAddress: req.socket.remoteAddress,
-
-                        // Subhost
-                        subhost: req.headers.host.slice(0, req.headers.host.lastIndexOf(hostname) - 1)
-                    };
-
-                // Check whether the request is a favicon
-                if (req.url === "/favicon.ico")
-                    c.response = this.readFile(this.iconPath) ?? "";
-
-                // Next function
-                const next = async (index: number, max: number) => {
-                    if (index < max) {
-                        // When response ended
-                        if (c.responseEnded)
-                            // End the function
-                            return;
-
-                        // Invoke the middleware
-                        await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
-                    }
-                }
-
-                // Invoke the middleware
-                await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
-
-                // End the response
-                this.endResponse(c, res);
-            }
+            for await (const res of requests) 
+                await this.cb(res.req, res);
         })().catch(e => {
             if (e)
                 throw e;
