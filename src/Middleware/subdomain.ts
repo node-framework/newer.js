@@ -47,7 +47,7 @@ export default class SubDomain implements Middleware {
             }
         }
 
-        if (ctx.headers().host === this.domain)
+        if (ctx.headers().host.startsWith(this.domain)) 
             // Invoke the middleware
             await this.mds[0]?.invoke(ctx, async () => __next(0, this.mds.length));
 
