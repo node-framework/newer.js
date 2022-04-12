@@ -75,8 +75,13 @@ export default class Server {
         // Write status code 
         res.writeHead(ctx.statusCode ?? 200);
 
+        // Response in string
+        const response = typeof ctx.response === "object" 
+            ? JSON.stringify(ctx.response) 
+            : String(ctx.response);
+
         // End the response
-        res.end(ctx.response ?? "");
+        res.end(response);
     }
 
     async cb(req: http.IncomingMessage, res: http.ServerResponse) {
@@ -94,7 +99,7 @@ export default class Server {
             statusCode: undefined,
 
             // The response, default to empty
-            response: "",
+            response: undefined,
 
             // The query of the URL
             query: getQuery(req.url),
@@ -108,7 +113,7 @@ export default class Server {
             // Append file content
             writeFile(path) {
                 // Append file content to response
-                c.response += this.readFile(path) ?? "";
+                c.response = this.readFile(path) ?? "";
             },
 
             // Header get and set

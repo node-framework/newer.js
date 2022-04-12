@@ -24,7 +24,7 @@ export interface Context extends Record<string, any> {
     /**
      * The response
      */
-    response: string;
+    response: any;
 
     /**
      * Status code
