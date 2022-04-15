@@ -365,3 +365,42 @@ export interface CookieOptions {
      */
     sameSite?: true | 'lax' | 'strict' | 'none';
 }
+
+export interface CORSOptions {
+    /**
+     * Access-Control-Allow-Origin specifies either a single origin which tells browsers to allow that origin to access the resource; 
+     * or else — for requests without credentials — the "*" wildcard tells browsers to allow any origin to access the resource.
+     */
+    allowOrigin?: string;
+
+    /**
+     * The Access-Control-Allow-Methods header specifies the method or methods allowed when accessing the resource. 
+     * This is used in response to a preflight request.
+     */
+    allowMethods?: Method[];
+
+    /**
+     * The Access-Control-Expose-Headers header adds the specified headers to the allowlist that 
+     * JavaScript (such as `getResponseHeader()`) in browsers is allowed to access.
+     */
+    exposeHeaders?: string[];
+
+    /**
+     * The Access-Control-Max-Age header indicates how long the results of a preflight request can be cached.
+     */
+    maxAge?: number;
+
+    /**
+     * The Access-Control-Allow-Credentials header indicates whether or not the response to the request can be exposed when the credentials flag is true. 
+     * When used as part of a response to a preflight request, this indicates whether or not the actual request can be made using credentials. 
+     * Note that simple GET requests are not preflighted, and so if a request is made for a resource with credentials, if this header is not 
+     * returned with the resource, the response is ignored by the browser and not returned to web content.
+     */
+    allowCredentials?: boolean;
+
+    /**
+     * The Access-Control-Allow-Headers header is used in response to a preflight request 
+     * to indicate which HTTP headers can be used when making the actual request.
+     */
+    allowHeaders?: string[];
+}

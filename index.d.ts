@@ -4,6 +4,7 @@ import StaticDir from "./src/Middleware/staticdir";
 import simple from "./src/Server/simple";
 import Cookie from "./src/Middleware/cookie";
 import route from "./src/Middleware/route";
+import CORS from "./src/Middleware/cors";
 
 export {
     Server,
@@ -11,7 +12,8 @@ export {
     StaticDir,
     simple,
     Cookie,
-    route
+    route,
+    CORS
 }
 
 export * from "./src/declarations";

@@ -4,6 +4,7 @@ const StaticDir = require("../lib/Middleware/staticdir.js").default;
 const route = require("../lib/Middleware/route.js").default;
 const simple = require("../lib/Server/simple.js").default;
 const Cookie = require("../lib/Middleware/cookie.js").default;
+const CORS = require("../lib/Middleware/cors.js").default;
 
 // Default export
 module.exports = {
@@ -12,5 +13,6 @@ module.exports = {
     StaticDir,
     simple,
     Cookie,
-    route
+    route,
+    CORS
 };
