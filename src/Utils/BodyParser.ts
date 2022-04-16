@@ -1,5 +1,4 @@
 import http from "http";
-import qs from "query-string";
 
 // Try parse to JSON
 function tryParseJSON(body: string): object {
@@ -10,8 +9,20 @@ function tryParseJSON(body: string): object {
     }
 }
 
+// Try parse to URLSearchParams
+function tryParseQuery(body: string): { [key: string]: string } {
+    const result: { [key: string]: string } = {};
+    for (const key of body.split("&")) {
+        if (!key)
+            continue;
+        const [k = key, v = ""] = key.split("=");
+        result[k] = v;
+    }
+    return result;
+}
+
 // Get the body of a request
-export const getBody = async (req: http.IncomingMessage): Promise<object> =>
+export const getBody = async (req: http.IncomingMessage): Promise<any> =>
     new Promise((res, rej) => {
         let body = '';
         req.on('data', data => {
@@ -21,20 +32,16 @@ export const getBody = async (req: http.IncomingMessage): Promise<object> =>
                 rej("Request data to long");
             }
         });
-        req.on('end', () => res(
-            tryParseJSON(body) ?? qs.parse(body)
-        ));
+        req.on('end', () => {
+            const parsed =
+                tryParseJSON(body)
+                ?? tryParseQuery(body)
+                ?? body;
+            res(parsed);
+        });
     });
 
 // Get query of an URL
-export const getQuery = (url: string) => {
-    // Result
-    const res = {};
-
-    // Get the query
-    new URLSearchParams(url.split("?")[1])
-        .forEach((value, key) => res[key] = value);
-
-    // Return the query
-    return res;
+export const getQuery = (url: string): { [key: string]: string } => {
+    return tryParseQuery(url.split("?")[1]);
 };

@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.5-beta.4",
+	"version": "0.2.5-beta.5",
 	"description": "A lightweight web framework",
 	"main": "./modules/index.js",
 	"keywords": [
@@ -13,8 +13,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"async": "^3.2.3",
-		"callable-instance": "^2.0.0",
-		"query-string": "^7.1.1"
+		"callable-instance": "^2.0.0"
 	},
 	"repository": {
 		"url": "https://github.com/node-framework/newer.js"

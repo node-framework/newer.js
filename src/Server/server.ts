@@ -7,6 +7,11 @@ import { getBody, getQuery } from "../Utils/BodyParser";
 import Callable from "callable-instance";
 
 interface Server {
+    /**
+     * The request handler
+     * @param req The request
+     * @param res The response
+     */
     (req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
 }
 

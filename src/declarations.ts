@@ -41,7 +41,9 @@ export interface Context extends Record<string, any> {
     /**
      * Parsed body
      */
-    readonly body: object;
+    readonly body: {
+        [k: string]: string;
+    };
 
     /**
      * The page url
