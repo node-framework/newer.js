@@ -11,6 +11,8 @@ function tryParseJSON(body: string): object {
 
 // Try parse to URLSearchParams
 function tryParseQuery(body: string): { [key: string]: string } {
+    if (!body) 
+        return;
     const result: { [key: string]: string } = {};
     for (const key of body.split("&")) {
         if (!key)
