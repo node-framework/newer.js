@@ -8,7 +8,6 @@ export default class CORS implements Middleware {
     }
 
     async invoke(ctx: Context, next: NextFunction) {
-
         // Headers 
         const headers = {
             "Access-Control-Allow-Origin": this.options.allowOrigin ?? "*",

@@ -4,8 +4,13 @@ import fs from "fs";
 import simple from "./simple";
 import { Middleware, Context, Method } from "../declarations";
 import { getBody, getQuery } from "../Utils/BodyParser";
+import Callable from "callable-instance";
 
-export default class Server {
+interface Server {
+    (req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+}
+
+class Server extends Callable<[http.IncomingMessage, http.ServerResponse], Promise<void>> {
     private mds: Middleware[];
 
     private options: http.ServerOptions | https.ServerOptions;
@@ -23,6 +28,7 @@ export default class Server {
      * The constructor
      */
     constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean) {
+        super("cb");
         this.options = options;
         this.httpsMode = httpsMode;
         this.mds = [];
@@ -76,8 +82,8 @@ export default class Server {
         res.writeHead(ctx.statusCode ?? 200);
 
         // Response in string
-        const response = typeof ctx.response === "object" 
-            ? JSON.stringify(ctx.response) 
+        const response = typeof ctx.response === "object"
+            ? JSON.stringify(ctx.response)
             : String(ctx.response);
 
         // End the response
@@ -194,7 +200,7 @@ export default class Server {
         // Make this process asynchronously run
         (async () => {
             // Loop through the requests
-            for await (const res of requests) 
+            for await (const res of requests)
                 await this.cb(res.req, res);
         })().catch(e => {
             if (e)
@@ -217,3 +223,5 @@ export default class Server {
         return this.rawServer;
     }
 }
+
+export default Server;

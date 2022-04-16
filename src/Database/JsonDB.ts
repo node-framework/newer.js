@@ -1,61 +1,13 @@
-import add from "../Utils/Compiler/add";
-import clear from "../Utils/Compiler/clear";
-import remove from "../Utils/Compiler/remove";
 import * as fs from "fs";
 import { Schema, SchemaType } from "../declarations";
 import compare from "../Utils/ObjectCompare";
 import match from "../Utils/ObjectMatch";
-import drop from "../Utils/Compiler/drop";
-import get from "../Utils/Compiler/get";
 import rmDuplicates from "../Utils/RmDuplicates";
 import asyncUtil from "async";
 
 // Email regex
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
-// Execute the .action file
-async function* exec(query: string, db: JsonDB, reviver: (key: string, value: any) => any) {
-    const lines: string[] = query
-        // Remove comments
-        .split("\n")
-        .map(line => line.startsWith("#") ? "" : line)
-        .reduce(
-            (prevLine, currentLine) =>
-                prevLine + "\n" + currentLine
-        )
-
-        // Replace all the new lines and tabs
-        .replaceAll("\n", "")
-        .replaceAll("\t", "")
-        .replaceAll("\r", "")
-        .replaceAll("    ", "")
-
-        // End statement
-        .split(";");
-
-    // Actions
-    for (const line of lines) {
-        if (line.startsWith("get"))
-            yield get(line, db, reviver);
-
-        // Insert
-        if (line.startsWith("add"))
-            yield add(line, db, reviver);
-
-        // Delete
-        else if (line.startsWith("remove"))
-            yield remove(line, db, reviver);
-
-        // Clear
-        else if (line.startsWith("clear"))
-            yield clear(line, db);
-
-        // Drop
-        else if (line.startsWith("drop"))
-            yield drop(line, db);
-    }
-}
 
 /**
  * Promise version of FS
@@ -444,26 +396,5 @@ export default class JsonDB {
 
         // Cache
         this.cache = {};
-    }
-
-    /**
-     * Run a JSON Query language file
-     */
-    run(filename: string) {
-        // Run the query
-        return exec(
-            fs.readFileSync(filename).toString(),
-            this,
-            this.reviver
-        );
-    }
-
-    /**
-     * Execute a query
-     * @param query The query
-     * @returns undefined after execution
-     */
-    query(query: string) {
-        return exec(query, this, this.reviver);
     }
 }
