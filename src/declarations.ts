@@ -118,14 +118,9 @@ export interface Context extends Record<string, any> {
     /**
      * Current cookie
      */
-    cookie?: {
+    readonly cookie?: {
         [key: string]: any;
-    };
-
-    /**
-     * Cookie options
-     */
-    cookieOptions?: CookieOptions;
+    } & CookieOptions;
 }
 
 
@@ -321,9 +316,9 @@ export interface AppConfigs {
  */
 export interface CookieOptions {
     /**
-     * Cookie maxAge in milliseconds.
+     * Cookie maxAge in seconds.
      */
-    maxAge?: number;
+    readonly maxAge?: number;
 
     /**
      * Decode the cookie
@@ -340,32 +335,32 @@ export interface CookieOptions {
     /**
      * Cookie domain
      */
-    domain?: string;
+    readonly domain?: string;
 
     /**
      * Cookie path
      */
-    path?: string;
+    readonly path?: string;
 
     /**
      * Cookie expires date
      */
-    expires?: Date;
+    readonly expires?: Date;
 
     /**
      * If set to true, the cookie cannot be accessed through document.cookie
      */
-    httpOnly?: boolean;
+    readonly httpOnly?: boolean;
 
     /**
      * If set to true, the cookie is available only in HTTPS
      */
-    secure?: boolean;
+    readonly secure?: boolean;
 
     /**
      * Cookie same site. Defaults to "lax"
      */
-    sameSite?: true | 'lax' | 'strict' | 'none';
+    readonly sameSite?: true | 'lax' | 'strict' | 'none';
 }
 
 export interface CORSOptions {

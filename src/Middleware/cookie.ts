@@ -1,15 +1,6 @@
 import { serialize, parse } from "../Utils/Cookie";
 import { Context, Middleware, NextFunction, CookieOptions } from "../declarations";
 
-declare module '../declarations' {
-    interface Context {
-        cookie?: {
-            [key: string]: any;
-        };
-        cookieOptions?: CookieOptions;
-    }
-}
-
 /**
  * Cookie middleware
  */
@@ -28,40 +19,46 @@ export default class Cookie implements Middleware {
      * @param next 
      */
     async invoke(ctx: Context, next: NextFunction): Promise<void> {
-        // Set cookies 
-        Object.defineProperty(ctx, "cookie", {
-            // Get cookies
-            get: () => 
-                JSON.parse(
-                    // Parse the response set cookie header
-                    parse(
-                        ctx.rawRequest.res.getHeader("Set-Cookie") as string ?? '', 
-                        this.options
-                    ).props
+        const currentCookie = JSON.parse(
+            // Parse the response set cookie header
+            parse(
+                ctx.rawRequest.req.headers.cookie ?? '', 
+                this.options
+            ).props
 
-                    // If cookie response is not set get the request cookie header
-                    ?? parse(ctx.rawRequest.req.headers.cookie
-                        ?? serialize("props", JSON.stringify({}), this.options),
-                        this.options
-                    ).props
-                ),
+            // If cookie response is not set get the request cookie header
+            ?? parse(ctx.rawRequest.req.headers.cookie
+                ?? serialize("props", JSON.stringify({}), this.options),
+                this.options
+            ).props
+        );
 
-            // Set cookies
-            set: (value: { [key: string]: any }) => {
-                // Set cookie header
-                ctx.rawRequest.res.setHeader("Set-Cookie", serialize("props", JSON.stringify(value), this.options));
+        // Option fields
+        const optionFields = ["maxAge", "expires", "path", "domain", "secure", "httpOnly", "sameSite", "encode", "decode"];
+
+        // Cookie
+        const cookie = new Proxy(typeof currentCookie === "object" ? currentCookie : {}, {
+            get: (target, key) => {
+                if (optionFields.includes(key.toString())) 
+                    return this.options[key];
+
+                // Get cookie
+                return target[key.toString()];
             },
 
-            enumerable: true,
-            configurable: true,
+            set: (target, key, value) => {
+                if (key in optionFields)
+                    throw new Error("Cannot set cookie options");
+
+                // Set cookie
+                target[key as string] = value;
+                return true;
+            }
         });
-
-        // Cookie options
-        Object.defineProperty(ctx, "cookieOptions", {
-            get: () => 
-                this.options,
-
-            enumerable: true,
+        Object.defineProperty(ctx, "cookie", {
+            get() {
+                return cookie;
+            }
         });
 
         // Next middleware

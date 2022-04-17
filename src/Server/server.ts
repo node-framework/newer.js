@@ -4,6 +4,7 @@ import fs from "fs";
 import simple from "./simple";
 import { Middleware, Context, Method } from "../declarations";
 import { getBody, getQuery } from "../Utils/BodyParser";
+import { serialize } from "../Utils/Cookie";
 
 interface Server {
     /**
@@ -232,6 +233,18 @@ class Server extends Function {
 
         // Invoke the middleware
         await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
+
+        // Set cookie
+        if (c.cookie) {
+            const options = {};
+            for (const option of ["maxAge", "expires", "path", "domain", "secure", "httpOnly", "sameSite", "encode", "decode"]) {
+                const val = c.cookie[option];
+                if (val)
+                    options[option] = val;
+            }
+            const newCookie = serialize("props", JSON.stringify(c.cookie), options);
+            res.setHeader("Set-Cookie", newCookie);
+        }
 
         // End the response
         this.endResponse(c, res);
