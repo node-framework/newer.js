@@ -4,7 +4,8 @@ import fs from "fs";
 import simple from "./simple";
 import { Middleware, Context, Method } from "../declarations";
 import { getBody, getQuery } from "../Utils/BodyParser";
-import { serialize } from "../Utils/Cookie";
+import endResponse from "../Utils/EndResponse";
+import setCookie from "../Utils/SetCookie";
 
 interface Server {
     /**
@@ -119,29 +120,6 @@ class Server extends Function {
         }
     }
 
-    // End the response
-    private endResponse(ctx: Context, res: http.ServerResponse) {
-        // Check whether content and status code is set
-        if (!ctx.response && !ctx.statusCode) {
-            // Set status code to 404
-            ctx.statusCode = 404;
-
-            // Set the response
-            ctx.response = "Cannot " + ctx.method + " " + ctx.url;
-        }
-
-        // Write status code 
-        res.writeHead(ctx.statusCode ?? 200);
-
-        // Response in string
-        const response = typeof ctx.response === "object"
-            ? JSON.stringify(ctx.response)
-            : String(ctx.response);
-
-        // End the response
-        res.end(response);
-    }
-
     /**
      * Return the request listener
      * @param req The request
@@ -161,8 +139,8 @@ class Server extends Function {
             // Default status code
             statusCode: undefined,
 
-            // The response, default to empty
-            response: undefined,
+            // The response, default to empty string
+            response: "",
 
             // The query of the URL
             query: getQuery(req.url),
@@ -174,7 +152,7 @@ class Server extends Function {
             url: req.url,
 
             // Append file content
-            writeFile(path) {
+            writeFile: path => {
                 // Append file content to response
                 c.response = this.readFile(path) ?? "";
             },
@@ -235,19 +213,10 @@ class Server extends Function {
         await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
 
         // Set cookie
-        if (c.cookie) {
-            const options = {};
-            for (const option of ["maxAge", "expires", "path", "domain", "secure", "httpOnly", "sameSite", "encode", "decode"]) {
-                const val = c.cookie[option];
-                if (val)
-                    options[option] = val;
-            }
-            const newCookie = serialize("props", JSON.stringify(c.cookie), options);
-            res.setHeader("Set-Cookie", newCookie);
-        }
+        setCookie(c, res);
 
         // End the response
-        this.endResponse(c, res);
+        endResponse(c, res);
     }
 
     /**

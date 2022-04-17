@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.5-beta.10",
+	"version": "0.2.5-beta.11",
 	"description": "A lightweight web framework",
 	"main": "./modules/index.js",
 	"keywords": [

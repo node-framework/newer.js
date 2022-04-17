@@ -23,6 +23,7 @@ export interface Context extends Record<string, any> {
 
     /**
      * The response
+     * @default ""
      */
     response: any;
 
@@ -123,11 +124,10 @@ export interface Context extends Record<string, any> {
     } & CookieOptions;
 }
 
-
 /**
  * A route handler
  */
-export type Handler = {
+export declare type Handler = {
     [method in Method]?: (ctx: Context) => Promise<void>;
 };
 
