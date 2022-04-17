@@ -46,27 +46,27 @@ export interface Context extends Record<string, any> {
     };
 
     /**
-     * The page url
+     * The page pathname and query
      */
     readonly url: string;
 
     /**
-     * Append a file content to response
+     * Set the response to the file content
      */
     writeFile(path: string): void;
 
     /**
-     * Get response headers
+     * Get request headers
      */
     header(name: string): string | number | string[];
 
     /**
      * Set response headers
      */
-    header(name: string, value?: string | number | readonly string[]): void;
+    header(name: string, value: string | number | readonly string[]): void;
 
     /**
-     * Set multiple headers
+     * Set multiple response headers
      */
     headers(headers: { [name: string]: string | number | readonly string[] }): void;
 

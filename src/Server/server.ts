@@ -4,7 +4,6 @@ import fs from "fs";
 import simple from "./simple";
 import { Middleware, Context, Method } from "../declarations";
 import { getBody, getQuery } from "../Utils/BodyParser";
-import Callable from "callable-instance";
 
 interface Server {
     /**
@@ -15,7 +14,7 @@ interface Server {
     (req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
 }
 
-class Server extends Callable<[http.IncomingMessage, http.ServerResponse], Promise<void>> {
+class Server extends Function {
     private mds: Middleware[];
 
     private options: http.ServerOptions | https.ServerOptions;
@@ -26,18 +25,65 @@ class Server extends Callable<[http.IncomingMessage, http.ServerResponse], Promi
 
     private iconPath: string;
 
-    constructor(options?: http.ServerOptions);
-    constructor(options: https.ServerOptions, httpsMode: boolean);
+    /**
+     * Create an HTTP server instance
+     */
+    constructor();
+
+    /**
+     * Create an HTTP server instance
+     * @param options The HTTP server options
+     */
+    constructor(options: http.ServerOptions);
+
+    /**
+     * Create an HTTPS server instance
+     * @param httpsMode if set to true, the server instance will be created as an HTTPS server
+     */
+    // @ts-ignore
+    constructor(httpsMode: true);
+
+    /**
+     * Create an HTTP server instance
+     * @param httpsMode if set to true, the server instance will be created as an HTTPS server
+     */
+    constructor(httpsMode: false);
+
+    /**
+     * Create an HTTPS server instance
+     * @param options The HTTPS server options
+     * @param httpsMode if set to true, the server instance will be created as an HTTPS server
+     */
+    constructor(options: https.ServerOptions, httpsMode: true);
+
+    /**
+     * Create an HTTP server instance
+     * @param options The server options
+     * @param httpsMode if set to true, the server instance will be created as an HTTPS server
+     */
+    constructor(options: http.ServerOptions, httpsMode: false);
 
     /**
      * The constructor
      */
     constructor(options?: http.ServerOptions | https.ServerOptions, httpsMode?: boolean) {
-        super("cb");
-        this.options = options;
-        this.httpsMode = httpsMode;
+        super();
+
+        if (typeof options === "boolean" && !httpsMode)
+            this.httpsMode = options;
+        else {
+            this.options = options;
+            this.httpsMode = httpsMode;
+        }
         this.mds = [];
         this.iconPath = "./favicon.ico";
+
+        return new Proxy(this, {
+            apply(target, _, argArray) {
+                // @ts-ignore
+                return target.cb(...argArray);
+            },
+        });
     }
 
     /**
@@ -95,6 +141,11 @@ class Server extends Callable<[http.IncomingMessage, http.ServerResponse], Promi
         res.end(response);
     }
 
+    /**
+     * Return the request listener
+     * @param req The request
+     * @param res The response
+     */
     async cb(req: http.IncomingMessage, res: http.ServerResponse) {
         // The context
         const c: Context = {
@@ -132,7 +183,7 @@ class Server extends Callable<[http.IncomingMessage, http.ServerResponse], Promi
                 // Get or set a header
                 return value
                     ? void res.setHeader(name, value)
-                    : res.getHeader(name);
+                    : req.headers[name];
             },
 
             // Set multiple headers or get request headers

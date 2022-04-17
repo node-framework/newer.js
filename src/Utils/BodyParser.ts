@@ -33,7 +33,7 @@ function tryParseQuery(body: string): { [key: string]: string } {
         if (!key)
             continue;
         const [k = key, v = ""] = key.split("=");
-        result[decodeURIComponent(k.replaceAll("%20", " "))] = decodeURIComponent(v.replaceAll("%20", " "));
+        result[k] = v;
     }
     return result;
 }
