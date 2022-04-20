@@ -73,7 +73,7 @@ class Application {
                 join(this.appConfig.projectPath, "src", "middlewares")
             ) ?? []) {
                 // Module path
-                let modulePath = resolve(join(filename));
+                let modulePath = resolve(filename);
 
                 modulePath = modulePath
                     .slice(modulePath.indexOf(":") + 1)

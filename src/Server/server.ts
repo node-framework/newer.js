@@ -19,6 +19,8 @@ interface Server {
 class Server extends Function {
     private mds: Middleware[];
 
+    private afterInvokeCb: (ctx: Context) => Promise<void> | void;
+
     private options: http.ServerOptions | https.ServerOptions;
 
     private httpsMode: boolean;
@@ -79,6 +81,7 @@ class Server extends Function {
         }
         this.mds = [];
         this.iconPath = "./favicon.ico";
+        this.afterInvokeCb = () => { };
 
         return new Proxy(this, {
             apply(target, _, argArray) {
@@ -95,6 +98,16 @@ class Server extends Function {
      */
     icon(path: string) {
         this.iconPath = path;
+        return this;
+    }
+
+    /**
+     * Called when finish invoking the middleware
+     * @param cb a callback
+     * @returns this server for chaining
+     */
+    afterInvoke(cb: (ctx: Context) => Promise<void> | void) {
+        this.afterInvokeCb = cb;
         return this;
     }
 
@@ -211,6 +224,10 @@ class Server extends Function {
 
         // Invoke the middleware
         await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
+
+        // Invoke the after invoke callback
+        if (!c.responseEnded)
+            await this.afterInvokeCb(c);
 
         // Set cookie
         setCookie(c, res);
