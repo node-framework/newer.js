@@ -2,7 +2,7 @@ node_modules
 .npmignore
 *.d.ts.map
 tsconfig.json
-bin 
+bin/*.bat
 test  
 jsconfig.json
 lib

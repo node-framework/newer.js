@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+/**
+ * Imports
+ * @private
+ */
+const fs = require("fs");
+const yargs = require("yargs");
+const createPackageJSON = require("./create-package-json");
+const createStructure = require("./create-structure");
+
+/**
+ * Parse the command-line arguments
+ * @private
+ */
+
+const args = yargs(process.argv.slice(2))
+    .option("type", {
+        alias: "t",
+        describe: "The application type, default or pre-setup",
+        default: "default",
+        choices: ["default", "pre-setup"]
+    })
+    .option("pkg", {
+        alias: "p",
+        describe: "The package manager you want to use, npm or yarn",
+        default: "npm",
+        choices: ["npm", "yarn"]
+    })
+    .help("help")
+    .argv;
+
+/**
+ * Parsed options
+ * @private
+ */
+
+const appType = args.type;
+const packageManager = args.pkg;
+
+/**
+ * Create files and folders
+ */
+createPackageJSON(packageManager);
+createStructure(appType);
