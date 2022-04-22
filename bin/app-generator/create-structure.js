@@ -1,51 +1,69 @@
 const fs = require("fs");
 
+const writePath = (path, type, content) => {
+    if (!fs.existsSync(path))
+        switch (type) {
+            case "folder":
+                fs.mkdirSync(path);
+                break;
+            case "file":
+                fs.appendFileSync(path, content);
+                break;
+        }
+};
+
+function importStatement(esm = false, prop) {
+    return `${esm ? "import" : "const"} ${prop} ${esm ? "from " : "= require("}"newer.js"${!esm ? ")" : ""};`;
+}
+
+function loadEnv(esm) {
+    return !esm ? `require("dotenv").config();` : "import \"dotenv/config\";";
+}
+
+function exportStatement(esm, prop) {
+    return (esm ? "export default " : "module.exports = ") + prop + ";";
+}
+
 /**
  * Create the default structure
  */
-function createDefault() {
-    
-}
+function createDefault(esm = false) {
+    // Index file
+    writePath(esm ? "./index.mjs" : "./index.js", "file",
+`${importStatement(esm, "{ Server, CORS, StaticDir }")}
+${esm ? `import router from "./routes/index.mjs";` : ""}
+${loadEnv(esm)}
 
-/**
- * Create the pre-setup structure
- */
-function createPreSetup() {
-    // Create the directories
-    if (!fs.existsSync("./src/middlewares")) {
-        if (!fs.existsSync("./src"))
-            fs.mkdirSync("./src");
-        fs.mkdirSync("./src/middlewares");
-    }
+const app = new Server();
 
-    // Create index and hello middleware
-    fs.appendFileSync("./src/middlewares/hello.js", `
-/**
- * @type {import("newer.js/app").NewerMiddleware}
- */
-module.exports = {
-    async invoke(ctx, next) {
-        ctx.response = "Hello World!";
-        await next();
-    }
-};
+app.middleware(new CORS());
+app.middleware(new StaticDir("./public"));
+app.middleware(${esm ? "router" : `require("./routes")`});
+
+app.listen(Number(process.env.PORT) || 8080);
 `
     );
 
-    fs.appendFileSync("./index.js", `
-import Application from "newer.js/app";
+    // Create folders
+    writePath("./routes", "folder");
+    writePath("./public", "folder");
+    writePath("./models", "folder");
+    writePath(".env", "file", "PORT=8080");
 
-Application.start();
-`);
-}
+    // Create the route index file
+    writePath(esm ? "./routes/index.mjs" : "./routes/index.js", "file", 
+`${importStatement(esm, "{ Router }")}
 
-module.exports = type => {
-    switch (type) {
-        case "default": 
-            createDefault();
-            break;
-        case "pre-setup":
-            createPreSetup();
-            break;
+const router = new Router("/");
+    
+router.route("/", {
+    GET(ctx) {
+        ctx.response = "Hello World!";
     }
+});
+    
+${exportStatement(esm, "router")}`
+    );
 }
+
+module.exports = createDefault;

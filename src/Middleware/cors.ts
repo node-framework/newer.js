@@ -10,7 +10,6 @@ export default class CORS implements Middleware {
     async invoke(ctx: Context, next: NextFunction) {
         // Headers 
         const headers = {
-            "Access-Control-Allow-Origin": this.options.allowOrigin ?? "*",
             "Access-Control-Allow-Methods": this.options.allowMethods?.join(", ") ?? "GET, POST, PUT, DELETE, PATCH, OPTIONS",
         };
         if (this.options.maxAge)
@@ -21,8 +20,27 @@ export default class CORS implements Middleware {
             headers["Access-Control-Allow-Headers"] = this.options.allowHeaders.join(", ");
         if (this.options.exposeHeaders)
             headers["Access-Control-Expose-Headers"] = this.options.exposeHeaders.join(", ");
-        if (this.options.allowOrigin && this.options.allowOrigin !== "*")
+
+        // Origin
+        if (!this.options.allowOrigins)
+            this.options.allowOrigins = "*";
+
+        // Set the header value
+        let value: string;
+        if (
+            Array.isArray(this.options.allowOrigins)
+            && this.options.allowOrigins.includes(ctx.headers().origin)
+        )
+            value = ctx.headers().origin;
+        else
+            value = this.options.allowOrigins as string;
+
+        // If value is not all origin
+        if (value !== "*")
             headers["Vary"] = "Origin";
+
+        // Set the header
+        headers["Access-Control-Allow-Origin"] = value;
 
         // Set headers and continue
         ctx.headers(headers);

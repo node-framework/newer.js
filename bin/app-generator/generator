@@ -15,17 +15,17 @@ const createStructure = require("./create-structure");
  */
 
 const args = yargs(process.argv.slice(2))
-    .option("type", {
-        alias: "t",
-        describe: "The application type, default or pre-setup",
-        default: "default",
-        choices: ["default", "pre-setup"]
-    })
     .option("pkg", {
         alias: "p",
         describe: "The package manager you want to use, npm or yarn",
         default: "npm",
         choices: ["npm", "yarn"]
+    })
+    .option("esm", {
+        alias: "e",
+        describe: "Set to true will enable ESM",
+        default: false,
+        type: "boolean"
     })
     .help("help")
     .argv;
@@ -35,11 +35,11 @@ const args = yargs(process.argv.slice(2))
  * @private
  */
 
-const appType = args.type;
 const packageManager = args.pkg;
+const esm = args.esm;
 
 /**
  * Create files and folders
  */
-createPackageJSON(packageManager);
-createStructure(appType);
+createPackageJSON(packageManager, esm);
+createStructure(esm);

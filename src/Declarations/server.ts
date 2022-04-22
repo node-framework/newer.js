@@ -11,7 +11,7 @@ export interface CORSOptions {
      * Access-Control-Allow-Origin specifies either a single origin which tells browsers to allow that origin to access the resource; 
      * or else — for requests without credentials — the "*" wildcard tells browsers to allow any origin to access the resource.
      */
-    allowOrigin?: string;
+    allowOrigins?: string | string[];
 
     /**
      * The Access-Control-Allow-Methods header specifies the method or methods allowed when accessing the resource. 
