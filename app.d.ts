@@ -1,4 +1,4 @@
-import { AppConfigs, Middleware } from "./src/declarations";
+import { AppConfigs, Middleware } from "./types/declarations";
 
 declare namespace Application {
     /**
