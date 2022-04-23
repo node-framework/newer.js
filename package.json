@@ -1,7 +1,7 @@
 {
 	"name": "newer.js",
-	"version": "0.2.5-pre.3",
-	"description": "A lightweight web framework",
+	"version": "0.2.5",
+	"description": "A web framework",
 	"main": "./modules/index.js",
 	"keywords": [
 		"backend",

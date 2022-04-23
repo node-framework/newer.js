@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/node-framework/newer.js/blob/main/LICENSE)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnode-framework%2Fnewer.js?ref=badge_shield)
 
-Newer.js is a lightweight framework for creating web servers.
+A web framework.
 
 ## Installation
 
