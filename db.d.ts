@@ -1,3 +1,3 @@
-import JsonDB from "./src/Database/JsonDB";
+import JsonDB from "./types/Database/JsonDB";
 
 export = JsonDB;

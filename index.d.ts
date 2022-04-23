@@ -1,10 +1,10 @@
-import Server from "./src/Server/server";
-import Router from "./src/Middleware/router";
-import StaticDir from "./src/Middleware/staticdir";
-import simple from "./src/Server/simple";
-import Cookie from "./src/Middleware/cookie";
-import route from "./src/Middleware/route";
-import CORS from "./src/Middleware/cors";
+import Server from "./types/Server/server";
+import Router from "./types/Middleware/router";
+import StaticDir from "./types/Middleware/staticdir";
+import simple from "./types/Server/simple";
+import Cookie from "./types/Middleware/cookie";
+import route from "./types/Middleware/route";
+import CORS from "./types/Middleware/cors";
 
 export {
     Server,
@@ -16,5 +16,5 @@ export {
     CORS
 }
 
-export * from "./src/declarations";
+export * from "./types/declarations";
 
