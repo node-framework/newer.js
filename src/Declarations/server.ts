@@ -104,6 +104,11 @@ export interface CookieOptions {
  */
 export interface Context extends Record<string, any> {
     /**
+     * Whether to end the response or not
+     */
+    toEndResponse: boolean;
+
+    /**
      * End the response manually
      */
     responseEnded: boolean;

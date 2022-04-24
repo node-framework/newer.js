@@ -79,6 +79,7 @@ class Server extends Function {
             this.options = options;
             this.httpsMode = httpsMode;
         }
+
         this.mds = [];
         this.iconPath = "./favicon.ico";
         this.afterInvokeCb = () => { };
@@ -141,6 +142,8 @@ class Server extends Function {
     async cb(req: http.IncomingMessage, res: http.ServerResponse) {
         // The context
         const c: Context = {
+            toEndResponse: true,
+
             // Raw request
             rawRequest: {
                 req, res
@@ -233,7 +236,8 @@ class Server extends Function {
         setCookie(c, res);
 
         // End the response
-        endResponse(c, res);
+        if (c.toEndResponse)
+            endResponse(c, res);
     }
 
     /**

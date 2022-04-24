@@ -12,6 +12,7 @@ export default function setCookie(c: Context, res: http.ServerResponse) {
                 options[option] = val;
         }
         const newCookie = serialize("props", JSON.stringify(c.cookie), options);
-        res.setHeader("Set-Cookie", newCookie);
+        if (!res.headersSent)
+            res.setHeader("Set-Cookie", newCookie);
     }
 }

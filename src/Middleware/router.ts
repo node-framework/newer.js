@@ -26,6 +26,9 @@ export default class Router implements Middleware {
      * @returns This router for chaining
      */
     route(routeName: string, routeHandler: Handler) {
+        if (routeName === "/")
+            routeName = "";
+
         this.middleware({
             // When the middleware is invoked
             invoke: async (ctx, next) => {
