@@ -12,7 +12,8 @@ export default function endResponse(ctx: Context, res: http.ServerResponse) {
     }
 
     // Write status code 
-    res.writeHead(ctx.statusCode ?? 200);
+    if (!res.headersSent)
+        res.writeHead(ctx.statusCode ?? 200);
 
     // Response in string
     const response = typeof ctx.response === "object"
@@ -20,5 +21,6 @@ export default function endResponse(ctx: Context, res: http.ServerResponse) {
         : String(ctx.response);
 
     // End the response
-    res.end(response);
+    if (!res.writableEnded)
+        res.end(response);
 }
