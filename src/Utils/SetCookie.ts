@@ -1,6 +1,6 @@
 import { Context } from "../declarations";
 import http from "http";
-import { serialize } from "../Utils/Cookie";
+import cookie from "cookie";
 
 export default function setCookie(c: Context, res: http.ServerResponse) {
     // Set cookie
@@ -11,7 +11,7 @@ export default function setCookie(c: Context, res: http.ServerResponse) {
             if (val)
                 options[option] = val;
         }
-        const newCookie = serialize("props", JSON.stringify(c.cookie), options);
+        const newCookie = cookie.serialize("props", JSON.stringify(c.cookie), options);
         if (!res.headersSent)
             res.setHeader("Set-Cookie", newCookie);
     }

@@ -1,3 +1,4 @@
+import { CookieParseOptions, CookieSerializeOptions } from "cookie";
 import http from "http";
 import net from "net";
 
@@ -49,53 +50,7 @@ export interface CORSOptions {
 /**
  * Cookie options
  */
-export interface CookieOptions {
-    /**
-     * Cookie maxAge in seconds.
-     */
-    readonly maxAge?: number;
-
-    /**
-     * Decode the cookie
-     * @param str The string to decode
-     */
-    decode?(str: string): string;
-
-    /**
-     * Encode the cookie
-     * @param str The string to encode
-     */
-    encode?(str: string): string;
-
-    /**
-     * Cookie domain
-     */
-    readonly domain?: string;
-
-    /**
-     * Cookie path
-     */
-    readonly path?: string;
-
-    /**
-     * Cookie expires date
-     */
-    readonly expires?: Date;
-
-    /**
-     * If set to true, the cookie cannot be accessed through document.cookie
-     */
-    readonly httpOnly?: boolean;
-
-    /**
-     * If set to true, the cookie is available only in HTTPS
-     */
-    readonly secure?: boolean;
-
-    /**
-     * Cookie same site. Defaults to "lax"
-     */
-    readonly sameSite?: true | 'lax' | 'strict' | 'none';
+export interface CookieOptions extends CookieParseOptions, CookieSerializeOptions {
 }
 
 
@@ -103,10 +58,6 @@ export interface CookieOptions {
  * Context of a request
  */
 export interface Context extends Record<string, any> {
-    /**
-     * Whether to end the response or not
-     */
-    toEndResponse: boolean;
 
     /**
      * End the response manually

@@ -166,7 +166,7 @@ export default class JsonDB {
 
             // Find one
             static async findOne(obj?: any, except?: boolean) {
-                return this.find(obj, 1, except)[0];
+                return (await this.find(obj, 1, except))[0];
             }
 
             // Update the object

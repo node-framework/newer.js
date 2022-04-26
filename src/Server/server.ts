@@ -134,16 +134,9 @@ class Server extends Function {
         }
     }
 
-    /**
-     * Return the request listener
-     * @param req The request
-     * @param res The response
-     */
-    async cb(req: http.IncomingMessage, res: http.ServerResponse) {
+    private async getContext(req: http.IncomingMessage, res: http.ServerResponse) {
         // The context
         const c: Context = {
-            toEndResponse: true,
-
             // Raw request
             rawRequest: {
                 req, res
@@ -208,6 +201,55 @@ class Server extends Function {
             remoteAddress: req.socket.remoteAddress,
         };
 
+        // Response proxy
+        const newRes = new Proxy(res, {
+            get(target, prop) {
+                if (prop === "end")
+                    return (content: any) => {
+                        c.response = typeof content === "object" ? JSON.stringify(content) : content;
+                        c.responseEnded = true;
+                    }
+
+                else if (prop === "write")
+                    return (data: any) => 
+                        c.response += typeof data === "object" ? JSON.stringify(data) : data;
+
+                else if (prop === "writeHead")
+                    return (statusCode: number, statusMessage?: string, headers?: http.OutgoingHttpHeaders | http.OutgoingHttpHeader[]) => {
+                        if (typeof statusMessage === "object")
+                            headers = statusMessage;
+
+                        // Set header
+                        for (let i = 0; i < headers?.length ?? 0; i += 2) 
+                            res.setHeader(headers[i], headers[i + 1]);
+                        
+                        // Status
+                        c.statusCode = statusCode;
+                        res.statusMessage = statusMessage;
+                    }
+
+                else if (prop === "setHeader")
+                    return (name: string, value: string | number | readonly string[]) =>
+                        c.header(name, value);
+
+                return Reflect.get(target, prop);
+            }
+        });
+
+        Object.defineProperty(c.rawRequest, "res", {
+            get: () => newRes
+        });
+        return c;
+    }
+
+    /**
+     * Return the request listener
+     * @param req The request
+     * @param res The response
+     */
+    async cb(req: http.IncomingMessage, res: http.ServerResponse) {
+        const c = await this.getContext(req, res);
+
         // Check whether the request is a favicon
         if (req.url === "/favicon.ico")
             c.response = this.readFile(this.iconPath) ?? "";
@@ -236,8 +278,7 @@ class Server extends Function {
         setCookie(c, res);
 
         // End the response
-        if (c.toEndResponse)
-            endResponse(c, res);
+        endResponse(c, res);
     }
 
     /**

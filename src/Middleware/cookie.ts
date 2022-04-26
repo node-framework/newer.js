@@ -1,4 +1,4 @@
-import { serialize, parse } from "../Utils/Cookie";
+import { serialize, parse } from "cookie";
 import { Context, Middleware, NextFunction, CookieOptions } from "../declarations";
 
 /**
