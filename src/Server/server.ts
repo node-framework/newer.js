@@ -1,7 +1,6 @@
 import http from "http";
 import https from "https";
 import fs from "fs";
-import simple from "./simple";
 import { Middleware, Context, Method } from "../declarations";
 import { getBody, getQuery } from "../Utils/BodyParser";
 import endResponse from "../Utils/EndResponse";
@@ -28,6 +27,8 @@ class Server extends Function {
     private rawServer: http.Server | https.Server;
 
     private iconPath: string;
+
+    private errorCb: (ctx: Context, error: any) => Promise<void> | void;
 
     /**
      * Create an HTTP server instance
@@ -83,6 +84,11 @@ class Server extends Function {
         this.mds = [];
         this.iconPath = "./favicon.ico";
         this.afterInvokeCb = () => { };
+        this.errorCb = (ctx, error) => {
+            console.error(error);
+            ctx.statusCode = 500;
+            ctx.response = "Internal Server Error";
+        };
 
         return new Proxy(this, {
             apply(target, _, argArray) {
@@ -113,6 +119,14 @@ class Server extends Function {
     }
 
     /**
+     * Set the error handler for the server
+     */
+    setErrorHandler(cb: (ctx: Context, error: any) => Promise<void> | void) {
+        this.errorCb = cb;
+        return this;
+    }
+
+    /**
      * Add middleware
      * @param m middleware 
      * @returns this server for chaining
@@ -137,6 +151,12 @@ class Server extends Function {
     private async getContext(req: http.IncomingMessage, res: http.ServerResponse) {
         // The context
         const c: Context = {
+            // Status message
+            statusMessage: "",
+
+            // Whether do response or not
+            doResponse: true,
+
             // Raw request
             rawRequest: {
                 req, res
@@ -215,31 +235,37 @@ class Server extends Function {
         if (req.url === "/favicon.ico")
             c.response = this.readFile(this.iconPath) ?? "";
 
-        // Next function
-        const next = async (index: number, max: number) => {
-            if (index < max) {
-                // When response ended
-                if (c.responseEnded)
-                    // End the function
-                    return;
+        try {
+            // Next function
+            const next = async (index: number, max: number) => {
+                if (index < max) {
+                    // When response ended
+                    if (c.responseEnded)
+                        // End the function
+                        return;
 
-                // Invoke the middleware
-                await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
+                    // Invoke the middleware
+                    await this.mds[index + 1]?.invoke(c, async () => next(index + 1, max));
+                }
             }
+
+            // Invoke the middleware
+            await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
+
+            // Invoke the after invoke callback
+            if (!c.responseEnded)
+                await this.afterInvokeCb(c);
+        } catch (e) {
+            this.errorCb(c, e);
+        } finally {
+            if (!c.doResponse) return;
+
+            // Set cookie
+            setCookie(c, res);
+
+            // End the response
+            endResponse(c, res);
         }
-
-        // Invoke the middleware
-        await this.mds[0]?.invoke(c, async () => next(0, this.mds.length));
-
-        // Invoke the after invoke callback
-        if (!c.responseEnded)
-            await this.afterInvokeCb(c);
-
-        // Set cookie
-        setCookie(c, res);
-
-        // End the response
-        endResponse(c, res);
     }
 
     /**
@@ -249,32 +275,16 @@ class Server extends Function {
      * @param backlog the backlog
      */
     async listen(port: number = 80, hostname: string = "localhost", backlog: number = 0) {
-        // Get requests
-        const requests = simple({
-            port,
-            hostname,
-            backlog,
-            options: this.options,
-            httpsMode: this.httpsMode
-        });
-
-        // Make this process asynchronously run
-        (async () => {
-            // Loop through the requests
-            for await (const res of requests)
-                await this.cb(res.req, res);
-        })().catch(e => {
-            if (e)
-                throw e;
-        });
+        const server = (this.httpsMode ? https : http).createServer(this.options);
+        server.on("request", this);
 
         // Wait until the server is ready
         await new Promise<void>(res =>
-            requests.server.once("listening", res)
+            server.listen(port, hostname, backlog, res)
         );
 
         // Http server
-        this.rawServer = requests.server;
+        this.rawServer = server;
     }
 
     /**

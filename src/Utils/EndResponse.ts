@@ -12,8 +12,9 @@ export default function endResponse(ctx: Context, res: http.ServerResponse) {
     }
 
     // Write status code 
-    if (!res.headersSent)
-        res.writeHead(ctx.statusCode ?? 200);
+    res.statusCode = ctx.statusCode ?? 200;
+    if (ctx.statusMessage)
+        res.statusMessage = ctx.statusMessage;
 
     // Response in string
     const response = typeof ctx.response === "object"

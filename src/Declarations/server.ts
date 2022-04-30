@@ -58,6 +58,17 @@ export interface CookieOptions extends CookieParseOptions, CookieSerializeOption
  * Context of a request
  */
 export interface Context extends Record<string, any> {
+    /**
+     * The status message of the response
+     * @default ""
+     */
+    statusMessage: string;
+
+    /**
+     * Whether to response or not
+     * @default true
+     */
+    doResponse: boolean;
 
     /**
      * End the response manually
