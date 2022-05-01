@@ -1,7 +1,7 @@
 const cp = require("child_process");
 const fs = require("fs");
 
-module.exports = (pkg, esm) => {
+function createPackageJSON(pkg, esm) {
     switch (pkg) {
         case "npm": 
             cp.execSync("npm install nodemon --save-dev");
@@ -21,3 +21,5 @@ module.exports = (pkg, esm) => {
     };
     fs.writeFileSync("./package.json", JSON.stringify(data, null, 4));
 }
+
+module.exports = createPackageJSON;
