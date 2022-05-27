@@ -64,7 +64,7 @@ export default class JsonDB {
      * @param obj 
      */
     private checkType(
-        validator: { [key: string | number | symbol]: SchemaType } | SchemaType | SchemaType[],
+        validator: { [key: string | number | symbol]: SchemaType | SchemaType[] } | SchemaType | SchemaType[],
         obj: any,
         propName: string = ""
     ) {
@@ -100,7 +100,7 @@ export default class JsonDB {
      * @param validator 
      * @returns a collection
      */
-    collection(name: string, validator?: { [prop: string]: SchemaType } | SchemaType): Schema {
+    collection(name: string, validator?: { [prop: string | number | symbol]: SchemaType | SchemaType[] } | SchemaType | SchemaType[]): Schema {
         // Check if schema validator exists
         if (!validator)
             return this.schemas[name];

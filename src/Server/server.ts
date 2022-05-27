@@ -148,7 +148,7 @@ class Server extends Function {
         }
     }
 
-    private async getContext(req: http.IncomingMessage, res: http.ServerResponse) {
+    async getContext(req: http.IncomingMessage, res: http.ServerResponse) {
         // The context
         const c: Context = {
             // Status message
