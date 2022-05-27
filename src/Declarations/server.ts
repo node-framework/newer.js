@@ -97,7 +97,7 @@ export interface Context extends Record<string, any> {
      * Parsed body
      */
     readonly body: {
-        [k: string]: string;
+        [k: string]: string | object;
     };
 
     /**

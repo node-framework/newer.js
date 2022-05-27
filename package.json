@@ -1,6 +1,6 @@
 {
 	"name": "newer.js",
-	"version": "0.2.9",
+	"version": "0.3.0-alpha",
 	"description": "A web framework",
 	"main": "./modules/index.js",
 	"keywords": [
