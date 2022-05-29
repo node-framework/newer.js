@@ -20,15 +20,15 @@ export default function endResponse(ctx: Context, res: http.ServerResponse) {
     let response: string;
 
     // Set response
-    if (typeof ctx.response === "string")
-        response = ctx.response;
-
-    else if (typeof ctx.response === "object") {
-        if (typeof ctx.response.toString === "function")
+    if (typeof ctx.response === "object") {
+        if (typeof ctx.response.toString === "function" && !Array.isArray(ctx.response))
             response = ctx.response.toString();
         else
             response = JSON.stringify(ctx.response);
     }
+
+    if (!response)
+        response = String(ctx.response);
 
     // End the response
     if (!res.writableEnded)
