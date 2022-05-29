@@ -397,4 +397,15 @@ export default class JsonDB {
         // Cache
         this.cache = {};
     }
+
+    /**
+     * Sync the cache with the database
+     */
+    async sync() {
+        // Read the file
+        const data = await pfs.readFile(this.path);
+
+        // Parse the data
+        this.cache = JSON.parse(data.toString());
+    }
 }

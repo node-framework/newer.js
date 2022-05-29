@@ -17,9 +17,18 @@ export default function endResponse(ctx: Context, res: http.ServerResponse) {
         res.statusMessage = ctx.statusMessage;
 
     // Response in string
-    const response = typeof ctx.response === "object"
-        ? JSON.stringify(ctx.response)
-        : String(ctx.response);
+    let response: string;
+
+    // Set response
+    if (typeof ctx.response === "string")
+        response = ctx.response;
+
+    else if (typeof ctx.response === "object") {
+        if (typeof ctx.response.toString === "function")
+            response = ctx.response.toString();
+        else
+            response = JSON.stringify(ctx.response);
+    }
 
     // End the response
     if (!res.writableEnded)
