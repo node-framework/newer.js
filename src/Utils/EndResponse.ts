@@ -21,13 +21,15 @@ export default function endResponse(ctx: Context, res: http.ServerResponse) {
 
     // Set response
     if (typeof ctx.response === "object") {
-        if (typeof ctx.response.toString === "function" && !Array.isArray(ctx.response))
+        if (
+            typeof ctx.response.toString === "function" 
+            && !Array.isArray(ctx.response)
+            && ctx.response.toString() !== "[object Object]"
+        ) 
             response = ctx.response.toString();
-        else
+        else 
             response = JSON.stringify(ctx.response);
-    }
-
-    if (!response)
+    } else
         response = String(ctx.response);
 
     // End the response
